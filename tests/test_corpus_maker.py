@@ -1,4 +1,3 @@
-import io
 import os
 import tempfile
 import unittest
@@ -24,18 +23,16 @@ class TeiCorpusMakerTester(unittest.TestCase):
         if os.path.exists(self.output_file):
             os.remove(self.output_file)
 
-    def test_start_tag_and_xml_declaration_written(self):
-        file = io.StringIO("")
-        self.corpus_maker._write_corpus_start(file)
-        self.assertEqual(
-            file.getvalue(),
-            '<?xml version="1.0" encoding="utf-8"?>\n<teiCorpus xmlns="http://www.tei-c.org/ns/1.0">\n',
-        )
-
-    def test_end_tag_written_to_file(self):
-        file = io.StringIO("")
-        self.corpus_maker._write_corpus_end_tag(file)
-        self.assertEqual(file.getvalue(), "</teiCorpus>")
+    def test_xml_declaration_written_to_corpus_file(self):
+        header_file = os.path.join("tests", "testdata", "header.xml")
+        empty_dir = os.path.join("tests", "testdata", "empty")
+        with tempfile.TemporaryDirectory() as tempdir:
+            _, output_file = tempfile.mkstemp(".xml", dir=tempdir, text=True)
+            self.corpus_maker.build_corpus(empty_dir, header_file, output_file)
+            with open(output_file) as ptr:
+                file_content = ptr.read()
+        xml_declaration = "<?xml version='1.0' encoding='utf-8'?>"
+        self.assertTrue(xml_declaration in file_content)
 
     def test_data_from_header_file_written_to_corpus_file(self):
         header_file = os.path.join("tests", "testdata", "header.xml")
@@ -45,11 +42,8 @@ class TeiCorpusMakerTester(unittest.TestCase):
             self.corpus_maker.build_corpus(empty_dir, header_file, output_file)
             with open(output_file) as ptr:
                 file_content = ptr.read()
-            self.assertEqual(
-                file_content,
-                """<?xml version="1.0" encoding="utf-8"?>
-<teiCorpus xmlns="http://www.tei-c.org/ns/1.0">
-<teiHeader>
+            self.assertTrue(
+                """<teiHeader>
     <fileDesc>
         <titleStmt>
             <title/>
@@ -61,8 +55,8 @@ class TeiCorpusMakerTester(unittest.TestCase):
           <p/>
         </sourceDesc>
     </fileDesc>
-</teiHeader>
-</teiCorpus>""",
+</teiHeader>"""
+                in file_content
             )
 
     def test_header_file_ignored_if_in_corpus_directory(self):
