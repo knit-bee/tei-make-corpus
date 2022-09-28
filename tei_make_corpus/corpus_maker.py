@@ -25,6 +25,8 @@ class TeiCorpusMaker:
     def _prepare_single_tei_file(self, file_path: str) -> etree._Element:
         doc = etree.parse(file_path)
         root = doc.getroot()
+        if etree.QName(root.tag).localname != "TEI":
+            return None
         return root
 
     def _get_paths_for_corpus_files(

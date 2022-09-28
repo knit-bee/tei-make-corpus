@@ -115,3 +115,11 @@ class TeiCorpusMakerTester(unittest.TestCase):
         doc = etree.parse(self.output_file)
         result = self.validator.validate(doc)
         self.assertTrue(result)
+
+    def test_non_tei_xml_files_omitted(self):
+        corpus_dir = os.path.join("tests", "testdata", "contaminated")
+        header_file = os.path.join("tests", "testdata", "header.xml")
+        self.corpus_maker.build_corpus(corpus_dir, header_file, self.output_file)
+        tei_corpus_root = etree.parse(self.output_file).getroot()
+        # teiCorpus should have 3 children
+        self.assertEqual(len(tei_corpus_root), 3)
