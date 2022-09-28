@@ -28,7 +28,7 @@ jobs:
           flake8 . --max-line-length=127
       - name: Run mypy
         run: |
-          mypy .
+          mypy tei_make_corpus tests
       - name: Test with pytest
         run: |
           pytest
