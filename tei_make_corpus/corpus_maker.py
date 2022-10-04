@@ -27,6 +27,7 @@ class TeiCorpusMaker:
         root = doc.getroot()
         if etree.QName(root.tag).localname != "TEI":
             return None
+        self._remove_xmlid_attribute(root)
         return root
 
     def _get_paths_for_corpus_files(
@@ -38,3 +39,7 @@ class TeiCorpusMaker:
             for file in files
             if file != header_file and file.endswith(".xml")
         )
+
+    def _remove_xmlid_attribute(self, tei_doc: etree._Element) -> None:
+        for node in tei_doc.findall(".//*[@{http://www.w3.org/XML/1998/namespace}id]"):
+            node.attrib.pop("{http://www.w3.org/XML/1998/namespace}id")

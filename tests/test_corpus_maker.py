@@ -123,3 +123,9 @@ class TeiCorpusMakerTester(unittest.TestCase):
         tei_corpus_root = etree.parse(self.output_file).getroot()
         # teiCorpus should have 3 children
         self.assertEqual(len(tei_corpus_root), 3)
+
+    def test_xmlid_attribute_removed(self):
+        file = os.path.join("tests", "testdata", "corpus", "file1.xml")
+        processed = self.corpus_maker._prepare_single_tei_file(file)
+        result = processed.findall(".//*[@{http://www.w3.org/XML/1998/namespace}id]")
+        self.assertEqual(result, [])
