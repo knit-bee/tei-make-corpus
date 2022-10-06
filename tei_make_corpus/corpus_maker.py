@@ -1,13 +1,19 @@
 import os
+from dataclasses import dataclass
 from typing import Generator
 
 from lxml import etree
 
+from tei_make_corpus.corpus_stream import CorpusStream
 
+
+@dataclass
 class TeiCorpusMaker:
-    def build_corpus(self, corpus_dir: str, header_file: str, output_file: str) -> None:
+    outstream: CorpusStream
+
+    def build_corpus(self, corpus_dir: str, header_file: str) -> None:
         common_header = etree.parse(header_file)
-        with etree.xmlfile(output_file, encoding="utf-8") as xf:
+        with etree.xmlfile(self.outstream.path(), encoding="utf-8") as xf:
             xf.write_declaration()
             with xf.element("teiCorpus", nsmap={None: "http://www.tei-c.org/ns/1.0"}):
                 xf.write("\n")

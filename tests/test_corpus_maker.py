@@ -1,11 +1,17 @@
 import os
-import tempfile
 import unittest
 
 from lxml import etree
 
 from tei_make_corpus.corpus_maker import TeiCorpusMaker
 from tests.utils import create_validator
+
+
+class MockCorpusStream:
+    file = os.path.join("tests", "testdata", "output_file.xml")
+
+    def path(self):
+        return self.file
 
 
 class TeiCorpusMakerTester(unittest.TestCase):
@@ -16,34 +22,30 @@ class TeiCorpusMakerTester(unittest.TestCase):
         )
 
     def setUp(self):
-        self.corpus_maker = TeiCorpusMaker()
-        self.output_file = os.path.join("tests", "testdata", "output_file.xml")
+        self.mock_stream = MockCorpusStream()
+        self.corpus_maker = TeiCorpusMaker(self.mock_stream)
 
     def tearDown(self):
-        if os.path.exists(self.output_file):
-            os.remove(self.output_file)
+        if os.path.exists(self.mock_stream.file):
+            os.remove(self.mock_stream.file)
 
     def test_xml_declaration_written_to_corpus_file(self):
         header_file = os.path.join("tests", "testdata", "header.xml")
         empty_dir = os.path.join("tests", "testdata", "empty")
-        with tempfile.TemporaryDirectory() as tempdir:
-            _, output_file = tempfile.mkstemp(".xml", dir=tempdir, text=True)
-            self.corpus_maker.build_corpus(empty_dir, header_file, output_file)
-            with open(output_file) as ptr:
-                file_content = ptr.read()
+        self.corpus_maker.build_corpus(empty_dir, header_file)
+        with open(self.mock_stream.file) as ptr:
+            file_content = ptr.read()
         xml_declaration = "<?xml version='1.0' encoding='utf-8'?>"
         self.assertTrue(xml_declaration in file_content)
 
     def test_data_from_header_file_written_to_corpus_file(self):
         header_file = os.path.join("tests", "testdata", "header.xml")
         empty_dir = os.path.join("tests", "testdata", "empty")
-        with tempfile.TemporaryDirectory() as tempdir:
-            _, output_file = tempfile.mkstemp(".xml", dir=tempdir, text=True)
-            self.corpus_maker.build_corpus(empty_dir, header_file, output_file)
-            with open(output_file) as ptr:
-                file_content = ptr.read()
-            self.assertTrue(
-                """<teiHeader>
+        self.corpus_maker.build_corpus(empty_dir, header_file)
+        with open(self.mock_stream.file) as ptr:
+            file_content = ptr.read()
+        self.assertTrue(
+            """<teiHeader>
     <fileDesc>
         <titleStmt>
             <title/>
@@ -56,8 +58,8 @@ class TeiCorpusMakerTester(unittest.TestCase):
         </sourceDesc>
     </fileDesc>
 </teiHeader>"""
-                in file_content
-            )
+            in file_content
+        )
 
     def test_header_file_ignored_if_in_corpus_directory(self):
         corpus_dir = os.path.join("tests", "testdata", "corpus")
@@ -95,14 +97,13 @@ class TeiCorpusMakerTester(unittest.TestCase):
             "tests/testdata/rec_corpus/part2/subpart/file21.xml",
             "tests/testdata/rec_corpus/part2/subpart/file22.xml",
         ]
-
         self.assertEqual(sorted(list(corpus_files)), expected)
 
     def test_all_corpus_files_added_to_output_doc(self):
         corpus_dir = os.path.join("tests", "testdata", "rec_corpus")
         header_file = os.path.join("tests", "testdata", "header.xml")
-        self.corpus_maker.build_corpus(corpus_dir, header_file, self.output_file)
-        doc = etree.parse(self.output_file)
+        self.corpus_maker.build_corpus(corpus_dir, header_file)
+        doc = etree.parse(self.mock_stream.file)
         tei_nodes = doc.findall(
             ".//TEI", namespaces={None: "http://www.tei-c.org/ns/1.0"}
         )
@@ -111,16 +112,16 @@ class TeiCorpusMakerTester(unittest.TestCase):
     def test_resulting_file_is_valid_tei(self):
         corpus_dir = os.path.join("tests", "testdata", "rec_corpus")
         header_file = os.path.join("tests", "testdata", "header.xml")
-        self.corpus_maker.build_corpus(corpus_dir, header_file, self.output_file)
-        doc = etree.parse(self.output_file)
+        self.corpus_maker.build_corpus(corpus_dir, header_file)
+        doc = etree.parse(self.mock_stream.file)
         result = self.validator.validate(doc)
         self.assertTrue(result)
 
     def test_non_tei_xml_files_omitted(self):
         corpus_dir = os.path.join("tests", "testdata", "contaminated")
         header_file = os.path.join("tests", "testdata", "header.xml")
-        self.corpus_maker.build_corpus(corpus_dir, header_file, self.output_file)
-        tei_corpus_root = etree.parse(self.output_file).getroot()
+        self.corpus_maker.build_corpus(corpus_dir, header_file)
+        tei_corpus_root = etree.parse(self.mock_stream.file).getroot()
         # teiCorpus should have 3 children
         self.assertEqual(len(tei_corpus_root), 3)
 
