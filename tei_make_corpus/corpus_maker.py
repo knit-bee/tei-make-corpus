@@ -16,9 +16,7 @@ class TeiCorpusMaker:
         with etree.xmlfile(self.outstream.path(), encoding="utf-8") as xf:
             xf.write_declaration()
             with xf.element("teiCorpus", nsmap={None: "http://www.tei-c.org/ns/1.0"}):
-                xf.write("\n")
                 xf.write(common_header.getroot())
-                xf.write("\n")
                 for tei_file in self._get_paths_for_corpus_files(
                     corpus_dir, header_file
                 ):
@@ -26,7 +24,6 @@ class TeiCorpusMaker:
                     # remove xmlns from individual TEI node?
                     # handle recurring id attributes
                     xf.write(self._prepare_single_tei_file(tei_file))
-                    xf.write("\n")
 
     def _prepare_single_tei_file(self, file_path: str) -> etree._Element:
         doc = etree.parse(file_path)
