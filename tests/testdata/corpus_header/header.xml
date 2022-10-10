@@ -1,0 +1,38 @@
+<teiHeader>
+    <fileDesc>
+        <titleStmt>
+            <title>Corpus title</title>
+            <author>Author</author>
+            <funder>Funder</funder>
+        </titleStmt>
+        <publicationStmt>
+          <publisher>Publisher</publisher>
+          <pubPlace>Place</pubPlace>
+          <date>today</date>
+          <availability n="test" status="unknown">Some text</availability>
+        </publicationStmt>
+        <sourceDesc>
+          <p/>
+        </sourceDesc>
+    </fileDesc>
+    <encodingDesc>
+      <classDecl>
+        <taxonomy n="dwds">
+          <bibl>Digitales Woerterbuch der deutschen Sprache</bibl>
+        </taxonomy>
+      </classDecl>
+      <projectDesc default="false">
+        <p>text collected by the Berlin-Brandenburgische Akademie der Wissenschaften for the project 'Digitales Wörterbuch der deutschen Sprache des 20. Jahrhunderts'.</p>
+      </projectDesc>
+      <samplingDecl default="false">
+        <p>linebreaks in paragraphs have been omitted (except for poems etc.)</p>
+        <p>heading lines and footers have been omitted.</p>
+        <p>blank lines and multiple blank spaces, including paragraph indents, have not been preserved.</p>
+        <p>marginal notes have been omitted.</p>
+        <p>font format (size, type) have not been preserved.</p>
+        <p>no reproduction of front and back matters.</p>
+        <p>preface(s), appendix(ices), index(es) and epilogues (of the author / editor) have been omitted.</p>
+        <p>figures and tables have not been preserved.</p>
+      </samplingDecl>
+    </encodingDesc>
+</teiHeader>

@@ -32,6 +32,8 @@ class TeiCorpusMaker:
         if etree.QName(root.tag).localname != "TEI":
             return None
         self._remove_xmlid_attribute(root)
+        iheader = root.find(".//{*}teiHeader")
+        self.header_handler.declutter_individual_header(iheader)
         return root
 
     def _get_paths_for_corpus_files(

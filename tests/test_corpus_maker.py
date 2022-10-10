@@ -19,7 +19,7 @@ class MockHeaderHandler:
     def common_header(self):
         return None
 
-    def declutter_individual_header(self):
+    def declutter_individual_header(self, iheader):
         pass
 
 
@@ -147,3 +147,27 @@ class TeiCorpusMakerTester(unittest.TestCase):
         processed = corpus_maker._prepare_single_tei_file(file)
         result = processed.findall(".//*[@{http://www.w3.org/XML/1998/namespace}id]")
         self.assertEqual(result, [])
+
+    def test_element_from_individual_header_removed_if_equal_in_common_header(self):
+        corpus_dir = os.path.join("tests", "testdata", "corpus_header")
+        header_file = os.path.join(corpus_dir, "header.xml")
+        header_handler = TeiHeaderHandlerImpl(header_file)
+        corpus_maker = TeiCorpusMaker(self.mock_stream, header_handler)
+        corpus_maker.build_corpus(corpus_dir, header_file)
+        doc = etree.parse(self.mock_stream.file)
+        result = doc.findall(
+            ".//funder", namespaces={None: "http://www.tei-c.org/ns/1.0"}
+        )
+        self.assertEqual(len(result), 1)
+
+    def test_element_retained_if_content_is_different_from_common_header(self):
+        corpus_dir = os.path.join("tests", "testdata", "corpus_header")
+        header_file = os.path.join(corpus_dir, "header.xml")
+        header_handler = TeiHeaderHandlerImpl(header_file)
+        corpus_maker = TeiCorpusMaker(self.mock_stream, header_handler)
+        corpus_maker.build_corpus(corpus_dir, header_file)
+        doc = etree.parse(self.mock_stream.file)
+        result = doc.findall(
+            ".//author", namespaces={None: "http://www.tei-c.org/ns/1.0"}
+        )
+        self.assertEqual(len(result), 4)
