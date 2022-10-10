@@ -11,14 +11,13 @@ from tei_make_corpus.header_handler import TeiHeaderHandler
 @dataclass
 class TeiCorpusMaker:
     outstream: CorpusStream
+    header_handler: TeiHeaderHandler
 
     def build_corpus(self, corpus_dir: str, header_file: str) -> None:
-        header_handler = TeiHeaderHandler(header_file)
-        common_header = header_handler.common_header()
         with etree.xmlfile(self.outstream.path(), encoding="utf-8") as xf:
             xf.write_declaration()
             with xf.element("teiCorpus", nsmap={None: "http://www.tei-c.org/ns/1.0"}):
-                xf.write(common_header)
+                xf.write(self.header_handler.common_header())
                 for tei_file in self._get_paths_for_corpus_files(
                     corpus_dir, header_file
                 ):
