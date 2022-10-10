@@ -1,5 +1,5 @@
-from itertools import product
 import random
+
 from lxml import etree
 
 from tei_make_corpus.element_equality import elements_equal
@@ -175,3 +175,18 @@ def test_elements_with_same_children_but_different_order():
     for tag in reversed(tags):
         etree.SubElement(elem2, tag)
     assert elements_equal(elem1, elem2) is False
+
+
+def test_elements_equal_if_ns_ignored():
+    elem1 = etree.Element("{namespace}tag")
+    elem2 = etree.Element("tag")
+    assert elements_equal(elem1, elem2, ignore_ns=True) is True
+
+
+def test_elements_with_children_equal_if_namespace_ignored():
+    elem1 = etree.Element("{namespace}tag")
+    elem2 = etree.Element("tag")
+    for _ in range(random.randint(1, 100)):
+        etree.SubElement(elem1, "{namespace}child")
+        etree.SubElement(elem2, "child")
+    assert elements_equal(elem1, elem2, ignore_ns=True) is True
