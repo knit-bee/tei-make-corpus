@@ -223,7 +223,69 @@ class TeiHeaderHandlerTest(unittest.TestCase):
         self.assertEqual(result, ["p"])
 
     def test_complex_element_removed_from_individual_header_if_in_common_header(self):
-        pass
+        header_file = io.BytesIO(
+            b"""<teiHeader>
+            <fileDesc>
+                <titleStmt>
+                    <title>Corpus title</title>
+                </titleStmt>
+                <publicationStmt>
+                  <distributor>Publisher</distributor>
+                  <pubPlace>Place</pubPlace>
+                  <date>today</date>
+                </publicationStmt>
+                <sourceDesc>
+                  <p/>
+                </sourceDesc>
+            </fileDesc>
+              <encodingDesc>
+              <projectDesc>
+                <p>text collected by some means</p>
+              </projectDesc>
+              <samplingDecl>
+                <p>linebreaks in paragraphs have been omitted (except for poems etc.)</p>
+                <p>heading lines and footers have been omitted.</p>
+                <p>blank lines and multiple blank spaces, including paragraph indents, have not been preserved.</p>
+                <p>marginal notes have been omitted.</p>
+                <p>font format (size, type) have not been preserved.</p>
+                <p>no reproduction of front and back matters.</p>
+                <p>preface(s), appendix(ices), index(es) and epilogues (of the author / editor) have been omitted.</p>
+                <p>figures and tables have not been preserved.</p>
+              </samplingDecl>
+            </encodingDesc>
+        </teiHeader>"""
+        )
+        header_handler = TeiHeaderHandler(header_file)
+        tei_doc = etree.XML(
+            """<TEI xmlns="http://www.tei-c.org/ns/1.0">
+            <teiHeader>
+            <fileDesc>
+              <titleStmt/>
+              <publicationStmt>
+                <p/>
+              </publicationStmt>
+            </fileDesc>
+            <encodingDesc>
+              <projectDesc>
+                <p>text collected by some means</p>
+              </projectDesc>
+              <samplingDecl>
+                <p>linebreaks in paragraphs have been omitted (except for poems etc.)</p>
+                <p>heading lines and footers have been omitted.</p>
+                <p>blank lines and multiple blank spaces, including paragraph indents, have not been preserved.</p>
+                <p>marginal notes have been omitted.</p>
+                <p>font format (size, type) have not been preserved.</p>
+                <p>no reproduction of front and back matters.</p>
+                <p>preface(s), appendix(ices), index(es) and epilogues (of the author / editor) have been omitted.</p>
+                <p>figures and tables have not been preserved.</p>
+              </samplingDecl>
+            </encodingDesc>
+          </teiHeader>
+          </TEI>"""
+        )
+        iheader = tei_doc.find(".//{*}teiHeader")
+        header_handler.declutter_individual_header(iheader)
+        self.assertEqual(tei_doc.findall(".//{*}encodingDesc"), [])
 
     def assertXmlElementsEqual(self, element1, element2):
         self.assertTrue(elements_equal(element1, element2))
