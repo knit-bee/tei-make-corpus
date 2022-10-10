@@ -1,11 +1,19 @@
-from typing import Optional
+from typing import Optional, Protocol
 
 from lxml import etree
 
 from tei_make_corpus.element_equality import elements_equal
 
 
-class TeiHeaderHandler:
+class TeiHeaderHandler(Protocol):
+    def common_header(self) -> etree._Element:
+        ...
+
+    def declutter_individual_header(self, iheader: etree._Element) -> None:
+        ...
+
+
+class TeiHeaderHandlerImpl:
     tags_no_leftover_sibling = {"distributor", "publisher", "authority"}
 
     def __init__(self, header_file_path: str) -> None:

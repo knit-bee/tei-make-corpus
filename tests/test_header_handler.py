@@ -5,21 +5,21 @@ import unittest
 from lxml import etree
 
 from tei_make_corpus.element_equality import elements_equal
-from tei_make_corpus.header_handler import TeiHeaderHandler
+from tei_make_corpus.header_handler import TeiHeaderHandlerImpl
 
 
-class TeiHeaderHandlerTest(unittest.TestCase):
+class TeiHeaderHandlerImplTest(unittest.TestCase):
     def setUp(self):
         self.testdata = os.path.join("tests", "testdata")
 
     def test_common_header_is_etree_element(self):
         header_file = os.path.join(self.testdata, "header.xml")
-        header_handler = TeiHeaderHandler(header_file)
+        header_handler = TeiHeaderHandlerImpl(header_file)
         self.assertTrue(isinstance(header_handler.common_header(), etree._Element))
 
     def test_common_header_element_constructed_from_xml(self):
         header_file = os.path.join(self.testdata, "header.xml")
-        header_handler = TeiHeaderHandler(header_file)
+        header_handler = TeiHeaderHandlerImpl(header_file)
         expected = etree.XML(
             """<teiHeader>
                 <fileDesc>
@@ -40,7 +40,7 @@ class TeiHeaderHandlerTest(unittest.TestCase):
 
     def test_simple_element_from_individual_header_removed_if_in_common_header(self):
         header_file = os.path.join(self.testdata, "corpus_header", "header.xml")
-        header_handler = TeiHeaderHandler(header_file)
+        header_handler = TeiHeaderHandlerImpl(header_file)
         tei_doc = etree.parse(os.path.join(self.testdata, "corpus_header", "file1.xml"))
         iheader = tei_doc.find(".//{*}teiHeader")
         header_handler.declutter_individual_header(iheader)
@@ -48,7 +48,7 @@ class TeiHeaderHandlerTest(unittest.TestCase):
 
     def test_simple_element_not_removed_if_different_in_common_header(self):
         header_file = os.path.join(self.testdata, "corpus_header", "header.xml")
-        header_handler = TeiHeaderHandler(header_file)
+        header_handler = TeiHeaderHandlerImpl(header_file)
         tei_doc = etree.parse(os.path.join(self.testdata, "corpus_header", "file1.xml"))
         iheader = tei_doc.find(".//{*}teiHeader")
         header_handler.declutter_individual_header(iheader)
@@ -56,7 +56,7 @@ class TeiHeaderHandlerTest(unittest.TestCase):
 
     def test_simple_element_not_removed_if_attributes_different(self):
         header_file = os.path.join(self.testdata, "corpus_header", "header.xml")
-        header_handler = TeiHeaderHandler(header_file)
+        header_handler = TeiHeaderHandlerImpl(header_file)
         tei_doc = etree.parse(os.path.join(self.testdata, "corpus_header", "file1.xml"))
         iheader = tei_doc.find(".//{*}teiHeader")
         header_handler.declutter_individual_header(iheader)
@@ -64,7 +64,7 @@ class TeiHeaderHandlerTest(unittest.TestCase):
 
     def test_simple_element_removed_if_attributes_also_match(self):
         header_file = os.path.join(self.testdata, "corpus_header", "header.xml")
-        header_handler = TeiHeaderHandler(header_file)
+        header_handler = TeiHeaderHandlerImpl(header_file)
         tei_doc = etree.XML(
             """
         <TEI xmlns="http://www.tei-c.org/ns/1.0">
@@ -87,7 +87,7 @@ class TeiHeaderHandlerTest(unittest.TestCase):
         self,
     ):
         header_file = os.path.join(self.testdata, "corpus_header", "header.xml")
-        header_handler = TeiHeaderHandler(header_file)
+        header_handler = TeiHeaderHandlerImpl(header_file)
         tei_doc = etree.XML(
             """<TEI xmlns="http://www.tei-c.org/ns/1.0">
             <teiHeader>
@@ -126,7 +126,7 @@ class TeiHeaderHandlerTest(unittest.TestCase):
             </fileDesc>
         </teiHeader>"""
         )
-        header_handler = TeiHeaderHandler(header_file)
+        header_handler = TeiHeaderHandlerImpl(header_file)
         tei_doc = etree.XML(
             """<TEI xmlns="http://www.tei-c.org/ns/1.0">
             <teiHeader>
@@ -165,7 +165,7 @@ class TeiHeaderHandlerTest(unittest.TestCase):
             </fileDesc>
         </teiHeader>"""
         )
-        header_handler = TeiHeaderHandler(header_file)
+        header_handler = TeiHeaderHandlerImpl(header_file)
         tei_doc = etree.XML(
             """<TEI xmlns="http://www.tei-c.org/ns/1.0">
             <teiHeader>
@@ -202,7 +202,7 @@ class TeiHeaderHandlerTest(unittest.TestCase):
             </fileDesc>
         </teiHeader>"""
         )
-        header_handler = TeiHeaderHandler(header_file)
+        header_handler = TeiHeaderHandlerImpl(header_file)
         tei_doc = etree.XML(
             """<TEI xmlns="http://www.tei-c.org/ns/1.0">
             <teiHeader>
@@ -255,7 +255,7 @@ class TeiHeaderHandlerTest(unittest.TestCase):
             </encodingDesc>
         </teiHeader>"""
         )
-        header_handler = TeiHeaderHandler(header_file)
+        header_handler = TeiHeaderHandlerImpl(header_file)
         tei_doc = etree.XML(
             """<TEI xmlns="http://www.tei-c.org/ns/1.0">
             <teiHeader>
