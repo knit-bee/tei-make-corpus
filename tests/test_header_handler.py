@@ -287,5 +287,53 @@ class TeiHeaderHandlerImplTest(unittest.TestCase):
         header_handler.declutter_individual_header(iheader)
         self.assertEqual(tei_doc.findall(".//{*}encodingDesc"), [])
 
+    def test_elements_with_non_ascii_content_removed_if_equal(self):
+        header_file = io.BytesIO(
+            """<teiHeader>
+            <fileDesc>
+                <titleStmt>
+                    <title>Corpus title</title>
+                </titleStmt>
+                 <publicationStmt>
+                        <publisher>
+                        Corpus Publisher
+                        </publisher>
+                        <address>
+                          <addrLine>Äine Straße</addrLine>
+                        </address>
+                        <pubPlace>Berlin</pubPlace>
+                        <date>2022-10-11</date>
+                      </publicationStmt>
+                <sourceDesc>
+                  <p/>
+                </sourceDesc>
+            </fileDesc>
+        </teiHeader>""".encode(
+                "utf-8"
+            )
+        )
+        header_handler = TeiHeaderHandlerImpl(header_file)
+        tei_doc = etree.XML(
+            """<TEI xmlns="http://www.tei-c.org/ns/1.0">
+        <teiHeader>
+        <fileDesc>
+          <titleStmt/>
+      <publicationStmt>
+        <publisher>Publisher
+        </publisher>
+        <address>
+          <addrLine>Äine Straße</addrLine>
+        </address>
+        <pubPlace>City</pubPlace>
+        <date>2021-10-11</date>
+      </publicationStmt>
+        </fileDesc>
+      </teiHeader>
+      </TEI>"""
+        )
+        iheader = tei_doc.find(".//{*}teiHeader")
+        header_handler.declutter_individual_header(iheader)
+        self.assertEqual(tei_doc.findall(".//{*}address"), [])
+
     def assertXmlElementsEqual(self, element1, element2):
         self.assertTrue(elements_equal(element1, element2))
