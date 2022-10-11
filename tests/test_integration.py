@@ -1,8 +1,8 @@
 import contextlib
 import io
+import os
 import sys
 import unittest
-import os
 
 from lxml import etree
 
