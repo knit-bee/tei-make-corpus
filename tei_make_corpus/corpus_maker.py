@@ -43,7 +43,7 @@ class TeiCorpusMaker:
             os.path.join(root, file)
             for root, dirs, files in os.walk(corpus_dir)
             for file in files
-            if file != header_file and file.endswith(".xml")
+            if file != os.path.basename(header_file) and file.endswith(".xml")
         )
 
     def _remove_xmlid_attribute(self, tei_doc: etree._Element) -> None:

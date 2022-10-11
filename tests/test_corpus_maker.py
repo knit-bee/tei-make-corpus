@@ -85,6 +85,17 @@ class TeiCorpusMakerTester(unittest.TestCase):
         ]
         self.assertEqual(sorted(list(corpus_files)), expected)
 
+    def test_header_file_ignored_if_in_corpus_directory_with_path(self):
+        corpus_dir = os.path.join("tests", "testdata", "corpus")
+        header_file = os.path.join("tests", "testdata", "corpus", "header.xml")
+        corpus_maker = TeiCorpusMaker(self.mock_stream, self.mock_header_handler)
+        corpus_files = corpus_maker._get_paths_for_corpus_files(corpus_dir, header_file)
+        expected = [
+            "tests/testdata/corpus/file1.xml",
+            "tests/testdata/corpus/file2.xml",
+        ]
+        self.assertEqual(sorted(list(corpus_files)), expected)
+
     def test_non_xml_files_ignored_in_corpus_directory(self):
         corpus_dir = os.path.join("tests", "testdata", "corpus")
         header_file = "header.xml"
