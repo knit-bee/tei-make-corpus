@@ -38,7 +38,7 @@ class TeiHeaderHandlerImpl:
         as each @key='value' pair is present on both elements.
 
         """
-        for element in self._cheader.iterdescendants():
+        for element in self._cheader.findall(".//*"):
             if etree.QName(element.tag).localname in self.tags_no_leftover_sibling:
                 continue
             matching = self._element_equivalent_in_individual_header(element, iheader)
