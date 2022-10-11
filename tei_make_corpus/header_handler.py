@@ -24,6 +24,20 @@ class TeiHeaderHandlerImpl:
         return self._cheader
 
     def declutter_individual_header(self, iheader: etree._Element) -> None:
+        """
+        Remove elements from individual teiHeader if they are identical
+        to elements in the common header.
+        Two elements are considered identical if they have the same tag,
+        text, tail, attributes and number of children AND all pairs of
+        children are also identical under the same conditions.
+        For text and tail comparision, any occurrance of whitespace at the
+        beginning and end of the string is stripped to allow for different
+        formatting. Also text or tail only containing whitespace are considered
+        equal to 'None'.
+        For attribute comparision, the order of attributes may differ as long
+        as each @key='value' pair is present on both elements.
+
+        """
         for element in self._cheader.iterdescendants():
             if etree.QName(element.tag).localname in self.tags_no_leftover_sibling:
                 continue

@@ -10,10 +10,19 @@ from tei_make_corpus.header_handler import TeiHeaderHandler
 
 @dataclass
 class TeiCorpusMaker:
+    """
+    Build a teiCorpus from a teiHeader and multiple TEI files
+    """
+
     outstream: CorpusStream
     header_handler: TeiHeaderHandler
 
     def build_corpus(self, corpus_dir: str, header_file: str) -> None:
+        """
+        Iterate over TEI files in the directory and combined them with
+        the common header into a single teiCorpus-tree.
+        The output is printed stdout as default.
+        """
         with etree.xmlfile(self.outstream.path(), encoding="utf-8") as xf:
             xf.write_declaration()
             with xf.element("teiCorpus", nsmap={None: "http://www.tei-c.org/ns/1.0"}):

@@ -9,7 +9,14 @@ def elements_equal(
     Check if two xml elements are equal, i.e. their tags, texts, tails
     and attributes are the same. Moreover they must have the same number
     of children and their children must recursively match for tag, text,
-    tail, and attributes to be considered as equal.
+    tail, attributes, and children to be considered as equal.
+
+    With the option 'ignore_ns', two elements that have different
+    namespaces (resp. only one has an explicit namespace) can be compared:
+    elem1 = <element>text</element>
+    elem2 = <{namespace}element>text</element>
+    As long as the localname is the same and all other conditions are met,
+    these elements will also be considered equal.
     """
     if ignore_ns:
         if etree.QName(elem1.tag).localname != etree.QName(elem2.tag).localname:
