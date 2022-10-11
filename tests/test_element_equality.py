@@ -190,3 +190,9 @@ def test_elements_with_children_equal_if_namespace_ignored():
         etree.SubElement(elem1, "{namespace}child")
         etree.SubElement(elem2, "child")
     assert elements_equal(elem1, elem2, ignore_ns=True) is True
+
+
+def test_elements_different_with_namespace_ignored():
+    elem1 = etree.Element("{namespace}tag")
+    elem2 = etree.Element("tag2")
+    assert elements_equal(elem1, elem2, ignore_ns=True) is False
