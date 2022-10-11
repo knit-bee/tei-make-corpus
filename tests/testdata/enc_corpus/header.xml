@@ -1,0 +1,18 @@
+<teiHeader>
+    <fileDesc>
+        <titleStmt>
+            <title/>
+        </titleStmt>
+        <publicationStmt>
+            <publisher>Publisher 1</publisher>
+            <address>
+              <addrLine>Äine Straße 11, Ö</addrLine>
+            </address>
+            <pubPlace>Ö</pubPlace>
+            <date>2022-10-11</date>
+        </publicationStmt>
+        <sourceDesc>
+          <p/>
+        </sourceDesc>
+    </fileDesc>
+</teiHeader>

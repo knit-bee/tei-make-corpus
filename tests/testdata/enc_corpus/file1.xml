@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt>
+        <title>Title</title>
+        <author/>
+        <respStmt>
+          <resp n="1">some change</resp>
+          <name n="1">Person Name</name>
+        </respStmt>
+      </titleStmt>
+      <publicationStmt>
+        <publisher>Publisher</publisher>
+        <address>
+          <addrLine>Äine Straße 11, Ö</addrLine>
+        </address>
+        <pubPlace>The Earth</pubPlace>
+        <date>2022-07-20</date>
+        <authority>
+          <name/>
+        </authority>
+      </publicationStmt>
+    </fileDesc>
+  </teiHeader>
+  <text>
+    <body>
+      <p>Actual text of the file</p>
+    </body>
+  </text>
+</TEI>

@@ -54,3 +54,17 @@ class IntegrationTest(unittest.TestCase):
         output_tree = etree.parse(pseudo)
         result = output_tree.getroot().getchildren()
         self.assertEqual(len(result), 5)
+
+    def test_element_with_non_ascii_text_removed_if_equal_in_common_header(self):
+        request = CliRequest(
+            header_file=os.path.join("tests", "testdata", "enc_corpus", "header.xml"),
+            corpus_dir=os.path.join("tests", "testdata", "enc_corpus"),
+        )
+        with contextlib.redirect_stdout(
+            io.TextIOWrapper(io.BytesIO(), sys.stdout.encoding)
+        ) as pseudo:
+            self.use_case.process(request)
+        pseudo.seek(0)
+        output_tree = etree.parse(pseudo)
+        result = output_tree.findall(".//{*}address")
+        self.assertEqual(len(result), 1)
