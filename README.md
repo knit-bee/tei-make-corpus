@@ -7,7 +7,7 @@ Create a teiCorpus-file from a collection of TEI documents
 Install from github repository:
 
 ```sh
-$ pip install git+ssh://github.com/knit-bee/tei-make-corpus.git
+$ pip install git+https://github.com/knit-bee/tei-make-corpus.git
 ```
 ### Requirements
 * Python >= 3.8
