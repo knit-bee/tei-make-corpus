@@ -1,3 +1,4 @@
+import logging
 import os
 from dataclasses import dataclass
 from typing import Generator
@@ -6,6 +7,8 @@ from lxml import etree
 
 from tei_make_corpus.corpus_stream import CorpusStream
 from tei_make_corpus.header_handler import TeiHeaderHandler
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -39,6 +42,7 @@ class TeiCorpusMaker:
         doc = etree.parse(file_path)
         root = doc.getroot()
         if etree.QName(root.tag).localname != "TEI":
+            logger.info("No <TEI> root element found. Ignoring file: %s", file_path)
             return None
         self._remove_xmlid_attribute(root)
         iheader = root.find(".//{*}teiHeader")
