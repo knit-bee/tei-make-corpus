@@ -1,3 +1,4 @@
+import re
 from typing import Optional, Protocol
 
 from lxml import etree
@@ -61,6 +62,14 @@ class TeiHeaderHandlerImpl:
         cheader_tree = self._cheader.getroottree()
         elem_xpath = cheader_tree.getelementpath(element)
         matching = iheader.find(
-            "./" + elem_xpath, namespaces={None: "http://www.tei-c.org/ns/1.0"}
+            self._adjust_xpath(elem_xpath),
+            namespaces={None: "http://www.tei-c.org/ns/1.0"},
         )
         return matching
+
+    def _adjust_xpath(self, xpath: str) -> str:
+        return f"./{self._clean_position_indices_from_path(xpath)}"
+
+    def _clean_position_indices_from_path(self, xpath: str) -> str:
+        pattern = r"\[\d+\]"
+        return re.sub(pattern, "", xpath)
