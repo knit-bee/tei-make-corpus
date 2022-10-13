@@ -1,5 +1,5 @@
 import re
-from typing import Optional, Protocol
+from typing import List, Protocol
 
 from lxml import etree
 
@@ -43,29 +43,30 @@ class TeiHeaderHandlerImpl:
             if etree.QName(element.tag).localname in self.tags_no_leftover_sibling:
                 continue
             matching = self._element_equivalent_in_individual_header(element, iheader)
-            if matching is not None:
-                if elements_equal(element, matching, ignore_ns=True):
-                    matching.getparent().remove(matching)
+            for struct_match in matching:
+                if elements_equal(element, struct_match, ignore_ns=True):
+                    struct_match.getparent().remove(struct_match)
         for element in self._cheader.iterdescendants(self.tags_no_leftover_sibling):
             matching = self._element_equivalent_in_individual_header(element, iheader)
-            if matching is not None:
-                if elements_equal(element, matching, ignore_ns=True):
-                    if matching.getnext() is None:
-                        matching.getparent().replace(matching, etree.Element("p"))
+            for struct_match in matching:
+                if elements_equal(element, struct_match, ignore_ns=True):
+                    if struct_match.getnext() is None:
+                        struct_match.getparent().replace(
+                            struct_match, etree.Element("p")
+                        )
 
     def _construct_common_header(self, header_file: str) -> etree._Element:
         return etree.parse(header_file).getroot()
 
     def _element_equivalent_in_individual_header(
         self, element: etree._Element, iheader: etree._Element
-    ) -> Optional[etree._Element]:
+    ) -> List[etree._Element]:
         cheader_tree = self._cheader.getroottree()
         elem_xpath = cheader_tree.getelementpath(element)
-        matching = iheader.find(
+        return iheader.findall(
             self._adjust_xpath(elem_xpath),
             namespaces={None: "http://www.tei-c.org/ns/1.0"},
         )
-        return matching
 
     def _adjust_xpath(self, xpath: str) -> str:
         return f"./{self._clean_position_indices_from_path(xpath)}"

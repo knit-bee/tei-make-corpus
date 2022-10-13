@@ -419,5 +419,52 @@ class TeiHeaderHandlerImplTest(unittest.TestCase):
         result = header_handler._clean_position_indices_from_path(path)
         self.assertEqual(result, "tag[@class1='value1']")
 
+    def test_all_matching_elements_from_individual_header_removed(self):
+        header_file = io.BytesIO(
+            b"""<teiHeader>
+                    <fileDesc>
+                        <titleStmt>
+                          <title>Corpus title</title>
+                        </titleStmt>
+                        <publicationStmt>
+                          <distributor>Publisher</distributor>
+                          <pubPlace>Place</pubPlace>
+                          <date>today</date>
+                        </publicationStmt>
+                        <notesStmt>
+                          <note>First note</note>
+                          <note>Second note</note>
+                        </notesStmt>
+                        <sourceDesc>
+                          <p/>
+                        </sourceDesc>
+                    </fileDesc>
+                </teiHeader>"""
+        )
+        header_handler = TeiHeaderHandlerImpl(header_file)
+        tei_doc = etree.XML(
+            """<TEI xmlns="http://www.tei-c.org/ns/1.0">
+            <teiHeader>
+            <fileDesc>
+              <titleStmt/>
+              <publicationStmt>
+                <distributor>Publisher</distributor>
+              </publicationStmt>
+              <notesStmt>
+                <note>First note</note>
+                <note>Second note</note>
+              </notesStmt>
+              <notesStmt>
+                <note>First note</note>
+                <note>Second note</note>
+              </notesStmt>
+            </fileDesc>
+          </teiHeader>
+          </TEI>"""
+        )
+        iheader = tei_doc.find(".//{*}teiHeader")
+        header_handler.declutter_individual_header(iheader)
+        self.assertEqual(tei_doc.findall(".//{*}notesStmt"), [])
+
     def assertXmlElementsEqual(self, element1, element2):
         self.assertTrue(elements_equal(element1, element2))
