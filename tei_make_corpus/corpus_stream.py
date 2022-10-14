@@ -6,6 +6,9 @@ class CorpusStream(Protocol):
     def path(self) -> Union[str, BinaryIO]:
         ...
 
+    def set_output_file(self, file: Optional[str]) -> None:
+        ...
+
 
 class CorpusStreamImpl:
     def __init__(self, output_file: Optional[str] = None) -> None:
@@ -16,5 +19,6 @@ class CorpusStreamImpl:
             return self.output_file
         return sys.stdout.buffer
 
-    def set_output_file(self, file: str) -> None:
-        self.output_file = file
+    def set_output_file(self, file: Optional[str]) -> None:
+        if file is not None:
+            self.output_file = file
