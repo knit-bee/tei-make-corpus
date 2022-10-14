@@ -33,7 +33,8 @@ class TeiMakeCorpusController:
             help="""Name of output file to write to. If this option is enabled, the
              output is written to the file instead of stdout.""",
         )
-        parser.add_argument(
+        split_group = parser.add_mutually_exclusive_group()
+        split_group.add_argument(
             "--split-documents",
             nargs="?",
             const=100000,
@@ -46,7 +47,7 @@ class TeiMakeCorpusController:
             This option can also be used without passing a value, the default is 100 000 (documents per output file).
         """,
         )
-        parser.add_argument(
+        split_group.add_argument(
             "--split-chars",
             nargs="?",
             const=15_000_000,

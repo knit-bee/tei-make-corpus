@@ -116,3 +116,15 @@ class TeiMakeCorpusControllerTest(unittest.TestCase):
             ["corpus", "-c=head.xml", "-f='out.xml'", "--split-chars", "100_000_000"]
         )
         self.assertEqual(self.mock_use_case.request.split_chars, 100_000_000)
+
+    def test_split_options_mutually_exclusive(self):
+        erroneous_input = [
+            ["--split-chars", "--split-documents"],
+            ["--split-chars", "10", "--split-documents"],
+            ["--split-chars", "--split-documents", "10"],
+        ]
+        for input_args in erroneous_input:
+            with self.assertRaises(SystemExit):
+                self.controller.process_arguments(
+                    ["corpus", "-c", "head.xml", "-f", "out.xml"] + input_args
+                )
