@@ -78,3 +78,41 @@ class TeiMakeCorpusControllerTest(unittest.TestCase):
             self.controller.process_arguments(
                 ["corpus", "-c=head.xml", "-f=out.xml", "--split-documents", "ten"]
             )
+
+    def test_split_chars_option_requires_file_name_argument(self):
+        with self.assertRaises(SystemExit):
+            self.controller.process_arguments(
+                ["corpus", "-c", "header.xml", "--split-chars"]
+            )
+
+    def test_controller_extracts_split_chars_option(self):
+        self.controller.process_arguments(
+            [
+                "corpus",
+                "-c",
+                "header.xml",
+                "--to-file",
+                "output.xml",
+                "--split-chars",
+                "1000000",
+            ]
+        )
+        self.assertEqual(self.mock_use_case.request.split_chars, 1_000_000)
+
+    def test_use_default_value_for_number_of_chars_if_no_value_indicated(self):
+        self.controller.process_arguments(
+            ["corpus", "-c", "header.xml", "--split-chars", "--to-file", "out.xml"]
+        )
+        self.assertEqual(self.mock_use_case.request.split_chars, 15_000_000)
+
+    def test_controller_exits_if_wrong_type_is_used_with_split_chars_option(self):
+        with self.assertRaises(SystemExit):
+            self.controller.process_arguments(
+                ["corpus", "-c=head.xml", "-f=out.xml", "--split-chars", "ten"]
+            )
+
+    def test_split_chars_option_usable_with_underscore_separated_number(self):
+        self.controller.process_arguments(
+            ["corpus", "-c=head.xml", "-f='out.xml'", "--split-chars", "100_000_000"]
+        )
+        self.assertEqual(self.mock_use_case.request.split_chars, 100_000_000)
