@@ -1,8 +1,8 @@
 from dataclasses import dataclass
-from typing import Protocol
+from typing import Protocol, Optional
 
 from tei_make_corpus.corpus_maker import TeiCorpusMaker
-from tei_make_corpus.corpus_stream import CorpusStreamImpl
+from tei_make_corpus.corpus_stream import CorpusStream
 from tei_make_corpus.header_handler import TeiHeaderHandlerImpl
 
 
@@ -10,6 +10,7 @@ from tei_make_corpus.header_handler import TeiHeaderHandlerImpl
 class CliRequest:
     header_file: str
     corpus_dir: str
+    output_file: Optional[str] = None
 
 
 class TeiMakeCorpusUseCase(Protocol):
@@ -17,15 +18,18 @@ class TeiMakeCorpusUseCase(Protocol):
         ...
 
 
+@dataclass
 class TeiMakeCorpusUseCaseImpl:
     """
     Use case that is called by the console script
     """
 
+    out_stream: CorpusStream
+
     def process(self, request: CliRequest) -> None:
-        out_stream = CorpusStreamImpl()
+        self.out_stream.set_output_file(request.output_file)
         header_handler = TeiHeaderHandlerImpl(request.header_file)
         corpus_maker = TeiCorpusMaker(
-            outstream=out_stream, header_handler=header_handler
+            outstream=self.out_stream, header_handler=header_handler
         )
         corpus_maker.build_corpus(request.corpus_dir, request.header_file)
