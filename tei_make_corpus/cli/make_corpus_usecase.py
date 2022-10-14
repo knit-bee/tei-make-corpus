@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Protocol, Optional
+from typing import Optional, Protocol
 
 from tei_make_corpus.corpus_maker import TeiCorpusMaker
 from tei_make_corpus.corpus_stream import CorpusStream
