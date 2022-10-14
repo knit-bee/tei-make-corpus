@@ -7,11 +7,17 @@ import unittest
 from lxml import etree
 
 from tei_make_corpus.cli.make_corpus_usecase import CliRequest, TeiMakeCorpusUseCaseImpl
+from tei_make_corpus.corpus_stream import CorpusStreamImpl
 
 
 class IntegrationTest(unittest.TestCase):
     def setUp(self):
-        self.use_case = TeiMakeCorpusUseCaseImpl()
+        self.out_stream = CorpusStreamImpl()
+        self.use_case = TeiMakeCorpusUseCaseImpl(self.out_stream)
+
+    def tearDown(self):
+        if self.out_stream.output_file and os.path.exists(self.out_stream.output_file):
+            os.remove(self.out_stream.output_file)
 
     def test_xml_element_tree_generated(self):
         request = CliRequest(
@@ -68,3 +74,15 @@ class IntegrationTest(unittest.TestCase):
         output_tree = etree.parse(pseudo)
         result = output_tree.findall(".//{*}address")
         self.assertEqual(len(result), 1)
+
+    def test_output_written_to_file_if_enabled(self):
+        output_file = os.path.join("tests", "testdata", "output.xml")
+        request = CliRequest(
+            header_file=os.path.join("tests", "testdata", "header.xml"),
+            corpus_dir=os.path.join("tests", "testdata", "rec_corpus"),
+            output_file=output_file,
+        )
+        self.use_case.process(request)
+        output_tree = etree.parse(output_file)
+        result = output_tree.getroot().getchildren()
+        self.assertEqual(len(result), 5)

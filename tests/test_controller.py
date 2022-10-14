@@ -20,13 +20,29 @@ class TeiMakeCorpusControllerTest(unittest.TestCase):
         self.controller = TeiMakeCorpusController(self.mock_use_case)
 
     def test_controller_extracts_header_file_name(self):
-        self.controller.process_arguments(["corpus", "--cheader", "header.xml"])
+        self.controller.process_arguments(["corpus", "--common-header", "header.xml"])
         self.assertEqual(self.mock_use_case.request.header_file, "header.xml")
 
     def test_controller_extracts_corpus_directory(self):
-        self.controller.process_arguments(["corpus", "--cheader", "header.xml"])
+        self.controller.process_arguments(["corpus", "--common-header", "header.xml"])
         self.assertEqual(self.mock_use_case.request.corpus_dir, "corpus")
 
     def test_controller_throws_error_if_header_file_is_missing(self):
         with self.assertRaises(SystemExit):
             self.controller.process_arguments(["corpus"])
+
+    def test_controller_extracts_output_filename(self):
+        self.controller.process_arguments(
+            ["corpus", "-c=header.xml", "--to-file", "output.xml"]
+        )
+        self.assertEqual(self.mock_use_case.request.output_file, "output.xml")
+
+    def test_controller_extracts_output_filename_short(self):
+        self.controller.process_arguments(
+            ["corpus", "-c=header.xml", "-f", "output.xml"]
+        )
+        self.assertEqual(self.mock_use_case.request.output_file, "output.xml")
+
+    def test_to_file_default_is_none_if_option_not_used(self):
+        self.controller.process_arguments(["corpus", "--common-header", "header.xml"])
+        self.assertEqual(self.mock_use_case.request.output_file, None)

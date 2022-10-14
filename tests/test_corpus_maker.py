@@ -4,15 +4,9 @@ import unittest
 from lxml import etree
 
 from tei_make_corpus.corpus_maker import TeiCorpusMaker
+from tei_make_corpus.corpus_stream import CorpusStreamImpl
 from tei_make_corpus.header_handler import TeiHeaderHandlerImpl
 from tests.utils import create_validator
-
-
-class MockCorpusStream:
-    file = os.path.join("tests", "testdata", "output_file.xml")
-
-    def path(self):
-        return self.file
 
 
 class MockHeaderHandler:
@@ -31,12 +25,14 @@ class TeiCorpusMakerTester(unittest.TestCase):
         )
 
     def setUp(self):
-        self.mock_stream = MockCorpusStream()
+        self.mock_stream = CorpusStreamImpl(
+            os.path.join("tests", "testdata", "output_file.xml")
+        )
         self.mock_header_handler = MockHeaderHandler()
 
     def tearDown(self):
-        if os.path.exists(self.mock_stream.file):
-            os.remove(self.mock_stream.file)
+        if os.path.exists(self.mock_stream.output_file):
+            os.remove(self.mock_stream.output_file)
 
     def test_xml_declaration_written_to_corpus_file(self):
         header_file = os.path.join("tests", "testdata", "header.xml")
@@ -44,7 +40,7 @@ class TeiCorpusMakerTester(unittest.TestCase):
         header_handler = TeiHeaderHandlerImpl(header_file)
         corpus_maker = TeiCorpusMaker(self.mock_stream, header_handler)
         corpus_maker.build_corpus(empty_dir, header_file)
-        with open(self.mock_stream.file) as ptr:
+        with open(self.mock_stream.output_file) as ptr:
             file_content = ptr.read()
         xml_declaration = "<?xml version='1.0' encoding='utf-8'?>"
         self.assertTrue(xml_declaration in file_content)
@@ -55,7 +51,7 @@ class TeiCorpusMakerTester(unittest.TestCase):
         header_handler = TeiHeaderHandlerImpl(header_file)
         corpus_maker = TeiCorpusMaker(self.mock_stream, header_handler)
         corpus_maker.build_corpus(empty_dir, header_file)
-        with open(self.mock_stream.file) as ptr:
+        with open(self.mock_stream.output_file) as ptr:
             file_content = ptr.read()
         self.assertTrue(
             """<teiHeader>
@@ -126,7 +122,7 @@ class TeiCorpusMakerTester(unittest.TestCase):
         header_handler = TeiHeaderHandlerImpl(header_file)
         corpus_maker = TeiCorpusMaker(self.mock_stream, header_handler)
         corpus_maker.build_corpus(corpus_dir, header_file)
-        doc = etree.parse(self.mock_stream.file)
+        doc = etree.parse(self.mock_stream.output_file)
         tei_nodes = doc.findall(
             ".//TEI", namespaces={None: "http://www.tei-c.org/ns/1.0"}
         )
@@ -138,7 +134,7 @@ class TeiCorpusMakerTester(unittest.TestCase):
         header_handler = TeiHeaderHandlerImpl(header_file)
         corpus_maker = TeiCorpusMaker(self.mock_stream, header_handler)
         corpus_maker.build_corpus(corpus_dir, header_file)
-        doc = etree.parse(self.mock_stream.file)
+        doc = etree.parse(self.mock_stream.output_file)
         result = self.validator.validate(doc)
         self.assertTrue(result)
 
@@ -148,7 +144,7 @@ class TeiCorpusMakerTester(unittest.TestCase):
         header_handler = TeiHeaderHandlerImpl(header_file)
         corpus_maker = TeiCorpusMaker(self.mock_stream, header_handler)
         corpus_maker.build_corpus(corpus_dir, header_file)
-        tei_corpus_root = etree.parse(self.mock_stream.file).getroot()
+        tei_corpus_root = etree.parse(self.mock_stream.output_file).getroot()
         # teiCorpus should have 3 children
         self.assertEqual(len(tei_corpus_root), 3)
 
@@ -165,7 +161,7 @@ class TeiCorpusMakerTester(unittest.TestCase):
         header_handler = TeiHeaderHandlerImpl(header_file)
         corpus_maker = TeiCorpusMaker(self.mock_stream, header_handler)
         corpus_maker.build_corpus(corpus_dir, header_file)
-        doc = etree.parse(self.mock_stream.file)
+        doc = etree.parse(self.mock_stream.output_file)
         result = doc.findall(
             ".//funder", namespaces={None: "http://www.tei-c.org/ns/1.0"}
         )
@@ -177,7 +173,7 @@ class TeiCorpusMakerTester(unittest.TestCase):
         header_handler = TeiHeaderHandlerImpl(header_file)
         corpus_maker = TeiCorpusMaker(self.mock_stream, header_handler)
         corpus_maker.build_corpus(corpus_dir, header_file)
-        doc = etree.parse(self.mock_stream.file)
+        doc = etree.parse(self.mock_stream.output_file)
         result = doc.findall(
             ".//author", namespaces={None: "http://www.tei-c.org/ns/1.0"}
         )
