@@ -11,6 +11,7 @@ class CliRequest:
     header_file: str
     corpus_dir: str
     output_file: Optional[str] = None
+    split_docs: int = -1
 
 
 class TeiMakeCorpusUseCase(Protocol):

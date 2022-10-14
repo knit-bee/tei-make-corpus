@@ -46,3 +46,35 @@ class TeiMakeCorpusControllerTest(unittest.TestCase):
     def test_to_file_default_is_none_if_option_not_used(self):
         self.controller.process_arguments(["corpus", "--common-header", "header.xml"])
         self.assertEqual(self.mock_use_case.request.output_file, None)
+
+    def test_split_documents_option_requires_file_name_argument(self):
+        with self.assertRaises(SystemExit):
+            self.controller.process_arguments(
+                ["corpus", "-c", "header.xml", "--split-documents"]
+            )
+
+    def test_controller_extracts_split_documents_option(self):
+        self.controller.process_arguments(
+            [
+                "corpus",
+                "-c",
+                "header.xml",
+                "--to-file",
+                "output.xml",
+                "--split-documents",
+                "100",
+            ]
+        )
+        self.assertEqual(self.mock_use_case.request.split_docs, 100)
+
+    def test_use_default_value_for_number_of_documents_if_no_value_indicated(self):
+        self.controller.process_arguments(
+            ["corpus", "-c", "header.xml", "--split-documents", "--to-file", "out.xml"]
+        )
+        self.assertEqual(self.mock_use_case.request.split_docs, 100_000)
+
+    def test_controller_exits_if_wrong_type_is_used_with_split_documents_option(self):
+        with self.assertRaises(SystemExit):
+            self.controller.process_arguments(
+                ["corpus", "-c=head.xml", "-f=out.xml", "--split-documents", "ten"]
+            )
