@@ -20,12 +20,24 @@ class TeiMakeCorpusController:
             "corpus_dir", help="Directory containing the TEI files.", type=str
         )
         parser.add_argument(
-            "--cheader",
+            "--common-header",
             "-c",
             help="Xml file containing the common header for the whole corpus.",
             required=True,
         )
+        parser.add_argument(
+            "--to-file",
+            "-f",
+            default=None,
+            metavar="FILENAME",
+            help="""Name of output file to write to. If this option is enabled, the
+             output is written to the file instead of stdout.""",
+        )
         args = parser.parse_args(arguments)
         self.use_case.process(
-            CliRequest(header_file=args.cheader, corpus_dir=args.corpus_dir)
+            CliRequest(
+                header_file=args.common_header,
+                corpus_dir=args.corpus_dir,
+                output_file=args.to_file,
+            )
         )
