@@ -31,6 +31,11 @@ optional arguments:
   -h, --help            show this help message and exit
   --cheader CHEADER, -c CHEADER
                         Xml file containing the common header for the whole corpus.
+  --to-file FILENAME, -f FILENAME
+                        Name of output file to write to. If this option is
+                        enabled, the output is written to the file instead of
+                        stdout.
+
 ```
 
 `tei-make-corpus` requires the path to a directory containing the TEI file and a file containing the information for the common header of the corpus.
