@@ -58,7 +58,7 @@ class TeiMakeCorpusController:
             files. The resulting files will be numbered consecutively. For example, if '--split-chars 15000000' is used,
             when the limit of 15M characters is reached, (after completing the current TEI document) a new output
             file be used.
-            This option can also be used without passing a value, the default is 15_000_000 (characters per document).
+            This option can also be used without passing a value, the default is 15_000_000 (characters per file).
             """,
         )
         args = parser.parse_args(arguments)
@@ -66,6 +66,8 @@ class TeiMakeCorpusController:
             parser.error("--split-documents requires --to-file FILENAME")
         if args.split_chars and args.to_file is None:
             parser.error("--split-chars requires --to-file FILENAME")
+        if not self._validate_split_value(args):
+            parser.error("Split value should be greater 0")
         self.use_case.process(
             CliRequest(
                 header_file=args.common_header,
@@ -75,3 +77,13 @@ class TeiMakeCorpusController:
                 split_chars=args.split_chars,
             )
         )
+
+    def _validate_split_value(self, args: argparse.Namespace) -> bool:
+        split_val = None
+        if args.split_documents is not None:
+            split_val = args.split_documents
+        if args.split_chars is not None:
+            split_val = args.split_chars
+        if split_val is not None and split_val < 1:
+            return False
+        return True

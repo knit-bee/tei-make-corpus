@@ -128,3 +128,16 @@ class TeiMakeCorpusControllerTest(unittest.TestCase):
                 self.controller.process_arguments(
                     ["corpus", "-c", "head.xml", "-f", "out.xml"] + input_args
                 )
+
+    def test_non_positive_integers_and_floats_are_rejected_as_values_for_split_options(
+        self,
+    ):
+        wrong_values = [0, -1, 0.5, -10, 1.5, 3333.3]
+        split_opts = ["--split-chars", "--split-documents"]
+        for option in split_opts:
+            for val in wrong_values:
+                with self.subTest():
+                    with self.assertRaises(SystemExit):
+                        self.controller.process_arguments(
+                            ["corpus", "-c", "head.xml", "-f", "out", option, f"{val}"]
+                        )
