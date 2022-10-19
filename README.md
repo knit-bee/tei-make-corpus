@@ -18,7 +18,7 @@ $ pip install git+https://github.com/knit-bee/tei-make-corpus.git
 
 `tei-make-corpus` can be used from the command line:
 
-```sh
+```
 $ tei-make-corpus --help
 usage: tei-make-corpus [-h] --cheader CHEADER corpus_dir
 
@@ -39,7 +39,7 @@ The common header should be a formatted `teiHeader`. During the generation of th
 and elements that appear in the common header are removed from the individual header.
 
 ### Example usage
-```sh
+```xml
 $ tei-make-corpus my_corpus --cheader common_header.xml
 <?xml version='1.0' encoding='utf-8'?>
 <teiCorpus xmlns="http://www.tei-c.org/ns/1.0"><teiHeader>
