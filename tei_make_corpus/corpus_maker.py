@@ -28,7 +28,7 @@ class TeiCorpusMaker:
         the common header into a single teiCorpus-tree.
         The output is printed stdout as default.
         """
-        with etree.xmlfile(self.outstream.path(), encoding="utf-8") as xf:
+        with etree.xmlfile(self.outstream.path(), encoding="UTF-8") as xf:
             xf.write_declaration()
             with xf.element("teiCorpus", nsmap={None: "http://www.tei-c.org/ns/1.0"}):
                 xf.write(self.header_handler.common_header())

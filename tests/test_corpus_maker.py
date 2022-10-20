@@ -47,7 +47,7 @@ class TeiCorpusMakerTester(unittest.TestCase):
         corpus_maker.build_corpus(empty_dir, header_file)
         with open(self.mock_stream.output_file) as ptr:
             file_content = ptr.read()
-        xml_declaration = "<?xml version='1.0' encoding='utf-8'?>"
+        xml_declaration = "<?xml version='1.0' encoding='UTF-8'?>"
         self.assertTrue(xml_declaration in file_content)
 
     def test_data_from_header_file_written_to_corpus_file(self):
