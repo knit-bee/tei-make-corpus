@@ -5,6 +5,7 @@ from typing import Generator
 
 from lxml import etree
 
+from tei_make_corpus.cli.corpus_config import CorpusConfig
 from tei_make_corpus.corpus_stream import CorpusStream
 from tei_make_corpus.header_handler import TeiHeaderHandler
 
@@ -19,6 +20,7 @@ class TeiCorpusMaker:
 
     outstream: CorpusStream
     header_handler: TeiHeaderHandler
+    config: CorpusConfig
 
     def build_corpus(self, corpus_dir: str, header_file: str) -> None:
         """
@@ -46,7 +48,8 @@ class TeiCorpusMaker:
             return None
         self._remove_xmlid_attribute(root)
         iheader = root.find(".//{*}teiHeader")
-        self.header_handler.declutter_individual_header(iheader)
+        if self.config.clean_header:
+            self.header_handler.declutter_individual_header(iheader)
         return root
 
     def _get_paths_for_corpus_files(
