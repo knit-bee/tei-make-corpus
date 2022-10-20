@@ -11,6 +11,7 @@ class CliRequest:
     header_file: str
     corpus_dir: str
     output_file: Optional[str] = None
+    clean_header: bool = False
 
 
 class TeiMakeCorpusUseCase(Protocol):

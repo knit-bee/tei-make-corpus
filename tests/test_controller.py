@@ -46,3 +46,17 @@ class TeiMakeCorpusControllerTest(unittest.TestCase):
     def test_to_file_default_is_none_if_option_not_used(self):
         self.controller.process_arguments(["corpus", "--common-header", "header.xml"])
         self.assertEqual(self.mock_use_case.request.output_file, None)
+
+    def test_controller_extracts_header_cleaning_option(self):
+        self.controller.process_arguments(
+            ["corpus", "-c", "header.xml", "--deduplicate-header"]
+        )
+        self.assertEqual(self.mock_use_case.request.clean_header, True)
+
+    def test_controller_extracts_header_cleaning_option_short(self):
+        self.controller.process_arguments(["corpus", "-c", "header.xml", "-d"])
+        self.assertEqual(self.mock_use_case.request.clean_header, True)
+
+    def test_header_cleaning_default_is_false(self):
+        self.controller.process_arguments(["corpus", "-c", "header.xml"])
+        self.assertEqual(self.mock_use_case.request.clean_header, False)
