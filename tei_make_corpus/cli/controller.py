@@ -33,11 +33,21 @@ class TeiMakeCorpusController:
             help="""Name of output file to write to. If this option is enabled, the
              output is written to the file instead of stdout.""",
         )
+        parser.add_argument(
+            "--deduplicate-header",
+            "-d",
+            default=False,
+            action="store_true",
+            help="""Remove elements from header of individual TEI files that are
+            identical in the common header (experimental).
+            """,
+        )
         args = parser.parse_args(arguments)
         self.use_case.process(
             CliRequest(
                 header_file=args.common_header,
                 corpus_dir=args.corpus_dir,
                 output_file=args.to_file,
+                clean_header=args.deduplicate_header,
             )
         )

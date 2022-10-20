@@ -20,7 +20,9 @@ $ pip install git+https://github.com/knit-bee/tei-make-corpus.git
 
 ```
 $ tei-make-corpus --help
-usage: tei-make-corpus [-h] --cheader CHEADER corpus_dir
+ usage: tei-make-corpus [-h] --common-header COMMON_HEADER [--to-file FILENAME]
+                       [--deduplicate-header]
+                       corpus_dir
 
 Create a *teiCorpus* from a collection of TEI documents. The output will be printed to stdout.
 
@@ -35,13 +37,18 @@ optional arguments:
                         Name of output file to write to. If this option is
                         enabled, the output is written to the file instead of
                         stdout.
+  --deduplicate-header, -d
+                        Remove elements from header of individual TEI files
+                        that are identical in the common header
+                        (experimental).
 
 ```
 
 `tei-make-corpus` requires the path to a directory containing the TEI file and a file containing the information for the common header of the corpus.
 All files in the corpus directory that don't end in `.xml` are ignored as well as files that don't contain a `TEI` element as root element.
-The common header should be a formatted `teiHeader`. During the generation of the corpus, the individual header of each file is compared with the common header
-and elements that appear in the common header are removed from the individual header.
+The common header should be a formatted `teiHeader`. If the option *--deduplicate-header* is used, the individual header of each file is compared with the common header during the generation of the corpus,
+and elements that appear in the common header are removed from the individual header (experimental).
+All xml:id attributes are removed from the individual TEI documents to avoid a clash of ids.
 
 ### Example usage
 ```xml
