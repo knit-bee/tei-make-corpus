@@ -46,9 +46,9 @@ optional arguments:
 
 `tei-make-corpus` requires the path to a directory containing the TEI file and a file containing the information for the common header of the corpus.
 All files in the corpus directory that don't end in `.xml` are ignored as well as files that don't contain a `TEI` element as root element.
-The common header should be a formatted `teiHeader`. If the option *--deduplicate-header* is used, the individual header of each file is compared with the common header during the generation of the corpus,
+The common header should be a formatted `teiHeader`. If the option `--deduplicate-header` is used, the individual header of each file is compared with the common header during the generation of the corpus,
 and elements that appear in the common header are removed from the individual header (experimental).
-All xml:id attributes are removed from the individual TEI documents to avoid a clash of ids.
+All `xml:id ` attributes are removed from the individual TEI documents to avoid a clash of ids.
 
 ### Example usage
 ```xml
@@ -78,6 +78,7 @@ The output can then be piped to other programs, e.g. to format it or to compress
 ```sh
 $ tei-make-corpus my_corpus --cheader common_header.xml | xmllint --format - | gzip > my_corpus.xml.gz
 ```
+To remove redundant namespace declarations from the output, e.g. use `xmllint` with the option `--nsclean`.
 
 ## License
 Copyright © 2022 Berlin-Brandenburgische Akademie der Wissenschaften.
