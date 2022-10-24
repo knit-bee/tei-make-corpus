@@ -65,6 +65,7 @@ class IntegrationTest(unittest.TestCase):
         request = CliRequest(
             header_file=os.path.join("tests", "testdata", "enc_corpus", "header.xml"),
             corpus_dir=os.path.join("tests", "testdata", "enc_corpus"),
+            clean_header=True,
         )
         with contextlib.redirect_stdout(
             io.TextIOWrapper(io.BytesIO(), sys.stdout.encoding)

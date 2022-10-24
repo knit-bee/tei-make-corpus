@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import Optional, Protocol
 
+from tei_make_corpus.cli.corpus_config import CorpusConfig
 from tei_make_corpus.corpus_maker import TeiCorpusMaker
 from tei_make_corpus.corpus_stream import CorpusStream
 from tei_make_corpus.header_handler import TeiHeaderHandlerImpl
@@ -11,6 +12,7 @@ class CliRequest:
     header_file: str
     corpus_dir: str
     output_file: Optional[str] = None
+    clean_header: bool = False
     split_docs: int = -1
     split_chars: int = -1
 
@@ -31,7 +33,8 @@ class TeiMakeCorpusUseCaseImpl:
     def process(self, request: CliRequest) -> None:
         self.out_stream.set_output_file(request.output_file)
         header_handler = TeiHeaderHandlerImpl(request.header_file)
+        config = CorpusConfig(clean_header=request.clean_header)
         corpus_maker = TeiCorpusMaker(
-            outstream=self.out_stream, header_handler=header_handler
+            outstream=self.out_stream, header_handler=header_handler, config=config
         )
         corpus_maker.build_corpus(request.corpus_dir, request.header_file)

@@ -33,6 +33,15 @@ class TeiMakeCorpusController:
             help="""Name of output file to write to. If this option is enabled, the
              output is written to the file instead of stdout.""",
         )
+        parser.add_argument(
+            "--deduplicate-header",
+            "-d",
+            default=False,
+            action="store_true",
+            help="""Remove elements from header of individual TEI files that are
+            identical in the common header (experimental).
+            """,
+        )
         split_group = parser.add_mutually_exclusive_group()
         split_group.add_argument(
             "--split-documents",
@@ -58,8 +67,7 @@ class TeiMakeCorpusController:
             files. The resulting files will be numbered consecutively. For example, if '--split-chars 15000000' is used,
             when the limit of 15M characters is reached, (after completing the current TEI document) a new output
             file be used.
-            This option can also be used without passing a value, the default is 15_000_000 (characters per file).
-            """,
+            This option can also be used without passing a value, the default is 15_000_000 (characters per file).""",
         )
         args = parser.parse_args(arguments)
         if args.split_documents and (args.to_file is None):
@@ -73,6 +81,7 @@ class TeiMakeCorpusController:
                 header_file=args.common_header,
                 corpus_dir=args.corpus_dir,
                 output_file=args.to_file,
+                clean_header=args.deduplicate_header,
                 split_docs=args.split_documents,
                 split_chars=args.split_chars,
             )
