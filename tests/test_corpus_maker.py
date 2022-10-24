@@ -89,7 +89,7 @@ class TeiCorpusMakerTester(unittest.TestCase):
             "tests/testdata/corpus/file1.xml",
             "tests/testdata/corpus/file2.xml",
         ]
-        self.assertEqual(sorted(list(corpus_files)), expected)
+        self.assertEqual(list(corpus_files), expected)
 
     def test_header_file_ignored_if_in_corpus_directory_with_path(self):
         corpus_dir = os.path.join("tests", "testdata", "corpus")
@@ -102,7 +102,7 @@ class TeiCorpusMakerTester(unittest.TestCase):
             "tests/testdata/corpus/file1.xml",
             "tests/testdata/corpus/file2.xml",
         ]
-        self.assertEqual(sorted(list(corpus_files)), expected)
+        self.assertEqual(list(corpus_files), expected)
 
     def test_non_xml_files_ignored_in_corpus_directory(self):
         corpus_dir = os.path.join("tests", "testdata", "corpus")
@@ -115,7 +115,7 @@ class TeiCorpusMakerTester(unittest.TestCase):
             "tests/testdata/corpus/file1.xml",
             "tests/testdata/corpus/file2.xml",
         ]
-        self.assertEqual(sorted(list(corpus_files)), expected)
+        self.assertEqual(list(corpus_files), expected)
 
     def test_corpus_files_found_recursively(self):
         corpus_dir = os.path.join("tests", "testdata", "rec_corpus")
@@ -130,7 +130,7 @@ class TeiCorpusMakerTester(unittest.TestCase):
             "tests/testdata/rec_corpus/part2/subpart/file21.xml",
             "tests/testdata/rec_corpus/part2/subpart/file22.xml",
         ]
-        self.assertEqual(sorted(list(corpus_files)), expected)
+        self.assertEqual(list(corpus_files), expected)
 
     def test_all_corpus_files_added_to_output_doc(self):
         corpus_dir = os.path.join("tests", "testdata", "rec_corpus")
