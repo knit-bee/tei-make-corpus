@@ -1,7 +1,7 @@
 import logging
 import os
 from dataclasses import dataclass
-from typing import Generator
+from typing import List
 
 from lxml import etree
 
@@ -57,12 +57,14 @@ class TeiCorpusMaker:
 
     def _get_paths_for_corpus_files(
         self, corpus_dir: str, header_file: str
-    ) -> Generator[str, None, None]:
-        return (
-            os.path.join(root, file)
-            for root, dirs, files in os.walk(corpus_dir)
-            for file in files
-            if file != os.path.basename(header_file) and file.endswith(".xml")
+    ) -> List[str]:
+        return sorted(
+            (
+                os.path.join(root, file)
+                for root, dirs, files in os.walk(corpus_dir)
+                for file in files
+                if file != os.path.basename(header_file) and file.endswith(".xml")
+            )
         )
 
     def _remove_xmlid_attribute(self, tei_doc: etree._Element) -> None:

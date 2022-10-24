@@ -1,4 +1,5 @@
 import os
+import tempfile
 import unittest
 
 from lxml import etree
@@ -219,3 +220,20 @@ class TeiCorpusMakerTester(unittest.TestCase):
             ".//funder", namespaces={None: "http://www.tei-c.org/ns/1.0"}
         )
         self.assertEqual(len(result), 2)
+
+    def test_files_ordered_alphabetically(self):
+        header_file = "header.xml"
+        corpus_maker = TeiCorpusMaker(
+            self.mock_stream, self.mock_header_handler, self.config_default
+        )
+        with tempfile.TemporaryDirectory() as tempdir:
+            file_names = []
+            for _ in range(10):
+                sub_dir = tempfile.mkdtemp(dir=tempdir)
+                for _ in range(100):
+                    _, tmp = tempfile.mkstemp(".xml", dir=sub_dir, text=True)
+                    file_names.append(tmp)
+            corpus_files = corpus_maker._get_paths_for_corpus_files(
+                tempdir, header_file
+            )
+        self.assertEqual(corpus_files, sorted(file_names))
