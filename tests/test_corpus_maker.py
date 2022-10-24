@@ -1,4 +1,5 @@
 import os
+import tempfile
 import unittest
 
 from lxml import etree
@@ -88,7 +89,7 @@ class TeiCorpusMakerTester(unittest.TestCase):
             "tests/testdata/corpus/file1.xml",
             "tests/testdata/corpus/file2.xml",
         ]
-        self.assertEqual(sorted(list(corpus_files)), expected)
+        self.assertEqual(list(corpus_files), expected)
 
     def test_header_file_ignored_if_in_corpus_directory_with_path(self):
         corpus_dir = os.path.join("tests", "testdata", "corpus")
@@ -101,7 +102,7 @@ class TeiCorpusMakerTester(unittest.TestCase):
             "tests/testdata/corpus/file1.xml",
             "tests/testdata/corpus/file2.xml",
         ]
-        self.assertEqual(sorted(list(corpus_files)), expected)
+        self.assertEqual(list(corpus_files), expected)
 
     def test_non_xml_files_ignored_in_corpus_directory(self):
         corpus_dir = os.path.join("tests", "testdata", "corpus")
@@ -114,7 +115,7 @@ class TeiCorpusMakerTester(unittest.TestCase):
             "tests/testdata/corpus/file1.xml",
             "tests/testdata/corpus/file2.xml",
         ]
-        self.assertEqual(sorted(list(corpus_files)), expected)
+        self.assertEqual(list(corpus_files), expected)
 
     def test_corpus_files_found_recursively(self):
         corpus_dir = os.path.join("tests", "testdata", "rec_corpus")
@@ -129,7 +130,7 @@ class TeiCorpusMakerTester(unittest.TestCase):
             "tests/testdata/rec_corpus/part2/subpart/file21.xml",
             "tests/testdata/rec_corpus/part2/subpart/file22.xml",
         ]
-        self.assertEqual(sorted(list(corpus_files)), expected)
+        self.assertEqual(list(corpus_files), expected)
 
     def test_all_corpus_files_added_to_output_doc(self):
         corpus_dir = os.path.join("tests", "testdata", "rec_corpus")
@@ -219,3 +220,20 @@ class TeiCorpusMakerTester(unittest.TestCase):
             ".//funder", namespaces={None: "http://www.tei-c.org/ns/1.0"}
         )
         self.assertEqual(len(result), 2)
+
+    def test_files_ordered_alphabetically(self):
+        header_file = "header.xml"
+        corpus_maker = TeiCorpusMaker(
+            self.mock_stream, self.mock_header_handler, self.config_default
+        )
+        with tempfile.TemporaryDirectory() as tempdir:
+            file_names = []
+            for _ in range(10):
+                sub_dir = tempfile.mkdtemp(dir=tempdir)
+                for _ in range(100):
+                    _, tmp = tempfile.mkstemp(".xml", dir=sub_dir, text=True)
+                    file_names.append(tmp)
+            corpus_files = corpus_maker._get_paths_for_corpus_files(
+                tempdir, header_file
+            )
+        self.assertEqual(corpus_files, sorted(file_names))
