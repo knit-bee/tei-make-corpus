@@ -14,17 +14,19 @@ class Partitioner:
         self, corpus_dir: str, header_file: str, clean: bool = False
     ) -> List[Partition]:
         # get info about split
+        return self._determine_partitions(corpus_dir, header_file, clean_files=clean)
+
+    def _determine_partitions(
+        self, corpus_dir: str, header_file: str, clean_files: bool = False
+    ) -> List[Partition]:
+        # split
         return [
             Partition(
                 self.header_handler,
                 self._get_paths_for_corpus_files(corpus_dir, header_file),
-                clean_files=clean,
+                clean_files=clean_files,
             )
         ]
-
-    def _determine_partitions(self):
-        # split
-        pass
 
     def _get_paths_for_corpus_files(
         self, corpus_dir: str, header_file: str

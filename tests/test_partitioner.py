@@ -74,3 +74,9 @@ class PartitionerTest(unittest.TestCase):
                 tempdir, header_file
             )
         self.assertEqual(corpus_files, sorted(file_names))
+
+    def test_only_one_partition_returned_in_default_setting(self):
+        corpus_dir = os.path.join("tests", "testdata", "rec_corpus")
+        header_file = os.path.join("tests", "testdata", "header.xml")
+        result = self.partitioner.get_partitions(corpus_dir, header_file)
+        self.assertEqual(len(result), 1)
