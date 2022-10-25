@@ -45,6 +45,8 @@ class TeiHeaderHandlerImpl:
             matching = self._element_equivalent_in_individual_header(element, iheader)
             for struct_match in matching:
                 if elements_equal(element, struct_match, ignore_ns=True):
+                    # check element:
+                    # if <publicationStmt>: don't remove
                     struct_match.getparent().remove(struct_match)
         for element in self._cheader.iterdescendants(self.tags_no_leftover_sibling):
             matching = self._element_equivalent_in_individual_header(element, iheader)
