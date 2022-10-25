@@ -31,18 +31,6 @@ class TeiCorpusMakerTester(unittest.TestCase):
         if os.path.exists(self.mock_stream.output_file):
             os.remove(self.mock_stream.output_file)
 
-    def test_xml_declaration_written_to_corpus_file(self):
-        header_file = os.path.join("tests", "testdata", "header.xml")
-        empty_dir = os.path.join("tests", "testdata", "empty")
-        corpus_maker = TeiCorpusMaker(
-            self.mock_stream, self.partitioner, self.config_default
-        )
-        corpus_maker.build_corpus(empty_dir, header_file)
-        with open(self.mock_stream.output_file) as ptr:
-            file_content = ptr.read()
-        xml_declaration = "<?xml version='1.0' encoding='UTF-8'?>"
-        self.assertTrue(xml_declaration in file_content)
-
     def test_data_from_header_file_written_to_corpus_file(self):
         header_file = os.path.join("tests", "testdata", "header.xml")
         empty_dir = os.path.join("tests", "testdata", "empty")
@@ -98,57 +86,3 @@ class TeiCorpusMakerTester(unittest.TestCase):
         doc = etree.parse(self.mock_stream.output_file)
         result = self.validator.validate(doc)
         self.assertTrue(result)
-
-    def test_non_tei_xml_files_omitted(self):
-        corpus_dir = os.path.join("tests", "testdata", "contaminated")
-        header_file = os.path.join("tests", "testdata", "header.xml")
-        header_handler = TeiHeaderHandlerImpl(header_file)
-        partitioner = Partitioner(header_handler)
-        corpus_maker = TeiCorpusMaker(
-            self.mock_stream, partitioner, self.config_default
-        )
-        corpus_maker.build_corpus(corpus_dir, header_file)
-        tei_corpus_root = etree.parse(self.mock_stream.output_file).getroot()
-        # teiCorpus should have 3 children
-        self.assertEqual(len(tei_corpus_root), 3)
-
-    def test_element_from_individual_header_removed_if_equal_in_common_header(self):
-        corpus_dir = os.path.join("tests", "testdata", "corpus_header")
-        header_file = os.path.join(corpus_dir, "header.xml")
-        header_handler = TeiHeaderHandlerImpl(header_file)
-        partitioner = Partitioner(header_handler)
-        corpus_maker = TeiCorpusMaker(self.mock_stream, partitioner, self.config_clean)
-        corpus_maker.build_corpus(corpus_dir, header_file)
-        doc = etree.parse(self.mock_stream.output_file)
-        result = doc.findall(
-            ".//funder", namespaces={None: "http://www.tei-c.org/ns/1.0"}
-        )
-        self.assertEqual(len(result), 1)
-
-    def test_element_retained_if_content_is_different_from_common_header(self):
-        corpus_dir = os.path.join("tests", "testdata", "corpus_header")
-        header_file = os.path.join(corpus_dir, "header.xml")
-        header_handler = TeiHeaderHandlerImpl(header_file)
-        partitioner = Partitioner(header_handler)
-        corpus_maker = TeiCorpusMaker(self.mock_stream, partitioner, self.config_clean)
-        corpus_maker.build_corpus(corpus_dir, header_file)
-        doc = etree.parse(self.mock_stream.output_file)
-        result = doc.findall(
-            ".//author", namespaces={None: "http://www.tei-c.org/ns/1.0"}
-        )
-        self.assertEqual(len(result), 4)
-
-    def test_individual_header_not_changed_if_option_is_set_to_false(self):
-        corpus_dir = os.path.join("tests", "testdata", "corpus_header")
-        header_file = os.path.join(corpus_dir, "header.xml")
-        header_handler = TeiHeaderHandlerImpl(header_file)
-        partitioner = Partitioner(header_handler)
-        corpus_maker = TeiCorpusMaker(
-            self.mock_stream, partitioner, self.config_default
-        )
-        corpus_maker.build_corpus(corpus_dir, header_file)
-        doc = etree.parse(self.mock_stream.output_file)
-        result = doc.findall(
-            ".//funder", namespaces={None: "http://www.tei-c.org/ns/1.0"}
-        )
-        self.assertEqual(len(result), 2)
