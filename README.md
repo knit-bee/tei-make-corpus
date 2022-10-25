@@ -31,7 +31,7 @@ positional arguments:
 
 optional arguments:
   -h, --help            show this help message and exit
-  --cheader CHEADER, -c CHEADER
+  --common-header COMMON_HEADER, -c COMMON_HEADER
                         Xml file containing the common header for the whole corpus.
   --to-file FILENAME, -f FILENAME
                         Name of output file to write to. If this option is
