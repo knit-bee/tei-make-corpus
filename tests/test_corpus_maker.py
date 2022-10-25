@@ -1,5 +1,4 @@
 import os
-import tempfile
 import unittest
 
 from lxml import etree
@@ -8,15 +7,8 @@ from tei_make_corpus.cli.corpus_config import CorpusConfig
 from tei_make_corpus.corpus_maker import TeiCorpusMaker
 from tei_make_corpus.corpus_stream import CorpusStreamImpl
 from tei_make_corpus.header_handler import TeiHeaderHandlerImpl
-from tests.utils import create_validator
-
-
-class MockHeaderHandler:
-    def common_header(self):
-        return None
-
-    def declutter_individual_header(self, iheader):
-        pass
+from tei_make_corpus.partitioner import Partitioner
+from tests.utils import MockHeaderHandler, create_validator
 
 
 class TeiCorpusMakerTester(unittest.TestCase):
@@ -30,7 +22,8 @@ class TeiCorpusMakerTester(unittest.TestCase):
         self.mock_stream = CorpusStreamImpl(
             os.path.join("tests", "testdata", "output_file.xml")
         )
-        self.mock_header_handler = MockHeaderHandler()
+        self.header_handler = MockHeaderHandler()
+        self.partitioner = Partitioner(self.header_handler)
         self.config_clean = CorpusConfig(clean_header=True)
         self.config_default = CorpusConfig(clean_header=False)
 
@@ -41,9 +34,8 @@ class TeiCorpusMakerTester(unittest.TestCase):
     def test_xml_declaration_written_to_corpus_file(self):
         header_file = os.path.join("tests", "testdata", "header.xml")
         empty_dir = os.path.join("tests", "testdata", "empty")
-        header_handler = TeiHeaderHandlerImpl(header_file)
         corpus_maker = TeiCorpusMaker(
-            self.mock_stream, header_handler, self.config_default
+            self.mock_stream, self.partitioner, self.config_default
         )
         corpus_maker.build_corpus(empty_dir, header_file)
         with open(self.mock_stream.output_file) as ptr:
@@ -55,8 +47,9 @@ class TeiCorpusMakerTester(unittest.TestCase):
         header_file = os.path.join("tests", "testdata", "header.xml")
         empty_dir = os.path.join("tests", "testdata", "empty")
         header_handler = TeiHeaderHandlerImpl(header_file)
+        partitioner = Partitioner(header_handler)
         corpus_maker = TeiCorpusMaker(
-            self.mock_stream, header_handler, self.config_default
+            self.mock_stream, partitioner, self.config_default
         )
         corpus_maker.build_corpus(empty_dir, header_file)
         with open(self.mock_stream.output_file) as ptr:
@@ -78,66 +71,13 @@ class TeiCorpusMakerTester(unittest.TestCase):
             in file_content
         )
 
-    def test_header_file_ignored_if_in_corpus_directory(self):
-        corpus_dir = os.path.join("tests", "testdata", "corpus")
-        header_file = "header.xml"
-        corpus_maker = TeiCorpusMaker(
-            self.mock_stream, self.mock_header_handler, self.config_default
-        )
-        corpus_files = corpus_maker._get_paths_for_corpus_files(corpus_dir, header_file)
-        expected = [
-            "tests/testdata/corpus/file1.xml",
-            "tests/testdata/corpus/file2.xml",
-        ]
-        self.assertEqual(list(corpus_files), expected)
-
-    def test_header_file_ignored_if_in_corpus_directory_with_path(self):
-        corpus_dir = os.path.join("tests", "testdata", "corpus")
-        header_file = os.path.join("tests", "testdata", "corpus", "header.xml")
-        corpus_maker = TeiCorpusMaker(
-            self.mock_stream, self.mock_header_handler, self.config_default
-        )
-        corpus_files = corpus_maker._get_paths_for_corpus_files(corpus_dir, header_file)
-        expected = [
-            "tests/testdata/corpus/file1.xml",
-            "tests/testdata/corpus/file2.xml",
-        ]
-        self.assertEqual(list(corpus_files), expected)
-
-    def test_non_xml_files_ignored_in_corpus_directory(self):
-        corpus_dir = os.path.join("tests", "testdata", "corpus")
-        header_file = "header.xml"
-        corpus_maker = TeiCorpusMaker(
-            self.mock_stream, self.mock_header_handler, self.config_default
-        )
-        corpus_files = corpus_maker._get_paths_for_corpus_files(corpus_dir, header_file)
-        expected = [
-            "tests/testdata/corpus/file1.xml",
-            "tests/testdata/corpus/file2.xml",
-        ]
-        self.assertEqual(list(corpus_files), expected)
-
-    def test_corpus_files_found_recursively(self):
-        corpus_dir = os.path.join("tests", "testdata", "rec_corpus")
-        header_file = "header.xml"
-        corpus_maker = TeiCorpusMaker(
-            self.mock_stream, self.mock_header_handler, self.config_default
-        )
-        corpus_files = corpus_maker._get_paths_for_corpus_files(corpus_dir, header_file)
-        expected = [
-            "tests/testdata/rec_corpus/part1/subpart/file1.xml",
-            "tests/testdata/rec_corpus/part1/subpart/file2.xml",
-            "tests/testdata/rec_corpus/part2/subpart/file21.xml",
-            "tests/testdata/rec_corpus/part2/subpart/file22.xml",
-        ]
-        self.assertEqual(list(corpus_files), expected)
-
     def test_all_corpus_files_added_to_output_doc(self):
         corpus_dir = os.path.join("tests", "testdata", "rec_corpus")
         header_file = os.path.join("tests", "testdata", "header.xml")
         header_handler = TeiHeaderHandlerImpl(header_file)
+        partitioner = Partitioner(header_handler)
         corpus_maker = TeiCorpusMaker(
-            self.mock_stream, header_handler, self.config_default
+            self.mock_stream, partitioner, self.config_default
         )
         corpus_maker.build_corpus(corpus_dir, header_file)
         doc = etree.parse(self.mock_stream.output_file)
@@ -150,8 +90,9 @@ class TeiCorpusMakerTester(unittest.TestCase):
         corpus_dir = os.path.join("tests", "testdata", "rec_corpus")
         header_file = os.path.join("tests", "testdata", "header.xml")
         header_handler = TeiHeaderHandlerImpl(header_file)
+        partitioner = Partitioner(header_handler)
         corpus_maker = TeiCorpusMaker(
-            self.mock_stream, header_handler, self.config_default
+            self.mock_stream, partitioner, self.config_default
         )
         corpus_maker.build_corpus(corpus_dir, header_file)
         doc = etree.parse(self.mock_stream.output_file)
@@ -162,30 +103,21 @@ class TeiCorpusMakerTester(unittest.TestCase):
         corpus_dir = os.path.join("tests", "testdata", "contaminated")
         header_file = os.path.join("tests", "testdata", "header.xml")
         header_handler = TeiHeaderHandlerImpl(header_file)
+        partitioner = Partitioner(header_handler)
         corpus_maker = TeiCorpusMaker(
-            self.mock_stream, header_handler, self.config_default
+            self.mock_stream, partitioner, self.config_default
         )
         corpus_maker.build_corpus(corpus_dir, header_file)
         tei_corpus_root = etree.parse(self.mock_stream.output_file).getroot()
         # teiCorpus should have 3 children
         self.assertEqual(len(tei_corpus_root), 3)
 
-    def test_xmlid_attribute_removed(self):
-        file = os.path.join("tests", "testdata", "corpus", "file1.xml")
-        corpus_maker = TeiCorpusMaker(
-            self.mock_stream, self.mock_header_handler, self.config_default
-        )
-        processed = corpus_maker._prepare_single_tei_file(file)
-        result = processed.findall(".//*[@{http://www.w3.org/XML/1998/namespace}id]")
-        self.assertEqual(result, [])
-
     def test_element_from_individual_header_removed_if_equal_in_common_header(self):
         corpus_dir = os.path.join("tests", "testdata", "corpus_header")
         header_file = os.path.join(corpus_dir, "header.xml")
         header_handler = TeiHeaderHandlerImpl(header_file)
-        corpus_maker = TeiCorpusMaker(
-            self.mock_stream, header_handler, self.config_clean
-        )
+        partitioner = Partitioner(header_handler)
+        corpus_maker = TeiCorpusMaker(self.mock_stream, partitioner, self.config_clean)
         corpus_maker.build_corpus(corpus_dir, header_file)
         doc = etree.parse(self.mock_stream.output_file)
         result = doc.findall(
@@ -197,9 +129,8 @@ class TeiCorpusMakerTester(unittest.TestCase):
         corpus_dir = os.path.join("tests", "testdata", "corpus_header")
         header_file = os.path.join(corpus_dir, "header.xml")
         header_handler = TeiHeaderHandlerImpl(header_file)
-        corpus_maker = TeiCorpusMaker(
-            self.mock_stream, header_handler, self.config_clean
-        )
+        partitioner = Partitioner(header_handler)
+        corpus_maker = TeiCorpusMaker(self.mock_stream, partitioner, self.config_clean)
         corpus_maker.build_corpus(corpus_dir, header_file)
         doc = etree.parse(self.mock_stream.output_file)
         result = doc.findall(
@@ -211,8 +142,9 @@ class TeiCorpusMakerTester(unittest.TestCase):
         corpus_dir = os.path.join("tests", "testdata", "corpus_header")
         header_file = os.path.join(corpus_dir, "header.xml")
         header_handler = TeiHeaderHandlerImpl(header_file)
+        partitioner = Partitioner(header_handler)
         corpus_maker = TeiCorpusMaker(
-            self.mock_stream, header_handler, self.config_default
+            self.mock_stream, partitioner, self.config_default
         )
         corpus_maker.build_corpus(corpus_dir, header_file)
         doc = etree.parse(self.mock_stream.output_file)
@@ -220,20 +152,3 @@ class TeiCorpusMakerTester(unittest.TestCase):
             ".//funder", namespaces={None: "http://www.tei-c.org/ns/1.0"}
         )
         self.assertEqual(len(result), 2)
-
-    def test_files_ordered_alphabetically(self):
-        header_file = "header.xml"
-        corpus_maker = TeiCorpusMaker(
-            self.mock_stream, self.mock_header_handler, self.config_default
-        )
-        with tempfile.TemporaryDirectory() as tempdir:
-            file_names = []
-            for _ in range(10):
-                sub_dir = tempfile.mkdtemp(dir=tempdir)
-                for _ in range(100):
-                    _, tmp = tempfile.mkstemp(".xml", dir=sub_dir, text=True)
-                    file_names.append(tmp)
-            corpus_files = corpus_maker._get_paths_for_corpus_files(
-                tempdir, header_file
-            )
-        self.assertEqual(corpus_files, sorted(file_names))
