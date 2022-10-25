@@ -98,3 +98,34 @@ class PartitionTest(unittest.TestCase):
         file_content = self.mock_stream.output_file.read().decode("utf-8")
         xml_declaration = "<?xml version='1.0' encoding='UTF-8'?>"
         self.assertTrue(xml_declaration in file_content)
+
+    def test_root_is_teiCorpus(self):
+        corpus_dir = os.path.join("tests", "testdata", "corpus_header")
+        header_file = os.path.join(corpus_dir, "header.xml")
+        corpus_files = [
+            os.path.join(corpus_dir, file)
+            for file in os.listdir(corpus_dir)
+            if file != "header.xml"
+        ]
+        header_handler = TeiHeaderHandlerImpl(header_file)
+        partition = Partition(header_handler, corpus_files)
+        partition.write_partition(self.mock_stream.path())
+        self.mock_stream.output_file.seek(0)
+        doc = etree.parse(self.mock_stream.output_file)
+        result = doc.getroot().tag
+        self.assertEqual(result, "{http://www.tei-c.org/ns/1.0}teiCorpus")
+
+    def test_all_tei_files_from_partition_written_to_output(self):
+        corpus_dir = os.path.join("tests", "testdata", "rec_corpus")
+        header_file = os.path.join("tests", "testdata", "header.xml")
+        corpus_files = [
+            os.path.join(root, file)
+            for root, dirs, files in os.walk(corpus_dir)
+            for file in files
+        ]
+        header_handler = TeiHeaderHandlerImpl(header_file)
+        partition = Partition(header_handler, corpus_files)
+        partition.write_partition(self.mock_stream.path())
+        self.mock_stream.output_file.seek(0)
+        root = etree.parse(self.mock_stream.output_file).getroot()
+        self.assertEqual(len(root), 5)
