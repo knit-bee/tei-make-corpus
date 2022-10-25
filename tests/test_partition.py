@@ -10,7 +10,8 @@ from tests.utils import MockHeaderHandler
 
 
 class MockStream:
-    output_file = io.BytesIO()
+    def __init__(self):
+        self.output_file = io.BytesIO()
 
     def path(self):
         return self.output_file
