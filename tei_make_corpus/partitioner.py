@@ -1,7 +1,8 @@
 import os
 from dataclasses import dataclass
-from typing import List
+from typing import List, Optional
 
+from tei_make_corpus.cli.corpus_config import CorpusConfig
 from tei_make_corpus.header_handler import TeiHeaderHandler
 from tei_make_corpus.partition import Partition
 
@@ -11,9 +12,12 @@ class Partitioner:
     header_handler: TeiHeaderHandler
 
     def get_partitions(
-        self, corpus_dir: str, header_file: str, clean: bool = False
+        self, corpus_dir: str, header_file: str, config: Optional[CorpusConfig] = None
     ) -> List[Partition]:
         # get info about split
+        clean = False
+        if config is not None:
+            clean = config.clean_header
         return self._determine_partitions(corpus_dir, header_file, clean_files=clean)
 
     def _determine_partitions(

@@ -27,7 +27,7 @@ class TeiCorpusMaker:
         # init config?
         # partition, write
         for partition in self.partitioner.get_partitions(
-            corpus_dir, header_file, clean=self.config.clean_header
+            corpus_dir, header_file, config=self.config
         ):
             partition.write_partition(self.outstream.path())
             # self.outstream.update_path()
