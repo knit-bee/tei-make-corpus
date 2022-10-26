@@ -44,3 +44,6 @@ class Partition:
     def _remove_xmlid_attribute(self, tei_doc: etree._Element) -> None:
         for node in tei_doc.findall(".//*[@{http://www.w3.org/XML/1998/namespace}id]"):
             node.attrib.pop("{http://www.w3.org/XML/1998/namespace}id")
+
+    def __len__(self):
+        return len(self.files)
