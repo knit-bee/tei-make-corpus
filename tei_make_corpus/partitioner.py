@@ -47,6 +47,20 @@ class Partitioner:
     ) -> List[Tuple[int, int]]:
         if intended_chunk_size == -1 or total_num_of_files < intended_chunk_size:
             return [(0, total_num_of_files)]
+        num_chunks = total_num_of_files // intended_chunk_size
+        # check if last chunk would be smaller than 30% of intended chunk size
+        # if yes, distribute files evenly
+        if (
+            total_num_of_files - (num_chunks * intended_chunk_size)
+            < intended_chunk_size * 0.3
+        ):
+            indices = []
+            start = 0
+            for i in range(1, num_chunks + 1):
+                end = int(round(i * (total_num_of_files / num_chunks)))
+                indices.append((start, end))
+                start = end
+            return indices
         return [
             (i, i + intended_chunk_size)
             for i in range(0, total_num_of_files, intended_chunk_size)

@@ -84,3 +84,32 @@ class PartitionerTest(unittest.TestCase):
         for part in partitions:
             result += part.files
         self.assertEqual(result, corpus_files)
+
+    def test_last_partition_with_only_small_amount_of_file_avoided(self):
+        total_no_files = 1001
+        split_val = 100
+        corpus_dir = "corpus"
+        corpus_files = ["file.xml"] * total_no_files
+        self.mock_path_finder.files[corpus_dir] = corpus_files
+        config = CorpusConfig(clean_header=False, split_docs=split_val)
+        partitions = list(
+            self.partitioner.get_partitions(corpus_dir, self.header_file, config)
+        )
+        last_partition = partitions[-1]
+        self.assertTrue(len(last_partition) > 1)
+
+    def test_last_partition_contains_at_least_thirty_percent_of_intended_chunk_size(
+        self,
+    ):
+        split_val = 100
+        for num_files in range(1001, 1030):
+            corpus_dir = "corpus"
+            corpus_files = ["file.xml"] * num_files
+            self.mock_path_finder.files[corpus_dir] = corpus_files
+            config = CorpusConfig(clean_header=False, split_docs=split_val)
+            partitions = list(
+                self.partitioner.get_partitions(corpus_dir, self.header_file, config)
+            )
+            last_partition = partitions[-1]
+            with self.subTest():
+                self.assertTrue(len(last_partition) > split_val * 0.3)
