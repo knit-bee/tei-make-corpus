@@ -20,6 +20,7 @@ class PartitionerTest(unittest.TestCase):
         self.mock_header_handler = MockHeaderHandler()
         self.mock_path_finder = MockPathFinder()
         self.partitioner = Partitioner(self.mock_header_handler, self.mock_path_finder)
+        self.header_file = "header.xml"
 
     def test_only_one_partition_returned_in_default_setting(self):
         corpus_dir = os.path.join("tests", "testdata", "rec_corpus")
@@ -34,31 +35,30 @@ class PartitionerTest(unittest.TestCase):
         self.assertEqual(len(result), 1)
 
     def test_partitioning_with_number_of_documents_per_file(self):
-        header_file = "header.xml"
         total_no_files = 1000
         split_val = 100
         corpus_files = ["file.xml"] * total_no_files
         self.mock_path_finder.files["test_dir"] = corpus_files
         config = CorpusConfig(clean_header=False, split_docs=split_val)
         partitions = list(
-            self.partitioner.get_partitions("test_dir", header_file, config)
+            self.partitioner.get_partitions("test_dir", self.header_file, config)
         )
         self.assertEqual(len(partitions), 10)
         self.assertEqual(sum(len(part) for part in partitions), total_no_files)
 
     def test_partitioning_with_random_number_of_documents_per_file(self):
-        header_file = "header.xml"
         total_no_files = random.randint(10, 15_000_000)
         split_val = random.randint(1, total_no_files)
         corpus_dir = "test_dir"
         corpus_files = [f"file{i}.xml" for i in range(total_no_files)]
         config = CorpusConfig(clean_header=False, split_docs=split_val)
         self.mock_path_finder.files[corpus_dir] = corpus_files
-        partitions = self.partitioner.get_partitions(corpus_dir, header_file, config)
+        partitions = self.partitioner.get_partitions(
+            corpus_dir, self.header_file, config
+        )
         self.assertEqual(sum(len(part) for part in partitions), total_no_files)
 
     def test_partitioning_split_value_larger_than_total_returns_one_partition(self):
-        header_file = "header.xml"
         total_no_files = random.randint(10, 15_000)
         split_val = random.randint(total_no_files, 15_000_000)
         corpus_dir = "test_dir"
@@ -66,19 +66,20 @@ class PartitionerTest(unittest.TestCase):
         self.mock_path_finder.files[corpus_dir] = corpus_files
         config = CorpusConfig(clean_header=False, split_docs=split_val)
         partitions = list(
-            self.partitioner.get_partitions(corpus_dir, header_file, config)
+            self.partitioner.get_partitions(corpus_dir, self.header_file, config)
         )
         self.assertEqual(len(partitions), 1)
 
     def test_all_files_contained_in_partitions(self):
-        header_file = "header.xml"
         total_no_files = random.randint(100, 10_000)
         split_val = random.randint(10, total_no_files)
         corpus_dir = "corpus"
         corpus_files = [f"file{i}.xml" for i in range(total_no_files)]
         self.mock_path_finder.files[corpus_dir] = corpus_files
         config = CorpusConfig(clean_header=False, split_docs=split_val)
-        partitions = self.partitioner.get_partitions(corpus_dir, header_file, config)
+        partitions = self.partitioner.get_partitions(
+            corpus_dir, self.header_file, config
+        )
         result = []
         for part in partitions:
             result += part.files
