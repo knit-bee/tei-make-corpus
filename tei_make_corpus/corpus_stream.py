@@ -38,4 +38,7 @@ class CorpusStreamImpl:
     def _find_template_name(self) -> str:
         if self.output_file is None:
             return "part"
-        return self.output_file.removesuffix(".xml")
+        xml_file_extension = ".xml"
+        if self.output_file.endswith(xml_file_extension):
+            return self.output_file[: -len(xml_file_extension)]
+        return self.output_file
