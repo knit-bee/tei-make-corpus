@@ -14,6 +14,7 @@ class IntegrationTest(unittest.TestCase):
     def setUp(self):
         self.out_stream = CorpusStreamImpl()
         self.use_case = TeiMakeCorpusUseCaseImpl(self.out_stream)
+        self.test_dir = os.path.join("tests", "testdata")
 
     def tearDown(self):
         if self.out_stream.output_file and os.path.exists(self.out_stream.output_file):
@@ -21,8 +22,8 @@ class IntegrationTest(unittest.TestCase):
 
     def test_xml_element_tree_generated(self):
         request = CliRequest(
-            header_file=os.path.join("tests", "testdata", "header.xml"),
-            corpus_dir=os.path.join("tests", "testdata", "rec_corpus"),
+            header_file=os.path.join(self.test_dir, "header.xml"),
+            corpus_dir=os.path.join(self.test_dir, "rec_corpus"),
         )
         with contextlib.redirect_stdout(
             io.TextIOWrapper(io.BytesIO(), sys.stdout.encoding)
@@ -33,10 +34,10 @@ class IntegrationTest(unittest.TestCase):
         self.assertTrue(isinstance(result, etree._ElementTree))
 
     def test_header_in_output(self):
-        header_file = os.path.join("tests", "testdata", "header.xml")
+        header_file = os.path.join(self.test_dir, "header.xml")
         request = CliRequest(
             header_file=header_file,
-            corpus_dir=os.path.join("tests", "testdata", "corpus"),
+            corpus_dir=os.path.join(self.test_dir, "corpus"),
         )
         with contextlib.redirect_stdout(
             io.TextIOWrapper(io.BytesIO(), sys.stdout.encoding)
@@ -49,8 +50,8 @@ class IntegrationTest(unittest.TestCase):
 
     def test_all_tei_files_added(self):
         request = CliRequest(
-            header_file=os.path.join("tests", "testdata", "header.xml"),
-            corpus_dir=os.path.join("tests", "testdata", "rec_corpus"),
+            header_file=os.path.join(self.test_dir, "header.xml"),
+            corpus_dir=os.path.join(self.test_dir, "rec_corpus"),
         )
         with contextlib.redirect_stdout(
             io.TextIOWrapper(io.BytesIO(), sys.stdout.encoding)
@@ -63,8 +64,8 @@ class IntegrationTest(unittest.TestCase):
 
     def test_element_with_non_ascii_text_removed_if_equal_in_common_header(self):
         request = CliRequest(
-            header_file=os.path.join("tests", "testdata", "enc_corpus", "header.xml"),
-            corpus_dir=os.path.join("tests", "testdata", "enc_corpus"),
+            header_file=os.path.join(self.test_dir, "enc_corpus", "header.xml"),
+            corpus_dir=os.path.join(self.test_dir, "enc_corpus"),
             clean_header=True,
         )
         with contextlib.redirect_stdout(
@@ -77,10 +78,10 @@ class IntegrationTest(unittest.TestCase):
         self.assertEqual(len(result), 1)
 
     def test_output_written_to_file_if_enabled(self):
-        output_file = os.path.join("tests", "testdata", "output.xml")
+        output_file = os.path.join(self.test_dir, "output.xml")
         request = CliRequest(
-            header_file=os.path.join("tests", "testdata", "header.xml"),
-            corpus_dir=os.path.join("tests", "testdata", "rec_corpus"),
+            header_file=os.path.join(self.test_dir, "header.xml"),
+            corpus_dir=os.path.join(self.test_dir, "rec_corpus"),
             output_file=output_file,
         )
         self.use_case.process(request)
