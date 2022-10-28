@@ -45,7 +45,7 @@ class TeiCorpusMakerTester(unittest.TestCase):
 
     def test_data_from_header_file_written_to_corpus_file(self):
         header_file = os.path.join("tests", "testdata", "header.xml")
-        empty_dir = os.path.join("tests", "testdata", "empty")
+        empty_dir = os.path.join("tests", "testdata", "corpus")
         header_handler = TeiHeaderHandlerImpl(header_file)
         partitioner = Partitioner(header_handler, self.path_finder)
         corpus_maker = TeiCorpusMaker(
@@ -155,3 +155,14 @@ class TeiCorpusMakerTester(unittest.TestCase):
             doc = etree.parse(file_path)
             with self.subTest():
                 self.assertEqual(len(doc.findall(".//{*}teiHeader")), 2)
+
+    def test_no_output_file_created_if_corpus_dir_is_empty(self):
+        header_file = os.path.join("tests", "testdata", "header.xml")
+        empty_dir = os.path.join("tests", "testdata", "empty")
+        header_handler = TeiHeaderHandlerImpl(header_file)
+        partitioner = Partitioner(header_handler, self.path_finder)
+        corpus_maker = TeiCorpusMaker(
+            self.mock_stream, partitioner, self.config_default
+        )
+        corpus_maker.build_corpus(empty_dir, header_file)
+        self.assertFalse(os.path.exists(self.mock_stream.path()))
