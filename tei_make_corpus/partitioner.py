@@ -45,6 +45,8 @@ class Partitioner:
     def _determine_chunk_indices(
         self, total_num_of_files: int, intended_chunk_size: int
     ) -> List[Tuple[int, int]]:
+        if total_num_of_files == 0:
+            return []
         if intended_chunk_size == -1 or total_num_of_files < intended_chunk_size:
             return [(0, total_num_of_files)]
         num_chunks = total_num_of_files // intended_chunk_size

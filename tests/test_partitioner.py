@@ -113,3 +113,8 @@ class PartitionerTest(unittest.TestCase):
             last_partition = partitions[-1]
             with self.subTest():
                 self.assertTrue(len(last_partition) > split_val * 0.3)
+
+    def test_partitioning_on_empty_directory_returns_empty_iterable(self):
+        config = CorpusConfig(clean_header=False, split_docs=3)
+        partitions = self.partitioner.get_partitions("empty", self.header_file, config)
+        self.assertEqual(list(partitions), [])
