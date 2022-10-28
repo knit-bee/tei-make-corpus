@@ -1,0 +1,31 @@
+<teiHeader>
+    <fileDesc>
+        <titleStmt>
+            <title>Corpus title</title>
+            <author>Author</author>
+            <funder>Funder</funder>
+        </titleStmt>
+        <publicationStmt>
+          <publisher>Publisher</publisher>
+          <pubPlace>Place</pubPlace>
+          <date>today</date>
+          <availability n="test" status="unknown">Some text</availability>
+        </publicationStmt>
+        <sourceDesc>
+          <p/>
+        </sourceDesc>
+    </fileDesc>
+    <encodingDesc>
+      <classDecl>
+        <taxonomy>
+          <bibl></bibl>
+        </taxonomy>
+      </classDecl>
+      <projectDesc default="false">
+        <p>Project</p>
+      </projectDesc>
+      <samplingDecl default="false">
+        <p>description how the file was changed</p>
+      </samplingDecl>
+    </encodingDesc>
+</teiHeader>
