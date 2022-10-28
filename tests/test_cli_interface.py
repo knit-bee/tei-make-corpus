@@ -29,11 +29,15 @@ def test_package_callable_with_output():
         with open(temp_header, "w") as ptr:
             ptr.write("<teiHeader/>")
         out_file = os.path.join(tempdir, "out.xml")
-        os.mkdir(os.path.join(tempdir, "corpus"))
+        corpus_dir = os.path.join(tempdir, "corpus")
+        os.mkdir(corpus_dir)
+        _, temp_tei = tempfile.mkstemp(".xml", dir=corpus_dir, text=True)
+        with open(temp_tei, "w") as ptr:
+            ptr.write("<TEI/>")
         process = subprocess.run(
             [
                 "tei-make-corpus",
-                os.path.join(tempdir, "corpus"),
+                corpus_dir,
                 "-c",
                 temp_header,
                 "--to-file",
