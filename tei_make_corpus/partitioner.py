@@ -45,7 +45,7 @@ class Partitioner:
         if doc_size != -1:
             index_pairs = self._determine_chunk_indices_file_size(all_files, doc_size)
         else:
-            index_pairs = self._determine_chunk_indices(
+            index_pairs = self._determine_chunk_indices_num_docs(
                 total_number_files, docs_per_file
             )
         for start_index, end_index in index_pairs:
@@ -55,7 +55,7 @@ class Partitioner:
                 clean_files=clean_files,
             )
 
-    def _determine_chunk_indices(
+    def _determine_chunk_indices_num_docs(
         self, total_num_of_files: int, intended_chunk_size: int
     ) -> List[Tuple[int, int]]:
         if total_num_of_files == 0:
@@ -66,7 +66,8 @@ class Partitioner:
         # check if last chunk would be smaller than 30% of intended chunk size
         # if yes, distribute files evenly
         if (
-            total_num_of_files - (num_chunks * intended_chunk_size)
+            0
+            < total_num_of_files - (num_chunks * intended_chunk_size)
             < intended_chunk_size * 0.3
         ):
             indices = []
