@@ -147,6 +147,63 @@ class IntegrationTest(unittest.TestCase):
         self.assertTrue(self.out_stream.path().startswith("part"))
         self._remove_output_files(dir=os.getcwd(), pattern=r"part\d*\.xml")
 
+    def test_one_file_created_if_intended_file_size_larger_than_total(self):
+        request = CliRequest(
+            header_file=os.path.join(self.test_dir, "header.xml"),
+            corpus_dir=os.path.join(self.test_dir, "rec_corpus"),
+            output_file=os.path.join(self.test_dir, "only_out.xml"),
+            split_size=100000,
+        )
+        self.use_case.process(request)
+        result = [
+            file for file in os.listdir(self.test_dir) if file.startswith("only_out")
+        ]
+        self.assertEqual(len(result), 1)
+
+    def test_multiple_files_created_with_split_size_option(self):
+        request = CliRequest(
+            header_file=os.path.join(self.test_dir, "header.xml"),
+            corpus_dir=os.path.join(self.test_dir, "rec_corpus"),
+            output_file=os.path.join(self.test_dir, "part_out.xml"),
+            split_size=1000,
+        )
+        self.use_case.process(request)
+        result = [
+            file for file in os.listdir(self.test_dir) if file.startswith("part_out")
+        ]
+        self.assertEqual(len(result), 4)
+        self._remove_output_files(pattern=r"part_out\d*\.xml")
+
+    def test_cleaning_of_header_performed_on_all_docs_with_split_size(self):
+        request = CliRequest(
+            header_file=os.path.join(self.test_dir, "header2.xml"),
+            corpus_dir=os.path.join(self.test_dir, "rec_corpus"),
+            output_file=os.path.join(self.test_dir, "part_out.xml"),
+            split_size=2000,
+            clean_header=True,
+        )
+        self.use_case.process(request)
+        output_files = [
+            file for file in os.listdir(self.test_dir) if file.startswith("part_out")
+        ]
+        for file in output_files:
+            doc = etree.parse(os.path.join(self.test_dir, file))
+            with self.subTest():
+                # encodingDesc should be removed from individual headers
+                # bc it is same in common header
+                self.assertEqual(len(doc.findall(".//{*}encodingDesc")), 1)
+        self._remove_output_files(pattern=r"part_out\d*\.xml")
+
+    def test_split_size_option_without_output_file_uses_default_template_name(self):
+        request = CliRequest(
+            header_file=os.path.join(self.test_dir, "header.xml"),
+            corpus_dir=os.path.join(self.test_dir, "rec_corpus"),
+            split_size=2000,
+        )
+        self.use_case.process(request)
+        self.assertTrue(self.out_stream.path().startswith("part"))
+        self._remove_output_files(dir=os.getcwd(), pattern=r"part\d*\.xml")
+
     def _remove_output_files(self, dir=None, pattern=None):
         dir = dir or self.test_dir
         other_files = [file for file in os.listdir(dir) if re.match(pattern, file)]
