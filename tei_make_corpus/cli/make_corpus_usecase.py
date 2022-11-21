@@ -4,6 +4,7 @@ from typing import Optional, Protocol
 from tei_make_corpus.cli.corpus_config import CorpusConfig
 from tei_make_corpus.corpus_maker import TeiCorpusMaker
 from tei_make_corpus.corpus_stream import CorpusStream
+from tei_make_corpus.file_size_estimator import FileSizeEstimatorImpl
 from tei_make_corpus.header_handler import TeiHeaderHandlerImpl
 from tei_make_corpus.partitioner import Partitioner
 from tei_make_corpus.path_finder import PathFinderImpl
@@ -36,7 +37,12 @@ class TeiMakeCorpusUseCaseImpl:
         self.out_stream.set_output_file(request.output_file)
         header_handler = TeiHeaderHandlerImpl(request.header_file)
         path_finder = PathFinderImpl()
-        partitioner = Partitioner(header_handler, path_finder)
+        size_estimator = FileSizeEstimatorImpl()
+        partitioner = Partitioner(
+            header_handler=header_handler,
+            path_finder=path_finder,
+            size_estimator=size_estimator,
+        )
         config = CorpusConfig(
             clean_header=request.clean_header,
             split_docs=request.split_docs,
