@@ -1,4 +1,5 @@
 import argparse
+import re
 from typing import List
 
 from tei_make_corpus.cli.make_corpus_usecase import CliRequest, TeiMakeCorpusUseCase
@@ -49,7 +50,7 @@ class TeiMakeCorpusController:
             "--split-documents",
             nargs="?",
             const=100000,
-            type=int,
+            type=self.valid_dimension,
             help="""Use this option to split the teiCorpus into mutliple files. This option
             takes a NUMBER OF FILES that are written to one output file. This option requires
             the '--to-file' argument, which will be used as template for the names of all output
@@ -65,7 +66,7 @@ class TeiMakeCorpusController:
             "--split-size",
             nargs="?",
             const=150_000_000,
-            type=int,
+            type=self.valid_dimension,
             help="""Use this option to split the teiCorpus into multiple files. This option
             takes an intended FILE SIZE IN BYTES for one output file. This option requires
             the '--to-file' argument, which will be used as template for the file names of all output
@@ -101,3 +102,22 @@ class TeiMakeCorpusController:
         if split_val is not None and split_val < 1:
             return False
         return True
+
+    def valid_dimension(self, input_string: str) -> int:
+        mulitiplicators = {
+            "k": 10**3,
+            "m": 10**6,
+            "g": 10**9,
+            "t": 10**12,
+            "": 1,
+        }
+        pattern = r"(\d+(_\d+|d*)*\.?\d*)([kKmMgGtT]?)$"
+        match = re.match(pattern, input_string)
+        if not match:
+            raise TypeError
+        numeric_part = match.group(1)
+        dimension = match.group(3).lower()
+        split_val = float(numeric_part) * mulitiplicators[dimension]
+        if split_val % 1:
+            raise TypeError
+        return int(split_val)
