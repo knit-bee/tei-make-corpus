@@ -62,23 +62,23 @@ class TeiMakeCorpusController:
         """,
         )
         split_group.add_argument(
-            "--split-chars",
+            "--split-size",
             nargs="?",
-            const=15_000_000,
+            const=150_000_000,
             type=int,
             help="""Use this option to split the teiCorpus into multiple files. This option
-            takes a NUMBER OF CHARACTERS that are written to one output file. This option requires
+            takes an intended FILE SIZE IN BYTES for one output file. This option requires
             the '--to-file' argument, which will be used as template for the file names of all output
-            files. The resulting files will be numbered consecutively. For example, if '--split-chars 15000000' is used,
-            when the limit of 15M characters is reached, (after completing the current TEI document) a new output
-            file be used.
-            This option can also be used without passing a value, the default is 15_000_000 (characters per file).""",
+            files. The resulting files will be numbered consecutively. For example, if '--split-size 15000' is used,
+            when the limit of 15 kilobytes is reached, (after completing the current TEI document) a new output
+            file will be used.
+            This option can also be used without passing a value, the default is 150 000 000 (bytes per file, 150 MB).""",
         )
         args = parser.parse_args(arguments)
         if args.split_documents and (args.to_file is None):
             parser.error("--split-documents requires --to-file FILENAME")
-        if args.split_chars and args.to_file is None:
-            parser.error("--split-chars requires --to-file FILENAME")
+        if args.split_size and args.to_file is None:
+            parser.error("--split-size requires --to-file FILENAME")
         if not self._validate_split_value(args):
             parser.error("Split value should be greater 0")
         self.use_case.process(
@@ -88,7 +88,7 @@ class TeiMakeCorpusController:
                 output_file=args.to_file,
                 clean_header=args.deduplicate_header,
                 split_docs=args.split_documents or -1,
-                split_chars=args.split_chars,
+                split_chars=args.split_size,
             )
         )
 
@@ -96,8 +96,8 @@ class TeiMakeCorpusController:
         split_val = None
         if args.split_documents is not None:
             split_val = args.split_documents
-        if args.split_chars is not None:
-            split_val = args.split_chars
+        if args.split_size is not None:
+            split_val = args.split_size
         if split_val is not None and split_val < 1:
             return False
         return True

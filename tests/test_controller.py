@@ -82,7 +82,7 @@ class TeiMakeCorpusControllerTest(unittest.TestCase):
     def test_split_chars_option_requires_file_name_argument(self):
         with self.assertRaises(SystemExit):
             self.controller.process_arguments(
-                ["corpus", "-c", "header.xml", "--split-chars"]
+                ["corpus", "-c", "header.xml", "--split-size"]
             )
 
     def test_controller_extracts_split_chars_option(self):
@@ -93,7 +93,7 @@ class TeiMakeCorpusControllerTest(unittest.TestCase):
                 "header.xml",
                 "--to-file",
                 "output.xml",
-                "--split-chars",
+                "--split-size",
                 "1000000",
             ]
         )
@@ -101,27 +101,27 @@ class TeiMakeCorpusControllerTest(unittest.TestCase):
 
     def test_use_default_value_for_number_of_chars_if_no_value_indicated(self):
         self.controller.process_arguments(
-            ["corpus", "-c", "header.xml", "--split-chars", "--to-file", "out.xml"]
+            ["corpus", "-c", "header.xml", "--split-size", "--to-file", "out.xml"]
         )
-        self.assertEqual(self.mock_use_case.request.split_chars, 15_000_000)
+        self.assertEqual(self.mock_use_case.request.split_chars, 150_000_000)
 
     def test_controller_exits_if_wrong_type_is_used_with_split_chars_option(self):
         with self.assertRaises(SystemExit):
             self.controller.process_arguments(
-                ["corpus", "-c=head.xml", "-f=out.xml", "--split-chars", "ten"]
+                ["corpus", "-c=head.xml", "-f=out.xml", "--split-size", "ten"]
             )
 
     def test_split_chars_option_usable_with_underscore_separated_number(self):
         self.controller.process_arguments(
-            ["corpus", "-c=head.xml", "-f='out.xml'", "--split-chars", "100_000_000"]
+            ["corpus", "-c=head.xml", "-f='out.xml'", "--split-size", "100_000_000"]
         )
         self.assertEqual(self.mock_use_case.request.split_chars, 100_000_000)
 
     def test_split_options_mutually_exclusive(self):
         erroneous_input = [
-            ["--split-chars", "--split-documents"],
-            ["--split-chars", "10", "--split-documents"],
-            ["--split-chars", "--split-documents", "10"],
+            ["--split-size", "--split-documents"],
+            ["--split-size", "10", "--split-documents"],
+            ["--split-size", "--split-documents", "10"],
         ]
         for input_args in erroneous_input:
             with self.assertRaises(SystemExit):
@@ -133,7 +133,7 @@ class TeiMakeCorpusControllerTest(unittest.TestCase):
         self,
     ):
         wrong_values = [0, -1, 0.5, -10, 1.5, 3333.3]
-        split_opts = ["--split-chars", "--split-documents"]
+        split_opts = ["--split-size", "--split-documents"]
         for option in split_opts:
             for val in wrong_values:
                 with self.subTest():
