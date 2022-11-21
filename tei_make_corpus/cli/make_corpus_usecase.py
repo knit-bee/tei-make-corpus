@@ -38,7 +38,9 @@ class TeiMakeCorpusUseCaseImpl:
         path_finder = PathFinderImpl()
         partitioner = Partitioner(header_handler, path_finder)
         config = CorpusConfig(
-            clean_header=request.clean_header, split_docs=request.split_docs
+            clean_header=request.clean_header,
+            split_docs=request.split_docs,
+            split_size=request.split_size,
         )
         corpus_maker = TeiCorpusMaker(
             outstream=self.out_stream, partitioner=partitioner, config=config
