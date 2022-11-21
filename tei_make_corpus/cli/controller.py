@@ -17,7 +17,9 @@ class TeiMakeCorpusController:
             description="Create a *teiCorpus* from a collection of TEI documents. The output will be printed to stdout."
         )
         parser.add_argument(
-            "corpus_dir", help="Directory containing the TEI files.", type=str
+            "corpus_dir",
+            help="Directory containing the TEI files. Only file with the extension '.xml' are processed.",
+            type=str,
         )
         parser.add_argument(
             "--common-header",
@@ -53,7 +55,7 @@ class TeiMakeCorpusController:
             the '--to-file' argument, which will be used as template for the names of all output
             files. The resulting files will be numbered consecutively. For example, if '--split-documents 10' is used,
             ten files are written to each output file. Each output file will be a valid, stand-alone teiCorpus and the
-            same common header is used for all parts. If last part would contain less than 30%% of the intended number
+            same common header is used for all parts. If the last part would contain less than 30%% of the intended number
             of TEI documents, all files will be distributed evenly (i.e. a part may then contain more than the
             indicated number of files).
             This option can also be used without passing a value, the default is 100 000 (documents per output file).
