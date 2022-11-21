@@ -102,6 +102,6 @@ class Partitioner:
                 start = end
                 summed_size = 0
         else:
-            if start < i:
+            if start < i + 1:
                 indices.append((start, i + 1))
         return indices
