@@ -99,7 +99,7 @@ class TeiMakeCorpusControllerTest(unittest.TestCase):
         )
         self.assertEqual(self.mock_use_case.request.split_size, 1_000_000)
 
-    def test_use_default_value_for_number_of_size_if_no_value_indicated(self):
+    def test_use_default_value_for_size_if_no_value_indicated(self):
         self.controller.process_arguments(
             ["corpus", "-c", "header.xml", "--split-size", "--to-file", "out.xml"]
         )
@@ -159,3 +159,7 @@ class TeiMakeCorpusControllerTest(unittest.TestCase):
     def test_controller_stores_default_value_for_split_docs_option_if_not_used(self):
         self.controller.process_arguments(["corpus", "-c", "header.xml"])
         self.assertEqual(self.mock_use_case.request.split_docs, -1)
+
+    def test_controller_stores_default_value_for_split_size_option_if_not_used(self):
+        self.controller.process_arguments(["corpus", "-c", "header.xml"])
+        self.assertEqual(self.mock_use_case.request.split_size, -1)
