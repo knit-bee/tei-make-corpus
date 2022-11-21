@@ -27,6 +27,6 @@ class TeiCorpusMaker:
         for partition in self.partitioner.get_partitions(
             corpus_dir, header_file, config=self.config
         ):
-            if self.config.split_docs != -1:
+            if self.config.split_docs != -1 or self.config.split_size != -1:
                 self.outstream.update_output_file_name()
             partition.write_partition(self.outstream.path())
