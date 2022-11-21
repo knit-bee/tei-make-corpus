@@ -88,7 +88,7 @@ class TeiMakeCorpusController:
                 output_file=args.to_file,
                 clean_header=args.deduplicate_header,
                 split_docs=args.split_documents or -1,
-                split_chars=args.split_size,
+                split_size=args.split_size,
             )
         )
 
