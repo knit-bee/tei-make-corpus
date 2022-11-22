@@ -37,7 +37,8 @@ tei-make-corpus = "tei_make_corpus.__main__:main"
 [project.optional-dependencies]
 check = ["black>=22.0.0",
     "flake8>=4.0.0",
-    "mypy>=0.7"]
+    "mypy>=0.7",
+    "coverage>=6.0"]
 test = ["pytest>=7.0"]
 
 [tool.flake8]
