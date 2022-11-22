@@ -216,3 +216,31 @@ class TeiMakeCorpusControllerTest(unittest.TestCase):
             with self.subTest():
                 with self.assertRaises(TypeError):
                     self.controller.valid_dimension(split_val)
+
+    def test_split_values_with_letters_processed_correctly(self):
+        split_vals = ["1k", "1.5K", "3m", "2.3M", "3G", "1.3g", "2t", "0.5T"]
+        expected = [
+            1000,
+            1500,
+            3000000,
+            2300000,
+            3000000000,
+            1.3 * 10**9,
+            2 * 10**12,
+            0.5 * 10**12,
+        ]
+        for i, val in enumerate(split_vals):
+            with self.subTest():
+                self.controller.process_arguments(
+                    [
+                        "corpus",
+                        "-c",
+                        "header.xml",
+                        "-f",
+                        "output.xml",
+                        "--split-documents",
+                        val,
+                    ]
+                )
+                self.assertEqual(self.mock_use_case.request.split_docs, expected[i])
+                self.mock_use_case.request = None
