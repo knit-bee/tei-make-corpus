@@ -163,3 +163,56 @@ class TeiMakeCorpusControllerTest(unittest.TestCase):
     def test_controller_stores_default_value_for_split_size_option_if_not_used(self):
         self.controller.process_arguments(["corpus", "-c", "header.xml"])
         self.assertEqual(self.mock_use_case.request.split_size, -1)
+
+    def test_valid_type_dimension_conversion(self):
+        input_args = [
+            "1k",
+            "1K",
+            "2m",
+            "2.1M",
+            "3G",
+            "3.5g",
+            "2.2t",
+            "0.4T",
+            "1_000",
+            "1_000_000",
+            "300_000",
+            "2_0_0",
+        ]
+        expected = [
+            1000,
+            1000,
+            2_000_000,
+            2_100_000,
+            3_000_000_000,
+            3_500_000_000,
+            2_200_000_000_000,
+            400_000_000_000,
+            1000,
+            1_000_000,
+            300000,
+            200,
+        ]
+        for i, split_val in enumerate(input_args):
+            with self.subTest():
+                self.assertEqual(
+                    self.controller.valid_dimension(split_val), expected[i]
+                )
+
+    def test_invalid_type_dimension_conversion(self):
+        input_args = [
+            "ten",
+            "1mio",
+            "2giga",
+            "thousand",
+            "4mill",
+            "1Mrd",
+            "1B",
+            "_100",
+            "200_",
+            "1__00",
+        ]
+        for i, split_val in enumerate(input_args):
+            with self.subTest():
+                with self.assertRaises(TypeError):
+                    self.controller.valid_dimension(split_val)
