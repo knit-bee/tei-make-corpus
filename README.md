@@ -47,7 +47,7 @@ optional arguments:
                         that are identical in the common header
                         (experimental).
   --split-documents [SPLIT_DOCUMENTS]
-                        Use this option to split the teiCorpus into mutliple
+                        Use this option to split the teiCorpus into multiple
                         files. This option takes a NUMBER OF FILES that are
                         written to one output file. This option requires the '
                         --to-file' argument, which will be used as template

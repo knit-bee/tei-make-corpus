@@ -52,7 +52,7 @@ class TeiMakeCorpusController:
             nargs="?",
             const=100000,
             type=self.valid_dimension,
-            help="""Use this option to split the teiCorpus into mutliple files. This option
+            help="""Use this option to split the teiCorpus into multiple files. This option
             takes a NUMBER OF FILES that are written to one output file. This option requires
             the '--to-file' argument, which will be used as template for the names of all output
             files. The resulting files will be numbered consecutively. For example, if '--split-documents 10' is used,
