@@ -15,7 +15,8 @@ class TeiMakeCorpusController:
 
     def process_arguments(self, arguments: List[str]) -> None:
         parser = argparse.ArgumentParser(
-            description="Create a *teiCorpus* from a collection of TEI documents. The output will be printed to stdout as default."
+            description="""Create a *teiCorpus* from a collection of TEI documents.
+             The output will be printed to stdout as default."""
         )
         parser.add_argument(
             "corpus_dir",
