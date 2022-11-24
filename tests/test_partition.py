@@ -1,5 +1,6 @@
 import io
 import os
+import random
 import unittest
 
 from lxml import etree
@@ -129,3 +130,9 @@ class PartitionTest(unittest.TestCase):
         self.mock_stream.output_file.seek(0)
         root = etree.parse(self.mock_stream.output_file).getroot()
         self.assertEqual(len(root), 5)
+
+    def test_len_of_partition(self):
+        expected = random.randint(1, 150_000_000)
+        files = ["file"] * expected
+        partition = Partition(self.mock_header_handler, files)
+        self.assertEqual(len(partition), expected)

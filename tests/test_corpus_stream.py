@@ -16,3 +16,31 @@ class CorpusStreamTest(unittest.TestCase):
         file = "text.xml"
         self.corpus_stream.set_output_file(file)
         self.assertEqual(self.corpus_stream.path(), file)
+
+    def test_update_output_file_name_enumeration(self):
+        template_name = "file.xml"
+        self.corpus_stream.set_output_file(template_name)
+        result = []
+        for _ in range(20):
+            self.corpus_stream.update_output_file_name()
+            result.append(self.corpus_stream.path())
+        expected = [f"file{i:04}.xml" for i in range(1, 21)]
+        self.assertEqual(result, expected)
+
+    def test_update_file_name_when_no_file_name_was_set(self):
+        result = []
+        for _ in range(20):
+            self.corpus_stream.update_output_file_name()
+            result.append(self.corpus_stream.path())
+        expected = [f"part{i:04}.xml" for i in range(1, 21)]
+        self.assertEqual(result, expected)
+
+    def test_update_output_file_name_enumeration_without_xml_extension(self):
+        template_name = "file"
+        self.corpus_stream.set_output_file(template_name)
+        result = []
+        for _ in range(20):
+            self.corpus_stream.update_output_file_name()
+            result.append(self.corpus_stream.path())
+        expected = [f"file{i:04}.xml" for i in range(1, 21)]
+        self.assertEqual(result, expected)
