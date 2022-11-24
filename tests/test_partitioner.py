@@ -188,6 +188,50 @@ class PartitionerTest(unittest.TestCase):
             result += part.files
         self.assertEqual(result, corpus_files)
 
+    def test_each_partition_contains_intended_number_of_files(self):
+        total_no_files = random.randint(1000, 1_000_000)
+        split_val = random.randint(100, 10_000)
+        corpus_dir = "corpus"
+        corpus_files = [f"file{i}.xml" for i in range(total_no_files)]
+        self.mock_path_finder.files[corpus_dir] = corpus_files
+        config = CorpusConfig(clean_header=False, split_docs=split_val)
+        partition_lengths = [
+            len(partition)
+            for partition in self.partitioner.get_partitions(
+                corpus_dir, self.header_file, config
+            )
+        ]
+        result = [
+            part == split_val
+            or part in range(int(split_val * 0.3), int(split_val * 1.3))
+            for part in partition_lengths
+        ]
+        self.assertTrue(all(result))
+
+    def test_all_but_last_partition_have_intended_size_at_least(self):
+        total_no_files = random.randint(10, 15_000_000)
+        split_val = random.randint(100_000, 1_000_000)
+        single_file_size = random.randint(1000, 10_000)
+        self.size_estimator.set_file_size(single_file_size)
+        corpus_dir = "test_dir"
+        corpus_files = [f"file{i}.xml" for i in range(total_no_files)]
+        config = CorpusConfig(clean_header=False, split_size=split_val)
+        self.mock_path_finder.files[corpus_dir] = corpus_files
+        partitions = self.partitioner.get_partitions(
+            corpus_dir, self.header_file, config
+        )
+        partition_sizes = [len(part) * single_file_size for part in partitions]
+        self.assertTrue(
+            all(
+                size
+                in range(
+                    split_val - single_file_size,
+                    split_val + single_file_size + 1,
+                )
+                for size in partition_sizes[:-1]
+            )
+        )
+
     def test_partitioning_on_empty_directory_returns_empty_iterable_file_size(self):
         config = CorpusConfig(clean_header=False, split_size=1000)
         partitions = self.partitioner.get_partitions("empty", self.header_file, config)
