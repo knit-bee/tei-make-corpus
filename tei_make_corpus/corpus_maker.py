@@ -24,10 +24,9 @@ class TeiCorpusMaker:
         the common header into a single teiCorpus-tree.
         The output is printed stdout as default.
         """
-        # init config?
-        # partition, write
         for partition in self.partitioner.get_partitions(
-            corpus_dir, header_file, clean=self.config.clean_header
+            corpus_dir, header_file, config=self.config
         ):
+            if self.config.split_docs != -1 or self.config.split_size != -1:
+                self.outstream.update_output_file_name()
             partition.write_partition(self.outstream.path())
-            # self.outstream.update_path()

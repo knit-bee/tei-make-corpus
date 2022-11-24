@@ -20,19 +20,24 @@ $ pip install git+https://github.com/knit-bee/tei-make-corpus.git
 
 ```
 $ tei-make-corpus --help
- usage: tei-make-corpus [-h] --common-header COMMON_HEADER [--to-file FILENAME]
+usage: tei-make-corpus [-h] --common-header COMMON_HEADER [--to-file FILENAME]
                        [--deduplicate-header]
+                       [--split-documents [SPLIT_DOCUMENTS] | --split-size
+                       [SPLIT_SIZE]]
                        corpus_dir
 
-Create a *teiCorpus* from a collection of TEI documents. The output will be printed to stdout.
+Create a *teiCorpus* from a collection of TEI documents. The output will be
+printed to stdout as default.
 
 positional arguments:
-  corpus_dir            Directory containing the TEI files.
+  corpus_dir            Directory containing the TEI files. Only file with the
+                        extension '.xml' are processed.
 
 optional arguments:
   -h, --help            show this help message and exit
   --common-header COMMON_HEADER, -c COMMON_HEADER
-                        Xml file containing the common header for the whole corpus.
+                        Xml file containing the common header for the whole
+                        corpus.
   --to-file FILENAME, -f FILENAME
                         Name of output file to write to. If this option is
                         enabled, the output is written to the file instead of
@@ -41,6 +46,34 @@ optional arguments:
                         Remove elements from header of individual TEI files
                         that are identical in the common header
                         (experimental).
+  --split-documents [SPLIT_DOCUMENTS]
+                        Use this option to split the teiCorpus into multiple
+                        files. This option takes a NUMBER OF FILES that are
+                        written to one output file. This option requires the '
+                        --to-file' argument, which will be used as template
+                        for the names of all output files. The resulting files
+                        will be numbered consecutively. For example, if '--
+                        split-documents 10' is used, ten files are written to
+                        each output file. Each output file will be a valid,
+                        stand-alone teiCorpus and the same common header is
+                        used for all parts. If the last part would contain
+                        less than 30% of the intended number of TEI documents,
+                        all files will be distributed evenly (i.e. a part may
+                        then contain more than the indicated number of files).
+                        This option can also be used without passing a value,
+                        the default is 100 000 (documents per output file).
+  --split-size [SPLIT_SIZE]
+                        Use this option to split the teiCorpus into multiple
+                        files. This option takes an intended FILE SIZE IN
+                        BYTES for one output file. This option requires the '
+                        --to-file' argument, which will be used as template
+                        for the file names of all output files. The resulting
+                        files will be numbered consecutively. For example, if
+                        '--split-size 15000' is used, when the limit of 15
+                        kilobytes is reached, (after completing the current
+                        TEI document) a new output file will be used. This
+                        option can also be used without passing a value, the
+                        default is 150 000 000 (bytes per file, 150 MB).
 
 ```
 
@@ -49,6 +82,7 @@ All files in the corpus directory that don't end in `.xml` are ignored as well a
 The common header should be a formatted `teiHeader`. If the option `--deduplicate-header` is used, the individual header of each file is compared with the common header during the generation of the corpus,
 and elements that appear in the common header are removed from the individual header (experimental).
 All `xml:id ` attributes are removed from the individual TEI documents to avoid a clash of ids.
+The split options (*--split-size* and *--split-documents*) can also be used with unit prefixes (K, M, G, T), e.g. "2K" = 2000 Bytes.
 
 ### Example usage
 ```xml
