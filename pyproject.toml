@@ -1,6 +1,6 @@
 [project]
 name = "tei-make-corpus"
-version = "0.0.1"
+version = "0.0.2"
 authors = [
   {name="Luise Köhler", email="luise.koehler@bbaw.de"},
 ]
