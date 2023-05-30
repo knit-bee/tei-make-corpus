@@ -136,3 +136,41 @@ class PartitionTest(unittest.TestCase):
         files = ["file"] * expected
         partition = Partition(self.mock_header_handler, files)
         self.assertEqual(len(partition), expected)
+
+    def test_empty_file_in_corpus_ommited(self):
+        corpus_dir = os.path.join("tests", "testdata", "dir_empty")
+        header_file = os.path.join("tests", "testdata", "header.xml")
+        header_handler = TeiHeaderHandlerImpl(header_file)
+        corpus_files = [
+            os.path.join(corpus_dir, file) for file in os.listdir(corpus_dir)
+        ]
+        partition = Partition(header_handler, corpus_files)
+        partition.write_partition(self.mock_stream.path())
+        self.mock_stream.output_file.seek(0)
+        tei_corpus_root = etree.parse(self.mock_stream.output_file).getroot()
+        self.assertEqual(len(tei_corpus_root), 3)
+
+    def test_invalid_xml_file_in_corpus(self):
+        corpus_dir = os.path.join("tests", "testdata", "dir_invalid")
+        header_file = os.path.join("tests", "testdata", "header.xml")
+        header_handler = TeiHeaderHandlerImpl(header_file)
+        corpus_files = [
+            os.path.join(corpus_dir, file) for file in os.listdir(corpus_dir)
+        ]
+        partition = Partition(header_handler, corpus_files)
+        partition.write_partition(self.mock_stream.path())
+        self.mock_stream.output_file.seek(0)
+        tei_corpus_root = etree.parse(self.mock_stream.output_file).getroot()
+        self.assertEqual(len(tei_corpus_root), 3)
+
+    def test_filename_logged_on_parsing_error(self):
+        corpus_dir = os.path.join("tests", "testdata", "dir_invalid")
+        header_file = os.path.join("tests", "testdata", "header.xml")
+        header_handler = TeiHeaderHandlerImpl(header_file)
+        corpus_files = [
+            os.path.join(corpus_dir, file) for file in os.listdir(corpus_dir)
+        ]
+        partition = Partition(header_handler, corpus_files)
+        with self.assertLogs() as logged:
+            partition.write_partition(self.mock_stream.path())
+        self.assertIn("tests/testdata/dir_invalid/invalid.xml", logged.output[0])
