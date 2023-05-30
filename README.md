@@ -86,7 +86,7 @@ The split options (*--split-size* and *--split-documents*) can also be used with
 
 ### Example usage
 ```xml
-$ tei-make-corpus my_corpus --cheader common_header.xml
+$ tei-make-corpus my_corpus --common-header common_header.xml
 <?xml version='1.0' encoding='utf-8'?>
 <teiCorpus xmlns="http://www.tei-c.org/ns/1.0"><teiHeader>
     <fileDesc>
@@ -110,7 +110,7 @@ $ tei-make-corpus my_corpus --cheader common_header.xml
 The output can then be piped to other programs, e.g. to format it or to compress it.
 
 ```sh
-$ tei-make-corpus my_corpus --cheader common_header.xml | xmllint --format - | gzip > my_corpus.xml.gz
+$ tei-make-corpus my_corpus --common-header common_header.xml | xmllint --format - | gzip > my_corpus.xml.gz
 ```
 To remove redundant namespace declarations from the output, e.g. use `xmllint` with the option `--nsclean`.
 
