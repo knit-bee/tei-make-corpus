@@ -30,7 +30,11 @@ class Partition:
                     xf.write("\n")
 
     def _prepare_single_tei_file(self, file_path: str) -> etree._Element:
-        doc = etree.parse(file_path)
+        try:
+            doc = etree.parse(file_path)
+        except etree.XMLSyntaxError:
+            logger.exception("File ommitted: %s" % file_path)
+            return None
         root = doc.getroot()
         if etree.QName(root.tag).localname != "TEI":
             logger.info("No <TEI> root element found. Ignoring file: %s", file_path)

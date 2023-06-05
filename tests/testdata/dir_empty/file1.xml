@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt>
+        <title>Title</title>
+        <author/>
+        <funder>Funder</funder>
+        <respStmt>
+          <resp n="1">some change</resp>
+          <name n="1">Person Name</name>
+        </respStmt>
+      </titleStmt>
+      <extent>76</extent>
+      <publicationStmt>
+        <publisher xml:id="Publisher">Publisher</publisher>
+        <address>
+          <addrLine>address at city</addrLine>
+        </address>
+        <pubPlace>The Earth</pubPlace>
+        <date>2022-07-20</date>
+        <authority>
+          <name/>
+        </authority>
+      </publicationStmt>
+      <notesStmt>
+        <note type="source" anchored="true">CD</note>
+        <note type="type">
+          <idno type="date">2022-07-20</idno>
+        </note>
+      </notesStmt>
+      <sourceDesc xml:id="orig" default="false">
+        <bibl default="false">bibl info</bibl>
+        <biblFull default="false">
+          <titleStmt>
+            <title level="a" type="main">Title</title>
+            <author/>
+          </titleStmt>
+          <publicationStmt>
+            <publisher>Publisher</publisher>
+            <pubPlace>Some city</pubPlace>
+            <date xml:id="first">2022-07-20</date>
+          </publicationStmt>
+          <seriesStmt>
+            <title level="j">series</title>
+            <idno type="volume">1</idno>
+            <idno type="page">11</idno>
+          </seriesStmt>
+          <notesStmt>
+            <note type="bibl">
+              <idno type="series">Series</idno>
+              <idno type="volume">1</idno>
+            </note>
+          </notesStmt>
+        </biblFull>
+      </sourceDesc>
+      <sourceDesc xml:id="scan" default="false">
+        <bibl default="false">bibl info</bibl>
+        <biblFull default="false">
+          <titleStmt>
+            <title level="a" type="main">Title</title>
+            <author/>
+          </titleStmt>
+          <editionStmt>
+            <edition>edition</edition>
+          </editionStmt>
+          <publicationStmt>
+            <publisher xml:id="Rechtsinhaber">Publisher</publisher>
+            <pubPlace>Some city</pubPlace>
+            <date>2022-07-20</date>
+          </publicationStmt>
+          <seriesStmt>
+            <title level="j">Series</title>
+            <idno type="volume">1</idno>
+            <idno type="page">11</idno>
+          </seriesStmt>
+          <notesStmt>
+            <note type="bibl">
+              <idno type="bibl">bibl info</idno>
+              <idno type="series">Series</idno>
+              <idno type="page_first">11</idno>
+            </note>
+          </notesStmt>
+        </biblFull>
+      </sourceDesc>
+    </fileDesc>
+    <encodingDesc>
+      <classDecl>
+        <taxonomy xml:id="tax">
+          <bibl></bibl>
+        </taxonomy>
+      </classDecl>
+      <projectDesc default="false">
+        <p>Project</p>
+      </projectDesc>
+      <samplingDecl default="false">
+        <p>description how the file was changed</p>
+      </samplingDecl>
+    </encodingDesc>
+    <profileDesc>
+      <textClass default="false">
+        <keywords scheme="#tax">
+          <term n="1" type="main">class</term>
+        </keywords>
+      </textClass>
+    </profileDesc>
+    <revisionDesc>
+      <change>0</change>
+      <change when="2022-07-21"><name>Other Person</name>Change description</change>
+    </revisionDesc>
+  </teiHeader>
+  <text>
+    <body>
+      <p>Actual text of the file</p>
+    </body>
+  </text>
+</TEI>
