@@ -39,10 +39,10 @@ class Partition:
         if etree.QName(root.tag).localname != "TEI":
             logger.info("No <TEI> root element found. Ignoring file: %s", file_path)
             return None
-        self._remove_xmlid_attribute(root)
         iheader = root.find(".//{*}teiHeader")
         if self.clean_files:
             self.header_handler.declutter_individual_header(iheader)
+        self._remove_xmlid_attribute(root)
         return root
 
     def _remove_xmlid_attribute(self, tei_doc: etree._Element) -> None:

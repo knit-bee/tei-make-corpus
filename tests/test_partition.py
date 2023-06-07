@@ -174,3 +174,22 @@ class PartitionTest(unittest.TestCase):
         with self.assertLogs() as logged:
             partition.write_partition(self.mock_stream.path())
         self.assertIn("tests/testdata/dir_invalid/invalid.xml", logged.output[0])
+
+    def test_redundant_elements_with_xml_id_attribute_removed(self):
+        corpus_dir = os.path.join("tests", "testdata", "cleaning")
+        header_file = os.path.join(corpus_dir, "header.xml")
+        corpus_files = [
+            os.path.join(corpus_dir, file) for file in os.listdir(corpus_dir)
+        ]
+        header_handler = TeiHeaderHandlerImpl(header_file)
+        partition = Partition(header_handler, corpus_files, clean_files=True)
+        partition.write_partition(self.mock_stream.path())
+        self.mock_stream.output_file.seek(0)
+        doc = etree.parse(self.mock_stream.output_file)
+        redundant_elements = ["funder", "respStmt", "editorialDecl", "tagsDecl"]
+        for elem_tag in redundant_elements:
+            result = doc.findall(
+                f".//{elem_tag}", namespaces={None: "http://www.tei-c.org/ns/1.0"}
+            )
+            with self.subTest():
+                self.assertEqual(len(result), 1)
