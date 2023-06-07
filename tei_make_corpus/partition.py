@@ -5,6 +5,7 @@ from typing import BinaryIO, List, Union
 from lxml import etree
 
 from tei_make_corpus.header_handler import TeiHeaderHandler
+from tei_make_corpus.xmlid_handler import XmlIdHandler
 
 logger = logging.getLogger(__name__)
 
@@ -13,6 +14,7 @@ logger = logging.getLogger(__name__)
 class Partition:
     header_handler: TeiHeaderHandler
     files: List[str]
+    xmlid_handler: XmlIdHandler
     clean_files: bool = False
 
     def write_partition(self, path: Union[str, BinaryIO]) -> None:
@@ -42,12 +44,8 @@ class Partition:
         iheader = root.find(".//{*}teiHeader")
         if self.clean_files:
             self.header_handler.declutter_individual_header(iheader)
-        self._remove_xmlid_attribute(root)
+        self.xmlid_handler.process_document(root)
         return root
-
-    def _remove_xmlid_attribute(self, tei_doc: etree._Element) -> None:
-        for node in tei_doc.findall(".//*[@{http://www.w3.org/XML/1998/namespace}id]"):
-            node.attrib.pop("{http://www.w3.org/XML/1998/namespace}id")
 
     def __len__(self):
         return len(self.files)

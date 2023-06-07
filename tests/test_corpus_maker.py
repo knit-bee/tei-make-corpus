@@ -10,6 +10,7 @@ from tei_make_corpus.file_size_estimator import FileSizeEstimatorImpl
 from tei_make_corpus.header_handler import TeiHeaderHandlerImpl
 from tei_make_corpus.partitioner import Partitioner
 from tei_make_corpus.path_finder import PathFinderImpl
+from tei_make_corpus.xmlid_handler import XmlIdHandlerImpl
 from tests.utils import MockHeaderHandler, create_validator
 
 
@@ -27,9 +28,7 @@ class TeiCorpusMakerTester(unittest.TestCase):
         self.header_handler = MockHeaderHandler()
         self.path_finder = PathFinderImpl()
         self.size_estimator = FileSizeEstimatorImpl()
-        self.partitioner = Partitioner(
-            self.header_handler, self.path_finder, self.size_estimator
-        )
+        self.xmlid_handler = XmlIdHandlerImpl()
         self.config_clean = CorpusConfig(clean_header=True)
         self.config_default = CorpusConfig(clean_header=False)
         self.partition_files = [
@@ -51,7 +50,9 @@ class TeiCorpusMakerTester(unittest.TestCase):
         header_file = os.path.join("tests", "testdata", "header.xml")
         empty_dir = os.path.join("tests", "testdata", "corpus")
         header_handler = TeiHeaderHandlerImpl(header_file)
-        partitioner = Partitioner(header_handler, self.path_finder, self.size_estimator)
+        partitioner = Partitioner(
+            header_handler, self.path_finder, self.size_estimator, self.xmlid_handler
+        )
         corpus_maker = TeiCorpusMaker(
             self.mock_stream, partitioner, self.config_default
         )
@@ -79,7 +80,9 @@ class TeiCorpusMakerTester(unittest.TestCase):
         corpus_dir = os.path.join("tests", "testdata", "rec_corpus")
         header_file = os.path.join("tests", "testdata", "header.xml")
         header_handler = TeiHeaderHandlerImpl(header_file)
-        partitioner = Partitioner(header_handler, self.path_finder, self.size_estimator)
+        partitioner = Partitioner(
+            header_handler, self.path_finder, self.size_estimator, self.xmlid_handler
+        )
         corpus_maker = TeiCorpusMaker(
             self.mock_stream, partitioner, self.config_default
         )
@@ -94,7 +97,9 @@ class TeiCorpusMakerTester(unittest.TestCase):
         corpus_dir = os.path.join("tests", "testdata", "rec_corpus")
         header_file = os.path.join("tests", "testdata", "header.xml")
         header_handler = TeiHeaderHandlerImpl(header_file)
-        partitioner = Partitioner(header_handler, self.path_finder, self.size_estimator)
+        partitioner = Partitioner(
+            header_handler, self.path_finder, self.size_estimator, self.xmlid_handler
+        )
         corpus_maker = TeiCorpusMaker(
             self.mock_stream, partitioner, self.config_default
         )
@@ -108,7 +113,9 @@ class TeiCorpusMakerTester(unittest.TestCase):
         header_file = os.path.join("tests", "testdata", "header.xml")
         corpus_dir = os.path.join("tests", "testdata", "rec_corpus")
         header_handler = TeiHeaderHandlerImpl(header_file)
-        partitioner = Partitioner(header_handler, self.path_finder, self.size_estimator)
+        partitioner = Partitioner(
+            header_handler, self.path_finder, self.size_estimator, self.xmlid_handler
+        )
         corpus_maker = TeiCorpusMaker(
             self.mock_stream, partitioner, self.config_default
         )
@@ -120,7 +127,9 @@ class TeiCorpusMakerTester(unittest.TestCase):
         corpus_dir = os.path.join("tests", "testdata", "rec_corpus")
         config = CorpusConfig(clean_header=False, split_docs=1)
         header_handler = TeiHeaderHandlerImpl(header_file)
-        partitioner = Partitioner(header_handler, self.path_finder, self.size_estimator)
+        partitioner = Partitioner(
+            header_handler, self.path_finder, self.size_estimator, self.xmlid_handler
+        )
         stream = CorpusStreamImpl(os.path.join("tests", "testdata", "output_file.xml"))
         corpus_maker = TeiCorpusMaker(stream, partitioner, config)
         corpus_maker.build_corpus(corpus_dir, header_file)
@@ -134,7 +143,9 @@ class TeiCorpusMakerTester(unittest.TestCase):
         corpus_dir = os.path.join("tests", "testdata", "rec_corpus")
         config = CorpusConfig(clean_header=False, split_docs=1)
         header_handler = TeiHeaderHandlerImpl(header_file)
-        partitioner = Partitioner(header_handler, self.path_finder, self.size_estimator)
+        partitioner = Partitioner(
+            header_handler, self.path_finder, self.size_estimator, self.xmlid_handler
+        )
         stream = CorpusStreamImpl(os.path.join("tests", "testdata", "output_file.xml"))
         corpus_maker = TeiCorpusMaker(stream, partitioner, config)
         corpus_maker.build_corpus(corpus_dir, header_file)
@@ -150,7 +161,9 @@ class TeiCorpusMakerTester(unittest.TestCase):
         corpus_dir = os.path.join("tests", "testdata", "rec_corpus")
         config = CorpusConfig(clean_header=False, split_docs=1)
         header_handler = TeiHeaderHandlerImpl(header_file)
-        partitioner = Partitioner(header_handler, self.path_finder, self.size_estimator)
+        partitioner = Partitioner(
+            header_handler, self.path_finder, self.size_estimator, self.xmlid_handler
+        )
         stream = CorpusStreamImpl(os.path.join("tests", "testdata", "output_file.xml"))
         corpus_maker = TeiCorpusMaker(stream, partitioner, config)
         corpus_maker.build_corpus(corpus_dir, header_file)
@@ -164,7 +177,9 @@ class TeiCorpusMakerTester(unittest.TestCase):
         header_file = os.path.join("tests", "testdata", "header.xml")
         empty_dir = os.path.join("tests", "testdata", "empty")
         header_handler = TeiHeaderHandlerImpl(header_file)
-        partitioner = Partitioner(header_handler, self.path_finder, self.size_estimator)
+        partitioner = Partitioner(
+            header_handler, self.path_finder, self.size_estimator, self.xmlid_handler
+        )
         corpus_maker = TeiCorpusMaker(
             self.mock_stream, partitioner, self.config_default
         )
@@ -176,7 +191,9 @@ class TeiCorpusMakerTester(unittest.TestCase):
         corpus_dir = os.path.join("tests", "testdata", "rec_corpus")
         config = CorpusConfig(clean_header=False, split_size=2000)
         header_handler = TeiHeaderHandlerImpl(header_file)
-        partitioner = Partitioner(header_handler, self.path_finder, self.size_estimator)
+        partitioner = Partitioner(
+            header_handler, self.path_finder, self.size_estimator, self.xmlid_handler
+        )
         stream = CorpusStreamImpl(os.path.join("tests", "testdata", "output_file.xml"))
         corpus_maker = TeiCorpusMaker(stream, partitioner, config)
         corpus_maker.build_corpus(corpus_dir, header_file)
@@ -190,7 +207,9 @@ class TeiCorpusMakerTester(unittest.TestCase):
         corpus_dir = os.path.join("tests", "testdata", "rec_corpus")
         config = CorpusConfig(clean_header=False, split_size=2000)
         header_handler = TeiHeaderHandlerImpl(header_file)
-        partitioner = Partitioner(header_handler, self.path_finder, self.size_estimator)
+        partitioner = Partitioner(
+            header_handler, self.path_finder, self.size_estimator, self.xmlid_handler
+        )
         stream = CorpusStreamImpl(os.path.join("tests", "testdata", "output_file.xml"))
         corpus_maker = TeiCorpusMaker(stream, partitioner, config)
         corpus_maker.build_corpus(corpus_dir, header_file)
@@ -206,7 +225,9 @@ class TeiCorpusMakerTester(unittest.TestCase):
         corpus_dir = os.path.join("tests", "testdata", "rec_corpus")
         config = CorpusConfig(clean_header=False, split_size=2000)
         header_handler = TeiHeaderHandlerImpl(header_file)
-        partitioner = Partitioner(header_handler, self.path_finder, self.size_estimator)
+        partitioner = Partitioner(
+            header_handler, self.path_finder, self.size_estimator, self.xmlid_handler
+        )
         stream = CorpusStreamImpl(os.path.join("tests", "testdata", "output_file.xml"))
         corpus_maker = TeiCorpusMaker(stream, partitioner, config)
         corpus_maker.build_corpus(corpus_dir, header_file)
