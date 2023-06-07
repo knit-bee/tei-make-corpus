@@ -10,8 +10,8 @@ class XmlIdHandler(Protocol):
 
 class XmlIdHandlerImpl:
     def process_document(self, doc_root: etree._Element) -> None:
-        self._remove_xmlid_attribute(doc_root)
+        self._remove_all_xmlid_attributes(doc_root)
 
-    def _remove_xmlid_attribute(self, tei_doc: etree._Element) -> None:
+    def _remove_all_xmlid_attributes(self, tei_doc: etree._Element) -> None:
         for node in tei_doc.findall(".//*[@{http://www.w3.org/XML/1998/namespace}id]"):
             node.attrib.pop("{http://www.w3.org/XML/1998/namespace}id")
