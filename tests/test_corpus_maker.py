@@ -236,3 +236,41 @@ class TeiCorpusMakerTester(unittest.TestCase):
             doc = etree.parse(file_path)
             with self.subTest():
                 self.assertEqual(len(doc.findall(".//{*}teiHeader")), 2)
+
+    def test_file_with_added_xmlid_prefixes_is_valid(self):
+        corpus_dir = os.path.join("tests", "testdata", "xmlid")
+        header_file = os.path.join(corpus_dir, "header.xml")
+        header_handler = TeiHeaderHandlerImpl(header_file)
+        partitioner = Partitioner(
+            header_handler,
+            self.path_finder,
+            self.size_estimator,
+            XmlIdHandlerImpl(
+                action="prefix",
+            ),
+        )
+        corpus_maker = TeiCorpusMaker(
+            self.mock_stream, partitioner, self.config_default
+        )
+        corpus_maker.build_corpus(corpus_dir, header_file)
+        doc = etree.parse(self.mock_stream.output_file)
+        result = self.validator.validate(doc)
+        self.assertTrue(result)
+
+    def test_file_with_added_xmlid_prefixes_is_valid_header_cleaning(self):
+        corpus_dir = os.path.join("tests", "testdata", "xmlid")
+        header_file = os.path.join(corpus_dir, "header.xml")
+        header_handler = TeiHeaderHandlerImpl(header_file)
+        partitioner = Partitioner(
+            header_handler,
+            self.path_finder,
+            self.size_estimator,
+            XmlIdHandlerImpl(
+                action="prefix",
+            ),
+        )
+        corpus_maker = TeiCorpusMaker(self.mock_stream, partitioner, self.config_clean)
+        corpus_maker.build_corpus(corpus_dir, header_file)
+        doc = etree.parse(self.mock_stream.output_file)
+        result = self.validator.validate(doc)
+        self.assertTrue(result)
