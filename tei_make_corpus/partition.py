@@ -44,7 +44,7 @@ class Partition:
         iheader = root.find(".//{*}teiHeader")
         if self.clean_files:
             self.header_handler.declutter_individual_header(iheader)
-        self.xmlid_handler.process_document(root)
+        self.xmlid_handler.process_document(root, file_path)
         return root
 
     def __len__(self):

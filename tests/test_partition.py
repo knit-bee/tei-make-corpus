@@ -203,3 +203,47 @@ class PartitionTest(unittest.TestCase):
             )
             with self.subTest():
                 self.assertEqual(len(result), 1)
+
+    def test_xmlid_attributes_prefixed(self):
+        corpus_dir = os.path.join("tests", "testdata", "cleaning")
+        header_file = os.path.join(corpus_dir, "header.xml")
+        corpus_files = [
+            os.path.join(corpus_dir, file) for file in os.listdir(corpus_dir)
+        ]
+        header_handler = TeiHeaderHandlerImpl(header_file)
+        xmlid_handler = XmlIdHandlerImpl(action="prefix")
+        partition = Partition(
+            header_handler, corpus_files, xmlid_handler, clean_files=False
+        )
+        partition.write_partition(self.mock_stream.path())
+        self.mock_stream.output_file.seek(0)
+        doc = etree.parse(self.mock_stream.output_file)
+        result = [
+            attr_val.startswith("p8e0744-")
+            for attr_val in doc.xpath(
+                "tei:TEI//@xml:id", namespaces={"tei": "http://www.tei-c.org/ns/1.0"}
+            )
+        ]
+        self.assertTrue(all(result))
+
+    def test_add_prefix_to_xmlid_with_multiple_files(self):
+        corpus_dir = os.path.join("tests", "testdata", "cleaning")
+        header_file = os.path.join(corpus_dir, "header.xml")
+        corpus_files = [
+            os.path.join(corpus_dir, file) for file in os.listdir(corpus_dir)
+        ] * 4
+        header_handler = TeiHeaderHandlerImpl(header_file)
+        xmlid_handler = XmlIdHandlerImpl(action="prefix")
+        partition = Partition(
+            header_handler, corpus_files, xmlid_handler, clean_files=False
+        )
+        partition.write_partition(self.mock_stream.path())
+        self.mock_stream.output_file.seek(0)
+        doc = etree.parse(self.mock_stream.output_file)
+        result = {
+            attr_val.split("-")[0]
+            for attr_val in doc.xpath(
+                "tei:TEI//@xml:id", namespaces={"tei": "http://www.tei-c.org/ns/1.0"}
+            )
+        }
+        self.assertEqual(result, {"p8e0744", "p8e07440", "p8e07441", "p8e07442"})
