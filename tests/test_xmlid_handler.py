@@ -16,6 +16,11 @@ class XmlIdHandlerImplTest(unittest.TestCase):
         result = doc.findall(".//*[@{http://www.w3.org/XML/1998/namespace}id]")
         self.assertEqual(result, [])
 
+    def test_xmlid_attribute_from_root_removed(self):
+        doc = etree.XML("<root xml:id='a'><inner/></root>")
+        self.default_handler.process_document(doc, "file.xml")
+        self.assertEqual(doc.attrib, {})
+
     def test_generate_prefix(self):
         filename = "path/to/file.xml"
         result = self.prefix_handler.generate_prefix(filename)
