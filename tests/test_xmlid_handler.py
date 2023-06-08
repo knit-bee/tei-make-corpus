@@ -224,3 +224,9 @@ class XmlIdHandlerImplTest(unittest.TestCase):
                 {"{http://www.w3.org/XML/1998/namespace}id": "p054536-a"},
             ],
         )
+
+    def test_xmlid_attributes_removed_if_action_set_incorrectly(self):
+        xmlid_handler = XmlIdHandlerImpl("sth")
+        doc = etree.XML("<root><el xml:id='ab'/></root>")
+        xmlid_handler.process_document(doc, "some_file.xml")
+        self.assertEqual(doc[0].attrib, {})

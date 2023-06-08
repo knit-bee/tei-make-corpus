@@ -15,10 +15,10 @@ class XmlIdHandlerImpl:
         self._prefixes: Set[str] = set()
 
     def process_document(self, doc_root: etree._Element, filepath: str) -> None:
-        if self.action is None:
-            self._remove_all_xmlid_attributes(doc_root)
         if self.action == "prefix":
             self._add_prefix_to_xmlid_attributes(doc_root, filepath)
+        else:
+            self._remove_all_xmlid_attributes(doc_root)
 
     def generate_prefix(self, filepath: str) -> str:
         uid = uuid.uuid5(uuid.NAMESPACE_DNS, filepath).hex
