@@ -53,7 +53,7 @@ class TeiMakeCorpusController:
             const=100000,
             type=self.valid_dimension,
             help="""Use this option to split the teiCorpus into multiple files. This option
-            takes a NUMBER OF FILES that are written to one output file. This option requires
+            takes a NUMBER OF DOCUMENTS that are written to one output file. This option requires
             the '--to-file' argument, which will be used as template for the names of all output
             files. The resulting files will be numbered consecutively. For example, if '--split-documents 10' is used,
             ten files are written to each output file. Each output file will be a valid, stand-alone teiCorpus and the
@@ -80,7 +80,7 @@ class TeiMakeCorpusController:
             "--prefix-xmlid",
             default=False,
             action="store_true",
-            help="""Add a prefix to @xml:id attribtues instead of removing them.
+            help="""Add a prefix to @xml:id attributes instead of removing them.
             The prefix is generated from the the document's file path and concatenated
             with the original value of the @xml:id attribute (separated by '-'). For
             each @xml:id attribute, the prefix is also added to attributes referencing
