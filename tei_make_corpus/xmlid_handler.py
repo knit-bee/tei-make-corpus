@@ -1,6 +1,6 @@
 import abc
 import uuid
-from typing import Optional, Set
+from typing import Set
 
 from lxml import etree
 
