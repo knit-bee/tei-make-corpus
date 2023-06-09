@@ -64,3 +64,10 @@ class XmlIdHandlerImpl:
             for attrib, value in element.items():
                 if value == "#" + xmlid_value:
                     element.set(attrib, f"#{prefix}-{xmlid_value}")
+
+
+def create_xmlid_handler(prefix_xmlid: bool = False) -> XmlIdHandlerImpl:
+    if prefix_xmlid:
+        return XmlIdHandlerImpl("prefix")
+    else:
+        return XmlIdHandlerImpl()
