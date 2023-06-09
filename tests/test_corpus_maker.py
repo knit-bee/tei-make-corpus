@@ -10,7 +10,7 @@ from tei_make_corpus.file_size_estimator import FileSizeEstimatorImpl
 from tei_make_corpus.header_handler import TeiHeaderHandlerImpl
 from tei_make_corpus.partitioner import Partitioner
 from tei_make_corpus.path_finder import PathFinderImpl
-from tei_make_corpus.xmlid_handler import XmlIdHandlerImpl
+from tei_make_corpus.xmlid_handler import XmlIdPrefixer, XmlIdRemover
 from tests.utils import MockHeaderHandler, create_validator
 
 
@@ -28,7 +28,7 @@ class TeiCorpusMakerTester(unittest.TestCase):
         self.header_handler = MockHeaderHandler()
         self.path_finder = PathFinderImpl()
         self.size_estimator = FileSizeEstimatorImpl()
-        self.xmlid_handler = XmlIdHandlerImpl()
+        self.xmlid_handler = XmlIdRemover()
         self.config_clean = CorpusConfig(clean_header=True)
         self.config_default = CorpusConfig(clean_header=False)
         self.partition_files = [
@@ -245,9 +245,7 @@ class TeiCorpusMakerTester(unittest.TestCase):
             header_handler,
             self.path_finder,
             self.size_estimator,
-            XmlIdHandlerImpl(
-                action="prefix",
-            ),
+            XmlIdPrefixer(),
         )
         corpus_maker = TeiCorpusMaker(
             self.mock_stream, partitioner, self.config_default
@@ -265,9 +263,7 @@ class TeiCorpusMakerTester(unittest.TestCase):
             header_handler,
             self.path_finder,
             self.size_estimator,
-            XmlIdHandlerImpl(
-                action="prefix",
-            ),
+            XmlIdPrefixer(),
         )
         corpus_maker = TeiCorpusMaker(self.mock_stream, partitioner, self.config_clean)
         corpus_maker.build_corpus(corpus_dir, header_file)

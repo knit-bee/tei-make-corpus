@@ -2,13 +2,13 @@ import unittest
 
 from lxml import etree
 
-from tei_make_corpus.xmlid_handler import XmlIdHandlerImpl
+from tei_make_corpus.xmlid_handler import XmlIdPrefixer, XmlIdRemover
 
 
 class XmlIdHandlerImplTest(unittest.TestCase):
     def setUp(self):
-        self.default_handler = XmlIdHandlerImpl()
-        self.prefix_handler = XmlIdHandlerImpl(action="prefix")
+        self.default_handler = XmlIdRemover()
+        self.prefix_handler = XmlIdPrefixer()
 
     def test_remove_xmlid_attribute_from_element(self):
         doc = etree.XML("<root><one xml:id='a'><two xml:id='b'/></one></root>")
@@ -224,9 +224,3 @@ class XmlIdHandlerImplTest(unittest.TestCase):
                 {"{http://www.w3.org/XML/1998/namespace}id": "p054536-a"},
             ],
         )
-
-    def test_xmlid_attributes_removed_if_action_set_incorrectly(self):
-        xmlid_handler = XmlIdHandlerImpl("sth")
-        doc = etree.XML("<root><el xml:id='ab'/></root>")
-        xmlid_handler.process_document(doc, "some_file.xml")
-        self.assertEqual(doc[0].attrib, {})

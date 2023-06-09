@@ -4,7 +4,7 @@ import unittest
 
 from tei_make_corpus.cli.corpus_config import CorpusConfig
 from tei_make_corpus.partitioner import Partitioner
-from tei_make_corpus.xmlid_handler import XmlIdHandlerImpl
+from tei_make_corpus.xmlid_handler import XmlIdRemover
 from tests.utils import MockHeaderHandler
 
 
@@ -32,7 +32,7 @@ class PartitionerTest(unittest.TestCase):
         self.mock_header_handler = MockHeaderHandler()
         self.mock_path_finder = MockPathFinder()
         self.size_estimator = MockSizeEstimator()
-        self.id_handler = XmlIdHandlerImpl()
+        self.id_handler = XmlIdRemover()
         self.partitioner = Partitioner(
             header_handler=self.mock_header_handler,
             path_finder=self.mock_path_finder,

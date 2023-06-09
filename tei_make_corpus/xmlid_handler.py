@@ -1,24 +1,32 @@
+import abc
 import uuid
-from typing import Optional, Protocol, Set
+from typing import Optional, Set
 
 from lxml import etree
 
 
-class XmlIdHandler(Protocol):
+class XmlIdHandler(abc.ABC):
+    @abc.abstractmethod
     def process_document(self, doc_root: etree._Element, filepath: str) -> None:
         ...
 
 
-class XmlIdHandlerImpl:
-    def __init__(self, action: Optional[str] = None) -> None:
-        self.action = action
+class XmlIdRemover(XmlIdHandler):
+    def process_document(self, doc_root: etree._Element, filepath: str) -> None:
+        self._remove_all_xmlid_attributes(doc_root)
+
+    def _remove_all_xmlid_attributes(self, tei_doc: etree._Element) -> None:
+        tei_doc.attrib.pop("{http://www.w3.org/XML/1998/namespace}id", None)
+        for node in tei_doc.findall(".//*[@{http://www.w3.org/XML/1998/namespace}id]"):
+            node.attrib.pop("{http://www.w3.org/XML/1998/namespace}id")
+
+
+class XmlIdPrefixer(XmlIdHandler):
+    def __init__(self) -> None:
         self._prefixes: Set[str] = set()
 
     def process_document(self, doc_root: etree._Element, filepath: str) -> None:
-        if self.action == "prefix":
-            self._add_prefix_to_xmlid_attributes(doc_root, filepath)
-        else:
-            self._remove_all_xmlid_attributes(doc_root)
+        self._add_prefix_to_xmlid_attributes(doc_root, filepath)
 
     def generate_prefix(self, filepath: str) -> str:
         uid = uuid.uuid5(uuid.NAMESPACE_DNS, filepath).hex
@@ -30,11 +38,6 @@ class XmlIdHandlerImpl:
             suffix_on_collision += 1
         self._prefixes.add(tmp_prefix)
         return f"p{tmp_prefix}"
-
-    def _remove_all_xmlid_attributes(self, tei_doc: etree._Element) -> None:
-        tei_doc.attrib.pop("{http://www.w3.org/XML/1998/namespace}id", None)
-        for node in tei_doc.findall(".//*[@{http://www.w3.org/XML/1998/namespace}id]"):
-            node.attrib.pop("{http://www.w3.org/XML/1998/namespace}id")
 
     def _add_prefix_to_xmlid_attributes(
         self, doc_root: etree._Element, filepath: str
@@ -66,8 +69,8 @@ class XmlIdHandlerImpl:
                     element.set(attrib, f"#{prefix}-{xmlid_value}")
 
 
-def create_xmlid_handler(prefix_xmlid: bool = False) -> XmlIdHandlerImpl:
+def create_xmlid_handler(prefix_xmlid: bool = False) -> XmlIdHandler:
     if prefix_xmlid:
-        return XmlIdHandlerImpl("prefix")
+        return XmlIdPrefixer()
     else:
-        return XmlIdHandlerImpl()
+        return XmlIdRemover()

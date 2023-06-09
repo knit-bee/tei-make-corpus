@@ -7,7 +7,7 @@ from lxml import etree
 
 from tei_make_corpus.header_handler import TeiHeaderHandlerImpl
 from tei_make_corpus.partition import Partition
-from tei_make_corpus.xmlid_handler import XmlIdHandlerImpl
+from tei_make_corpus.xmlid_handler import XmlIdPrefixer, XmlIdRemover
 from tests.utils import MockHeaderHandler
 
 
@@ -23,7 +23,7 @@ class PartitionTest(unittest.TestCase):
     def setUp(self):
         self.mock_header_handler = MockHeaderHandler()
         self.mock_stream = MockStream()
-        self.xmlid_handler = XmlIdHandlerImpl()
+        self.xmlid_handler = XmlIdRemover()
 
     def test_xmlid_attribute_removed(self):
         file = os.path.join("tests", "testdata", "corpus", "file1.xml")
@@ -211,7 +211,7 @@ class PartitionTest(unittest.TestCase):
             os.path.join(corpus_dir, file) for file in os.listdir(corpus_dir)
         ]
         header_handler = TeiHeaderHandlerImpl(header_file)
-        xmlid_handler = XmlIdHandlerImpl(action="prefix")
+        xmlid_handler = XmlIdPrefixer()
         partition = Partition(
             header_handler, corpus_files, xmlid_handler, clean_files=False
         )
@@ -233,7 +233,7 @@ class PartitionTest(unittest.TestCase):
             os.path.join(corpus_dir, file) for file in os.listdir(corpus_dir)
         ] * 4
         header_handler = TeiHeaderHandlerImpl(header_file)
-        xmlid_handler = XmlIdHandlerImpl(action="prefix")
+        xmlid_handler = XmlIdPrefixer()
         partition = Partition(
             header_handler, corpus_files, xmlid_handler, clean_files=False
         )
