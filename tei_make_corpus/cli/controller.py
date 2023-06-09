@@ -76,6 +76,17 @@ class TeiMakeCorpusController:
             file will be used.
             This option can also be used without passing a value, the default is 150 000 000 (bytes per file, 150 MB).""",
         )
+        parser.add_argument(
+            "--prefix-xmlid",
+            default=False,
+            action="store_true",
+            help="""Add a prefix to @xml:id attribtues instead of removing them.
+            The prefix is generated from the the document's file path and concatenated
+            with the original value of the @xml:id attribute (separated by '-'). For
+            each @xml:id attribute, the prefix is also added to attributes referencing
+            the @xml:id, i.e. attributes with the same value as @xml:id but with a
+            prepended '#'.""",
+        )
         args = parser.parse_args(arguments)
         if args.split_documents and (args.to_file is None):
             parser.error("--split-documents requires --to-file FILENAME")
@@ -91,6 +102,7 @@ class TeiMakeCorpusController:
                 clean_header=args.deduplicate_header,
                 split_docs=args.split_documents or -1,
                 split_size=args.split_size or -1,
+                prefix_xmlid=args.prefix_xmlid,
             )
         )
 

@@ -244,3 +244,13 @@ class TeiMakeCorpusControllerTest(unittest.TestCase):
                 )
                 self.assertEqual(self.mock_use_case.request.split_docs, expected[i])
                 self.mock_use_case.request = None
+
+    def test_xmlid_prefixing_default_is_false(self):
+        self.controller.process_arguments(["corpus", "-c", "header.xml"])
+        self.assertEqual(self.mock_use_case.request.prefix_xmlid, False)
+
+    def test_controller_extracts_prefix_xmlid_option(self):
+        self.controller.process_arguments(
+            ["corpus", "-c", "header.xml", "--prefix-xmlid"]
+        )
+        self.assertEqual(self.mock_use_case.request.prefix_xmlid, True)

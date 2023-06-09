@@ -19,6 +19,7 @@ class CliRequest:
     clean_header: bool = False
     split_docs: int = -1
     split_size: int = -1
+    prefix_xmlid: bool = False
 
 
 class TeiMakeCorpusUseCase(Protocol):
