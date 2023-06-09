@@ -8,7 +8,7 @@ from tei_make_corpus.file_size_estimator import FileSizeEstimatorImpl
 from tei_make_corpus.header_handler import TeiHeaderHandlerImpl
 from tei_make_corpus.partitioner import Partitioner
 from tei_make_corpus.path_finder import PathFinderImpl
-from tei_make_corpus.xmlid_handler import XmlIdHandlerImpl
+from tei_make_corpus.xmlid_handler import create_xmlid_handler
 
 
 @dataclass
@@ -40,7 +40,7 @@ class TeiMakeCorpusUseCaseImpl:
         header_handler = TeiHeaderHandlerImpl(request.header_file)
         path_finder = PathFinderImpl()
         size_estimator = FileSizeEstimatorImpl()
-        xmlid_handler = XmlIdHandlerImpl()
+        xmlid_handler = create_xmlid_handler(request.prefix_xmlid)
         partitioner = Partitioner(
             header_handler=header_handler,
             path_finder=path_finder,
