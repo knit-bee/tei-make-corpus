@@ -1,6 +1,12 @@
 import argparse
 import re
-from typing import List
+import sys
+from typing import Dict, List, Optional, Union
+
+if sys.version_info < (3, 11):
+    import tomli as toml
+else:
+    import tomllib as toml
 
 from tei_make_corpus.cli.make_corpus_usecase import CliRequest, TeiMakeCorpusUseCase
 
@@ -21,13 +27,12 @@ class TeiMakeCorpusController:
             "--config", "-k", default=None, help="Name of the config file"
         )
         conf_args, remaining_argv = config_parser.parse_known_args(arguments)
-        defaults = {}
+        defaults = self.parse_config_file(conf_args.config, config_parser)
         parser = argparse.ArgumentParser(
             parents=[config_parser],
             description="""Create a *teiCorpus* from a collection of TEI documents.
                  The output will be printed to stdout as default.""",
         )
-        parser.set_defaults(**defaults)
         parser.add_argument(
             "corpus_dir",
             help="Directory containing the TEI files. Only file with the extension '.xml' are processed.",
@@ -97,7 +102,12 @@ class TeiMakeCorpusController:
             the @xml:id, i.e. attributes with the same value as @xml:id but with a
             prepended '#'.""",
         )
+        parser.set_defaults(**defaults)
         args = parser.parse_args(remaining_argv)
+        if args.split_documents and args.split_size:
+            parser.error(
+                "Only one of the options --split-size or --split-documents can be used."
+            )
         if args.split_documents and (args.to_file is None):
             parser.error("--split-documents requires --to-file FILENAME")
         if args.split_size and args.to_file is None:
@@ -116,7 +126,10 @@ class TeiMakeCorpusController:
             )
         )
 
-    def _validate_split_value(self, args: argparse.Namespace) -> bool:
+    def _validate_split_value(
+        self,
+        args: argparse.Namespace,
+    ) -> bool:
         split_val = None
         if args.split_documents is not None:
             split_val = args.split_documents
@@ -149,3 +162,17 @@ class TeiMakeCorpusController:
         if split_val % 1:
             raise TypeError
         return int(split_val)
+
+    def parse_config_file(
+        self, filepath: Optional[str], parser: argparse.ArgumentParser
+    ) -> Dict[str, Union[str, int, bool]]:
+        config = {}
+        if filepath is not None:
+            try:
+                with open(filepath, "rb") as fp:
+                    config = toml.load(fp)
+            except FileNotFoundError:
+                parser.error("File not found: %s" % filepath)
+            except toml.TOMLDecodeError:
+                parser.error("Invalid TOML file: %s" % filepath)
+        return config

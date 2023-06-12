@@ -1,0 +1,3 @@
+deduplicate_header = true
+split_documents= 10
+prefix_xmlid=true

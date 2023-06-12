@@ -254,3 +254,88 @@ class TeiMakeCorpusControllerTest(unittest.TestCase):
             ["corpus", "-c", "header.xml", "--prefix-xmlid"]
         )
         self.assertEqual(self.mock_use_case.request.prefix_xmlid, True)
+
+    def test_optional_arguments_read_from_config_file(self):
+        self.controller.process_arguments(
+            ["corpus", "-c", "header.xml", "--config", "tests/testdata/test.cfg"]
+        )
+        result = [
+            self.mock_use_case.request.corpus_dir,
+            self.mock_use_case.request.header_file,
+            self.mock_use_case.request.output_file,
+            self.mock_use_case.request.clean_header,
+            self.mock_use_case.request.split_docs,
+            self.mock_use_case.request.prefix_xmlid,
+        ]
+        expected = ["corpus", "header.xml", "output.xml", True, 10, True]
+        self.assertEqual(result, expected)
+
+    def test_split_docs_and_split_size_in_config_file_mutually_exclusive(self):
+        with self.assertRaises(SystemExit):
+            self.controller.process_arguments(
+                ["corpus", "-c", "header.xml", "--config", "tests/testdata/invalid.cfg"]
+            )
+
+    def test_arguments_can_be_read_from_file_and_cli(self):
+        self.controller.process_arguments(
+            [
+                "corpus",
+                "-c",
+                "header.xml",
+                "--config",
+                "tests/testdata/config.toml",
+                "--to-file",
+                "out_file.xml",
+            ]
+        )
+        result = [
+            self.mock_use_case.request.split_docs,
+            self.mock_use_case.request.output_file,
+        ]
+        self.assertEqual(result, [10, "out_file.xml"])
+
+    def test_command_line_args_override_config_file(self):
+        self.controller.process_arguments(
+            [
+                "corpus",
+                "-c",
+                "header.xml",
+                "--config",
+                "tests/testdata/test.cfg",
+                "-f",
+                "myfile.xml",
+                "--split-documents",
+                "30k",
+            ]
+        )
+        result = [
+            self.mock_use_case.request.output_file,
+            self.mock_use_case.request.split_docs,
+        ]
+        expected = ["myfile.xml", 30_000]
+        self.assertEqual(result, expected)
+
+    def test_empty_config_file_normal_default_values_used(self):
+        self.controller.process_arguments(
+            ["corpus", "-c", "header.xml", "-k", "tests/testdata/dir_empty/empty.xml"]
+        )
+        result = [
+            self.mock_use_case.request.output_file,
+            self.mock_use_case.request.clean_header,
+            self.mock_use_case.request.split_docs,
+            self.mock_use_case.request.split_size,
+            self.mock_use_case.request.prefix_xmlid,
+        ]
+        self.assertEqual(result, [None, False, -1, -1, False])
+
+    def test_controller_raises_error_if_config_file_does_not_exist(self):
+        with self.assertRaises(SystemExit):
+            self.controller.process_arguments(
+                ["corpus", "-c", "head.xml", "--config", "some_file"]
+            )
+
+    def test_invalid_toml_file(self):
+        with self.assertRaises(SystemExit):
+            self.controller.process_arguments(
+                ["corpus", "-c", "head.xml", "--config", "tests/testdata/invalid2.cfg"]
+            )
