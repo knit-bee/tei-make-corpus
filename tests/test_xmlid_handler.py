@@ -5,10 +5,9 @@ from lxml import etree
 from tei_make_corpus.xmlid_handler import XmlIdPrefixer, XmlIdRemover
 
 
-class XmlIdHandlerImplTest(unittest.TestCase):
+class XmlIdRemoverTest(unittest.TestCase):
     def setUp(self):
         self.default_handler = XmlIdRemover()
-        self.prefix_handler = XmlIdPrefixer()
 
     def test_remove_xmlid_attribute_from_element(self):
         doc = etree.XML("<root><one xml:id='a'><two xml:id='b'/></one></root>")
@@ -20,6 +19,11 @@ class XmlIdHandlerImplTest(unittest.TestCase):
         doc = etree.XML("<root xml:id='a'><inner/></root>")
         self.default_handler.process_document(doc, "file.xml")
         self.assertEqual(doc.attrib, {})
+
+
+class XmlIdPrefixerTest(unittest.TestCase):
+    def setUp(self):
+        self.prefix_handler = XmlIdPrefixer()
 
     def test_generate_prefix(self):
         filename = "path/to/file.xml"
