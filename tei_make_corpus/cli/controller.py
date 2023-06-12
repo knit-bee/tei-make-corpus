@@ -14,10 +14,20 @@ class TeiMakeCorpusController:
         self.use_case = use_case
 
     def process_arguments(self, arguments: List[str]) -> None:
-        parser = argparse.ArgumentParser(
-            description="""Create a *teiCorpus* from a collection of TEI documents.
-             The output will be printed to stdout as default."""
+        config_parser = argparse.ArgumentParser(
+            add_help=False,
         )
+        config_parser.add_argument(
+            "--config", "-k", default=None, help="Name of the config file"
+        )
+        conf_args, remaining_argv = config_parser.parse_known_args(arguments)
+        defaults = {}
+        parser = argparse.ArgumentParser(
+            parents=[config_parser],
+            description="""Create a *teiCorpus* from a collection of TEI documents.
+                 The output will be printed to stdout as default.""",
+        )
+        parser.set_defaults(**defaults)
         parser.add_argument(
             "corpus_dir",
             help="Directory containing the TEI files. Only file with the extension '.xml' are processed.",
@@ -87,7 +97,7 @@ class TeiMakeCorpusController:
             the @xml:id, i.e. attributes with the same value as @xml:id but with a
             prepended '#'.""",
         )
-        args = parser.parse_args(arguments)
+        args = parser.parse_args(remaining_argv)
         if args.split_documents and (args.to_file is None):
             parser.error("--split-documents requires --to-file FILENAME")
         if args.split_size and args.to_file is None:
