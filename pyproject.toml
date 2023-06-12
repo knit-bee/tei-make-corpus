@@ -50,4 +50,4 @@ ignore_missing_imports = true
 profile = "black"
 
 [tool.coverage.report]
-exclude_lines = ["class .*\\bProtocol\\):"]
+exclude_lines = ["class .*\\bProtocol\\):", "@abc.abstract"]
