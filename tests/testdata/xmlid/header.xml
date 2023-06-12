@@ -1,0 +1,53 @@
+<teiHeader>
+ <fileDesc>
+   <titleStmt>
+    <title>Corpus title</title>
+    <funder xml:id="Funder">Funder</funder>
+    <respStmt corresp="#Publisher">
+      <resp n="1">some change</resp>
+      <name n="1">Person Name</name>
+    </respStmt>
+   </titleStmt>
+   <publicationStmt>
+     <publisher xml:id="Publisher">Publisher
+     </publisher>
+     <pubPlace>Place</pubPlace>
+     <date>today</date>
+     <availability status="unknown">
+       <p>text</p>
+     </availability>
+   </publicationStmt>
+     <sourceDesc>
+       <p/>
+     </sourceDesc>
+ </fileDesc>
+ <encodingDesc>
+    <editorialDecl>
+      <p>Encoding information</p>
+    </editorialDecl>
+    <tagsDecl>
+      <rendition scheme="css" xml:id="aq">font-family:sans-serif</rendition>
+      <rendition scheme="css" xml:id="b">font-weight:bold</rendition>
+      <rendition scheme="css" xml:id="blue">color:blue</rendition>
+      <rendition scheme="css" xml:id="c">display:block; text-align:center</rendition>
+      <rendition scheme="css" xml:id="et">display:block; margin-left:2em; text-indent:0</rendition>
+      <rendition scheme="css" xml:id="et2">display:block; margin-left:4em; text-indent:0</rendition>
+      <rendition scheme="css" xml:id="et3">display:block; margin-left:6em; text-indent:0</rendition>
+      <rendition scheme="css" xml:id="f">border:1px dotted silver</rendition>
+      <rendition scheme="css" xml:id="fr">border:1px dotted silver</rendition>
+      <rendition scheme="css" xml:id="g">letter-spacing:0.125em</rendition>
+      <rendition scheme="css" xml:id="i">font-style:italic</rendition>
+      <rendition scheme="css" xml:id="in">font-size:150%</rendition>
+      <rendition scheme="css" xml:id="k">font-variant:small-caps</rendition>
+      <rendition scheme="css" xml:id="larger">font-size:larger</rendition>
+      <rendition scheme="css" xml:id="red">color:red</rendition>
+      <rendition scheme="css" xml:id="right">display:block; text-align:right</rendition>
+      <rendition scheme="css" xml:id="s">text-decoration:line-through</rendition>
+      <rendition scheme="css" xml:id="smaller">font-size:smaller</rendition>
+      <rendition scheme="css" xml:id="sub">vertical-align:sub; font-size:.7em</rendition>
+      <rendition scheme="css" xml:id="sup">vertical-align:super; font-size:.7em</rendition>
+      <rendition scheme="css" xml:id="u">text-decoration:underline</rendition>
+      <rendition scheme="css" xml:id="uu">border-bottom:double 3px #000</rendition>
+    </tagsDecl>
+  </encodingDesc>
+</teiHeader>

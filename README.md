@@ -48,7 +48,7 @@ optional arguments:
                         (experimental).
   --split-documents [SPLIT_DOCUMENTS]
                         Use this option to split the teiCorpus into multiple
-                        files. This option takes a NUMBER OF FILES that are
+                        files. This option takes a NUMBER OF DOCUMENTS that are
                         written to one output file. This option requires the '
                         --to-file' argument, which will be used as template
                         for the names of all output files. The resulting files
@@ -74,15 +74,57 @@ optional arguments:
                         TEI document) a new output file will be used. This
                         option can also be used without passing a value, the
                         default is 150 000 000 (bytes per file, 150 MB).
+  --prefix-xmlid        
+                        Add a prefix to @xml:id attributes instead of removing
+                        them. The prefix is generated from the the document's
+                        file path and concatenated with the original value of
+                        the @xml:id attribute (separated by '-'). For each
+                        @xml:id attribute, the prefix is also added to attributes
+                        referencing the @xml:id, i.e. attributes with the same
+                        value as @xml:id but with a prepended '#'.
 
 ```
 
-`tei-make-corpus` requires the path to a directory containing the TEI file and a file containing the information for the common header of the corpus.
-All files in the corpus directory that don't end in `.xml` are ignored as well as files that don't contain a `TEI` element as root element.
-The common header should be a formatted `teiHeader`. If the option `--deduplicate-header` is used, the individual header of each file is compared with the common header during the generation of the corpus,
-and elements that appear in the common header are removed from the individual header (experimental).
-All `xml:id ` attributes are removed from the individual TEI documents to avoid a clash of ids.
-The split options (*--split-size* and *--split-documents*) can also be used with unit prefixes (K, M, G, T), e.g. "2K" = 2000 Bytes.
+`tei-make-corpus` requires the path to a directory containing the TEI file and a file containing the information for the common header of the corpus.  
+All files in the corpus directory that don't end in `.xml` are ignored as well as files that don't contain a `TEI` element as root element.  
+The common header should be a formatted `teiHeader`. If the option `--deduplicate-header` is used, the individual header of each file is compared with the common header during the generation of the corpus, and elements that appear in the common header are removed from the individual header (experimental).  
+The split options (*--split-size* and *--split-documents*) can also be used with unit prefixes (K, M, G, T), e.g. "2K" = 2000 Bytes.  
+As default, all `@xml:id ` attributes are removed from the individual TEI documents to avoid a clash of ids. With the option *--prefix-xmlid*, a prefix individual to each document can be added to `@xml:id` attributes and attributes referencing them (see example below).
+
+
+<table width="100%">
+<tr>
+ <th>Original document</th>
+ <th>With prefix added</th>
+ </tr>
+
+ <tr>
+ <td>
+
+```xml
+<TEI>
+  <name xml:id="author"/>
+  <!-- ... -->
+  <name corresp="#author"/>
+</TEI>
+```
+</td>
+
+<td>
+
+```xml
+<TEI>
+  <name xml:id="p7dff7b-author"/>
+  <!-- ... -->
+  <name corresp="#p7dff7b-author"/>
+</TEI>
+```
+</td>
+
+</tr>
+
+</table>
+
 
 ### Example usage
 ```xml

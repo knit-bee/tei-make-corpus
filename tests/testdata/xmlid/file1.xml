@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt>
+        <title>Title</title>
+        <author>author A</author>
+        <funder xml:id="Funder">Funder</funder>
+        <respStmt corresp="#Publisher">
+          <resp n="1">some change</resp>
+          <name n="1">Person Name</name>
+        </respStmt>
+      </titleStmt>
+      <extent>42</extent>
+      <publicationStmt>
+        <publisher xml:id="Publisher">Publisher</publisher>
+        <pubPlace>Place</pubPlace>
+        <date>2022-07-20</date>
+      <availability status='unknown'><p>text</p></availability>
+      </publicationStmt>
+      <notesStmt>
+        <note type="source" anchored="true">Note</note>
+        <note type="type">
+          <idno type="date">2022-07-20</idno>
+        </note>
+      </notesStmt>
+      <sourceDesc default="false">
+        <bibl default="false">bibl info</bibl>
+        <biblFull default="false">
+          <titleStmt>
+            <title level="a" type="main">Title</title>
+            <author/>
+          </titleStmt>
+          <publicationStmt>
+            <publisher>Publisher</publisher>
+            <pubPlace>Some city</pubPlace>
+            <date>2022-07-20</date>
+          </publicationStmt>
+          <seriesStmt>
+            <title level="j">series</title>
+            <idno type="volume">1</idno>
+            <idno type="page">11</idno>
+          </seriesStmt>
+          <notesStmt>
+            <note type="bibl">
+              <idno type="series">Series</idno>
+              <idno type="volume">1</idno>
+            </note>
+          </notesStmt>
+        </biblFull>
+      </sourceDesc>
+      <sourceDesc default="false">
+        <bibl default="false">bibl info</bibl>
+        <biblFull default="false">
+          <titleStmt>
+            <title level="a" type="main">Title</title>
+            <author/>
+          </titleStmt>
+          <editionStmt>
+            <edition>edition</edition>
+          </editionStmt>
+          <publicationStmt>
+            <publisher>Publisher</publisher>
+            <pubPlace>Some city</pubPlace>
+            <date>2022-07-20</date>
+          </publicationStmt>
+          <seriesStmt>
+            <title level="j">Series</title>
+            <idno type="volume">1</idno>
+            <idno type="page">11</idno>
+          </seriesStmt>
+          <notesStmt>
+            <note type="bibl">
+              <idno type="bibl">bibl info</idno>
+              <idno type="series">Series</idno>
+              <idno type="page_first">11</idno>
+            </note>
+          </notesStmt>
+        </biblFull>
+      </sourceDesc>
+    </fileDesc>
+    <encodingDesc>
+      <projectDesc>
+        <p>Ínfo</p>
+      </projectDesc>
+      <editorialDecl>
+        <p>Encoding information</p>
+      </editorialDecl>
+      <tagsDecl>
+        <rendition scheme="css" xml:id="aq">font-family:sans-serif</rendition>
+        <rendition scheme="css" xml:id="b">font-weight:bold</rendition>
+        <rendition scheme="css" xml:id="blue">color:blue</rendition>
+        <rendition scheme="css" xml:id="c">display:block; text-align:center</rendition>
+        <rendition scheme="css" xml:id="et">display:block; margin-left:2em; text-indent:0</rendition>
+        <rendition scheme="css" xml:id="et2">display:block; margin-left:4em; text-indent:0</rendition>
+        <rendition scheme="css" xml:id="et3">display:block; margin-left:6em; text-indent:0</rendition>
+        <rendition scheme="css" xml:id="f">border:1px dotted silver</rendition>
+        <rendition scheme="css" xml:id="fr">border:1px dotted silver</rendition>
+        <rendition scheme="css" xml:id="g">letter-spacing:0.125em</rendition>
+        <rendition scheme="css" xml:id="i">font-style:italic</rendition>
+        <rendition scheme="css" xml:id="in">font-size:150%</rendition>
+        <rendition scheme="css" xml:id="k">font-variant:small-caps</rendition>
+        <rendition scheme="css" xml:id="larger">font-size:larger</rendition>
+        <rendition scheme="css" xml:id="red">color:red</rendition>
+        <rendition scheme="css" xml:id="right">display:block; text-align:right</rendition>
+        <rendition scheme="css" xml:id="s">text-decoration:line-through</rendition>
+        <rendition scheme="css" xml:id="smaller">font-size:smaller</rendition>
+        <rendition scheme="css" xml:id="sub">vertical-align:sub; font-size:.7em</rendition>
+        <rendition scheme="css" xml:id="sup">vertical-align:super; font-size:.7em</rendition>
+        <rendition scheme="css" xml:id="u">text-decoration:underline</rendition>
+        <rendition scheme="css" xml:id="uu">border-bottom:double 3px #000</rendition>
+      </tagsDecl>
+    </encodingDesc>
+    <profileDesc>
+      <textClass default="false">
+        <keywords scheme="#tax">
+          <term n="1" type="main">class</term>
+        </keywords>
+      </textClass>
+    </profileDesc>
+    <revisionDesc>
+      <change>0</change>
+      <change when="2022-07-21"><name>Other Person</name>Change description</change>
+    </revisionDesc>
+  </teiHeader>
+  <text>
+    <body>
+      <p>Actual text of the file</p>
+    </body>
+  </text>
+</TEI>

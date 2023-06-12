@@ -8,6 +8,7 @@ from tei_make_corpus.file_size_estimator import FileSizeEstimatorImpl
 from tei_make_corpus.header_handler import TeiHeaderHandlerImpl
 from tei_make_corpus.partitioner import Partitioner
 from tei_make_corpus.path_finder import PathFinderImpl
+from tei_make_corpus.xmlid_handler import create_xmlid_handler
 
 
 @dataclass
@@ -18,6 +19,7 @@ class CliRequest:
     clean_header: bool = False
     split_docs: int = -1
     split_size: int = -1
+    prefix_xmlid: bool = False
 
 
 class TeiMakeCorpusUseCase(Protocol):
@@ -38,10 +40,12 @@ class TeiMakeCorpusUseCaseImpl:
         header_handler = TeiHeaderHandlerImpl(request.header_file)
         path_finder = PathFinderImpl()
         size_estimator = FileSizeEstimatorImpl()
+        xmlid_handler = create_xmlid_handler(request.prefix_xmlid)
         partitioner = Partitioner(
             header_handler=header_handler,
             path_finder=path_finder,
             size_estimator=size_estimator,
+            xmlid_handler=xmlid_handler,
         )
         config = CorpusConfig(
             clean_header=request.clean_header,

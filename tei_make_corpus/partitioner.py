@@ -6,6 +6,7 @@ from tei_make_corpus.file_size_estimator import FileSizeEstimator
 from tei_make_corpus.header_handler import TeiHeaderHandler
 from tei_make_corpus.partition import Partition
 from tei_make_corpus.path_finder import PathFinder
+from tei_make_corpus.xmlid_handler import XmlIdHandler
 
 
 @dataclass
@@ -13,6 +14,7 @@ class Partitioner:
     header_handler: TeiHeaderHandler
     path_finder: PathFinder
     size_estimator: FileSizeEstimator
+    xmlid_handler: XmlIdHandler
 
     def get_partitions(
         self, corpus_dir: str, header_file: str, config: Optional[CorpusConfig] = None
@@ -52,6 +54,7 @@ class Partitioner:
             yield Partition(
                 self.header_handler,
                 all_files[start_index:end_index],
+                self.xmlid_handler,
                 clean_files=clean_files,
             )
 

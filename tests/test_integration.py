@@ -204,6 +204,125 @@ class IntegrationTest(unittest.TestCase):
         self.assertTrue(self.out_stream.path().startswith("part"))
         self._remove_output_files(dir=os.getcwd(), pattern=r"part\d*\.xml")
 
+    def test_prefix_added_to_xmlid_attributes(self):
+        request = CliRequest(
+            header_file=os.path.join(self.test_dir, "xmlid", "header.xml"),
+            corpus_dir=os.path.join(self.test_dir, "xmlid"),
+            prefix_xmlid=True,
+        )
+        with contextlib.redirect_stdout(
+            io.TextIOWrapper(io.BytesIO(), sys.stdout.encoding)
+        ) as pseudo:
+            self.use_case.process(request)
+        pseudo.seek(0)
+        doc = etree.parse(pseudo)
+        result = [attr_val for attr_val in doc.xpath("//@xml:id | //@corresp")]
+        expected = [
+            "Funder",
+            "#Publisher",
+            "Publisher",
+            "aq",
+            "b",
+            "blue",
+            "c",
+            "et",
+            "et2",
+            "et3",
+            "f",
+            "fr",
+            "g",
+            "i",
+            "in",
+            "k",
+            "larger",
+            "red",
+            "right",
+            "s",
+            "smaller",
+            "sub",
+            "sup",
+            "u",
+            "uu",
+            "p2b85cc-Funder",
+            "#p2b85cc-Publisher",
+            "p2b85cc-Publisher",
+            "p2b85cc-aq",
+            "p2b85cc-b",
+            "p2b85cc-blue",
+            "p2b85cc-c",
+            "p2b85cc-et",
+            "p2b85cc-et2",
+            "p2b85cc-et3",
+            "p2b85cc-f",
+            "p2b85cc-fr",
+            "p2b85cc-g",
+            "p2b85cc-i",
+            "p2b85cc-in",
+            "p2b85cc-k",
+            "p2b85cc-larger",
+            "p2b85cc-red",
+            "p2b85cc-right",
+            "p2b85cc-s",
+            "p2b85cc-smaller",
+            "p2b85cc-sub",
+            "p2b85cc-sup",
+            "p2b85cc-u",
+            "p2b85cc-uu",
+            "p7556d0-Funder",
+            "#p7556d0-Publisher",
+            "p7556d0-Publisher",
+            "p7556d0-aq",
+            "p7556d0-b",
+            "p7556d0-blue",
+            "p7556d0-c",
+            "p7556d0-et",
+            "p7556d0-et2",
+            "p7556d0-et3",
+            "p7556d0-f",
+            "p7556d0-fr",
+            "p7556d0-g",
+            "p7556d0-i",
+            "p7556d0-in",
+            "p7556d0-k",
+            "p7556d0-larger",
+            "p7556d0-red",
+            "p7556d0-right",
+            "p7556d0-s",
+            "p7556d0-smaller",
+            "p7556d0-sub",
+            "p7556d0-sup",
+            "p7556d0-u",
+            "p7556d0-uu",
+        ]
+        self.assertEqual(result, expected)
+
+    def test_prefix_added_to_xmlid_attributes_that_are_not_duplicates_in_common_header(
+        self,
+    ):
+        request = CliRequest(
+            header_file=os.path.join(self.test_dir, "xmlid", "header.xml"),
+            corpus_dir=os.path.join(self.test_dir, "xmlid"),
+            clean_header=True,
+            prefix_xmlid=True,
+        )
+        with contextlib.redirect_stdout(
+            io.TextIOWrapper(io.BytesIO(), sys.stdout.encoding)
+        ) as pseudo:
+            self.use_case.process(request)
+        pseudo.seek(0)
+        doc = etree.parse(pseudo)
+        result = [
+            attrib
+            for attrib in doc.xpath(
+                "tei:TEI//@xml:id", namespaces={"tei": "http://www.tei-c.org/ns/1.0"}
+            )
+        ]
+        expected = [
+            "p2b85cc-Publisher",
+            "p7556d0-Publisher",
+        ]
+        self.assertEqual(result, expected)
+
     def _remove_output_files(self, dir=None, pattern=None):
         dir = dir or self.test_dir
         other_files = [file for file in os.listdir(dir) if re.match(pattern, file)]

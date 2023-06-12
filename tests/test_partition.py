@@ -7,6 +7,7 @@ from lxml import etree
 
 from tei_make_corpus.header_handler import TeiHeaderHandlerImpl
 from tei_make_corpus.partition import Partition
+from tei_make_corpus.xmlid_handler import XmlIdPrefixer, XmlIdRemover
 from tests.utils import MockHeaderHandler
 
 
@@ -22,10 +23,11 @@ class PartitionTest(unittest.TestCase):
     def setUp(self):
         self.mock_header_handler = MockHeaderHandler()
         self.mock_stream = MockStream()
+        self.xmlid_handler = XmlIdRemover()
 
     def test_xmlid_attribute_removed(self):
         file = os.path.join("tests", "testdata", "corpus", "file1.xml")
-        partition = Partition(self.mock_header_handler, [])
+        partition = Partition(self.mock_header_handler, [], self.xmlid_handler)
         processed = partition._prepare_single_tei_file(file)
         result = processed.findall(".//*[@{http://www.w3.org/XML/1998/namespace}id]")
         self.assertEqual(result, [])
@@ -37,7 +39,7 @@ class PartitionTest(unittest.TestCase):
         corpus_files = [
             os.path.join(corpus_dir, file) for file in os.listdir(corpus_dir)
         ]
-        partition = Partition(header_handler, corpus_files)
+        partition = Partition(header_handler, corpus_files, self.xmlid_handler)
         partition.write_partition(self.mock_stream.path())
         self.mock_stream.output_file.seek(0)
         tei_corpus_root = etree.parse(self.mock_stream.output_file).getroot()
@@ -51,7 +53,9 @@ class PartitionTest(unittest.TestCase):
             os.path.join(corpus_dir, file) for file in os.listdir(corpus_dir)
         ]
         header_handler = TeiHeaderHandlerImpl(header_file)
-        partition = Partition(header_handler, corpus_files, clean_files=True)
+        partition = Partition(
+            header_handler, corpus_files, self.xmlid_handler, clean_files=True
+        )
         partition.write_partition(self.mock_stream.path())
         self.mock_stream.output_file.seek(0)
         doc = etree.parse(self.mock_stream.output_file)
@@ -67,7 +71,9 @@ class PartitionTest(unittest.TestCase):
         corpus_files = [
             os.path.join(corpus_dir, file) for file in os.listdir(corpus_dir)
         ]
-        partition = Partition(header_handler, corpus_files, clean_files=True)
+        partition = Partition(
+            header_handler, corpus_files, self.xmlid_handler, clean_files=True
+        )
         partition.write_partition(self.mock_stream.path())
         self.mock_stream.output_file.seek(0)
         doc = etree.parse(self.mock_stream.output_file)
@@ -83,7 +89,9 @@ class PartitionTest(unittest.TestCase):
             os.path.join(corpus_dir, file) for file in os.listdir(corpus_dir)
         ]
         header_handler = TeiHeaderHandlerImpl(header_file)
-        partition = Partition(header_handler, corpus_files, clean_files=False)
+        partition = Partition(
+            header_handler, corpus_files, self.xmlid_handler, clean_files=False
+        )
         partition.write_partition(self.mock_stream.path())
         self.mock_stream.output_file.seek(0)
         doc = etree.parse(self.mock_stream.output_file)
@@ -93,7 +101,7 @@ class PartitionTest(unittest.TestCase):
         self.assertEqual(len(result), 2)
 
     def test_xml_declaration_written_to_corpus_file(self):
-        partition = Partition(self.mock_header_handler, [])
+        partition = Partition(self.mock_header_handler, [], self.xmlid_handler)
         partition.write_partition(self.mock_stream.path())
         self.mock_stream.output_file.seek(0)
         file_content = self.mock_stream.output_file.read().decode("utf-8")
@@ -109,7 +117,7 @@ class PartitionTest(unittest.TestCase):
             if file != "header.xml"
         ]
         header_handler = TeiHeaderHandlerImpl(header_file)
-        partition = Partition(header_handler, corpus_files)
+        partition = Partition(header_handler, corpus_files, self.xmlid_handler)
         partition.write_partition(self.mock_stream.path())
         self.mock_stream.output_file.seek(0)
         doc = etree.parse(self.mock_stream.output_file)
@@ -125,7 +133,7 @@ class PartitionTest(unittest.TestCase):
             for file in files
         ]
         header_handler = TeiHeaderHandlerImpl(header_file)
-        partition = Partition(header_handler, corpus_files)
+        partition = Partition(header_handler, corpus_files, self.xmlid_handler)
         partition.write_partition(self.mock_stream.path())
         self.mock_stream.output_file.seek(0)
         root = etree.parse(self.mock_stream.output_file).getroot()
@@ -134,7 +142,7 @@ class PartitionTest(unittest.TestCase):
     def test_len_of_partition(self):
         expected = random.randint(1, 150_000_000)
         files = ["file"] * expected
-        partition = Partition(self.mock_header_handler, files)
+        partition = Partition(self.mock_header_handler, files, self.xmlid_handler)
         self.assertEqual(len(partition), expected)
 
     def test_empty_file_in_corpus_ommited(self):
@@ -144,7 +152,7 @@ class PartitionTest(unittest.TestCase):
         corpus_files = [
             os.path.join(corpus_dir, file) for file in os.listdir(corpus_dir)
         ]
-        partition = Partition(header_handler, corpus_files)
+        partition = Partition(header_handler, corpus_files, self.xmlid_handler)
         partition.write_partition(self.mock_stream.path())
         self.mock_stream.output_file.seek(0)
         tei_corpus_root = etree.parse(self.mock_stream.output_file).getroot()
@@ -157,7 +165,7 @@ class PartitionTest(unittest.TestCase):
         corpus_files = [
             os.path.join(corpus_dir, file) for file in os.listdir(corpus_dir)
         ]
-        partition = Partition(header_handler, corpus_files)
+        partition = Partition(header_handler, corpus_files, self.xmlid_handler)
         partition.write_partition(self.mock_stream.path())
         self.mock_stream.output_file.seek(0)
         tei_corpus_root = etree.parse(self.mock_stream.output_file).getroot()
@@ -170,7 +178,72 @@ class PartitionTest(unittest.TestCase):
         corpus_files = [
             os.path.join(corpus_dir, file) for file in os.listdir(corpus_dir)
         ]
-        partition = Partition(header_handler, corpus_files)
+        partition = Partition(header_handler, corpus_files, self.xmlid_handler)
         with self.assertLogs() as logged:
             partition.write_partition(self.mock_stream.path())
         self.assertIn("tests/testdata/dir_invalid/invalid.xml", logged.output[0])
+
+    def test_redundant_elements_with_xml_id_attribute_removed(self):
+        corpus_dir = os.path.join("tests", "testdata", "cleaning")
+        header_file = os.path.join(corpus_dir, "header.xml")
+        corpus_files = [
+            os.path.join(corpus_dir, file) for file in os.listdir(corpus_dir)
+        ]
+        header_handler = TeiHeaderHandlerImpl(header_file)
+        partition = Partition(
+            header_handler, corpus_files, self.xmlid_handler, clean_files=True
+        )
+        partition.write_partition(self.mock_stream.path())
+        self.mock_stream.output_file.seek(0)
+        doc = etree.parse(self.mock_stream.output_file)
+        redundant_elements = ["funder", "respStmt", "editorialDecl", "tagsDecl"]
+        for elem_tag in redundant_elements:
+            result = doc.findall(
+                f".//{elem_tag}", namespaces={None: "http://www.tei-c.org/ns/1.0"}
+            )
+            with self.subTest():
+                self.assertEqual(len(result), 1)
+
+    def test_xmlid_attributes_prefixed(self):
+        corpus_dir = os.path.join("tests", "testdata", "cleaning")
+        header_file = os.path.join(corpus_dir, "header.xml")
+        corpus_files = [
+            os.path.join(corpus_dir, file) for file in os.listdir(corpus_dir)
+        ]
+        header_handler = TeiHeaderHandlerImpl(header_file)
+        xmlid_handler = XmlIdPrefixer()
+        partition = Partition(
+            header_handler, corpus_files, xmlid_handler, clean_files=False
+        )
+        partition.write_partition(self.mock_stream.path())
+        self.mock_stream.output_file.seek(0)
+        doc = etree.parse(self.mock_stream.output_file)
+        result = [
+            attr_val.startswith("p8e0744-")
+            for attr_val in doc.xpath(
+                "tei:TEI//@xml:id", namespaces={"tei": "http://www.tei-c.org/ns/1.0"}
+            )
+        ]
+        self.assertTrue(all(result))
+
+    def test_add_prefix_to_xmlid_with_multiple_files(self):
+        corpus_dir = os.path.join("tests", "testdata", "cleaning")
+        header_file = os.path.join(corpus_dir, "header.xml")
+        corpus_files = [
+            os.path.join(corpus_dir, file) for file in os.listdir(corpus_dir)
+        ] * 4
+        header_handler = TeiHeaderHandlerImpl(header_file)
+        xmlid_handler = XmlIdPrefixer()
+        partition = Partition(
+            header_handler, corpus_files, xmlid_handler, clean_files=False
+        )
+        partition.write_partition(self.mock_stream.path())
+        self.mock_stream.output_file.seek(0)
+        doc = etree.parse(self.mock_stream.output_file)
+        result = {
+            attr_val.split("-")[0]
+            for attr_val in doc.xpath(
+                "tei:TEI//@xml:id", namespaces={"tei": "http://www.tei-c.org/ns/1.0"}
+            )
+        }
+        self.assertEqual(result, {"p8e0744", "p8e07440", "p8e07441", "p8e07442"})
