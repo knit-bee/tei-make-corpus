@@ -247,3 +247,40 @@ class PartitionTest(unittest.TestCase):
             )
         }
         self.assertEqual(result, {"p8e0744", "p8e07440", "p8e07441", "p8e07442"})
+
+    def test_xml_model_written_to_corpus_file(self):
+        xml_pi = [etree.PI("pi1")]
+        partition = Partition(
+            self.mock_header_handler,
+            [],
+            self.xmlid_handler,
+            xml_processing_instructions=xml_pi,
+        )
+        partition.write_partition(self.mock_stream.path())
+        self.mock_stream.output_file.seek(0)
+        file_content = self.mock_stream.output_file.read().decode("utf-8")
+        proc_instr = "<?pi1 ?>"
+        self.assertTrue(proc_instr in file_content)
+
+    def test_multiple_xml_models_written_to_corpus_file(self):
+        xml_pis = [
+            etree.PI("pi1"),
+            etree.PI("xml-model"),
+            etree.PI("pi2", "atr1='val1' atr2='val2'"),
+        ]
+        partition = Partition(
+            self.mock_header_handler,
+            [],
+            self.xmlid_handler,
+            xml_processing_instructions=xml_pis,
+        )
+        partition.write_partition(self.mock_stream.path())
+        self.mock_stream.output_file.seek(0)
+        doc = etree.parse(self.mock_stream.output_file)
+        result = [
+            (pi.target, pi.attrib) for pi in doc.xpath("preceding-sibling::node()")
+        ]
+        self.assertEqual(
+            result,
+            [("pi1", {}), ("xml-model", {}), ("pi2", {"atr1": "val1", "atr2": "val2"})],
+        )
