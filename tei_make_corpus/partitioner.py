@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from typing import Generator, List, Optional, Tuple
 
+from lxml import etree
+
 from tei_make_corpus.cli.corpus_config import CorpusConfig
 from tei_make_corpus.file_size_estimator import FileSizeEstimator
 from tei_make_corpus.header_handler import TeiHeaderHandler
@@ -15,6 +17,7 @@ class Partitioner:
     path_finder: PathFinder
     size_estimator: FileSizeEstimator
     xmlid_handler: XmlIdHandler
+    xml_processing_instructions: Optional[List[etree.PI]] = None
 
     def get_partitions(
         self, corpus_dir: str, header_file: str, config: Optional[CorpusConfig] = None
@@ -56,6 +59,7 @@ class Partitioner:
                 all_files[start_index:end_index],
                 self.xmlid_handler,
                 clean_files=clean_files,
+                xml_processing_instructions=self.xml_processing_instructions,
             )
 
     def _determine_chunk_indices_num_docs(
