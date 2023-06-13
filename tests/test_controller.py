@@ -1,3 +1,4 @@
+import os
 import unittest
 from typing import Optional
 
@@ -18,6 +19,7 @@ class TeiMakeCorpusControllerTest(unittest.TestCase):
     def setUp(self):
         self.mock_use_case = MockUseCase()
         self.controller = TeiMakeCorpusController(self.mock_use_case)
+        self.configs = os.path.join("tests", "testdata", "config")
 
     def test_controller_extracts_header_file_name(self):
         self.controller.process_arguments(["corpus", "--common-header", "header.xml"])
@@ -256,8 +258,9 @@ class TeiMakeCorpusControllerTest(unittest.TestCase):
         self.assertEqual(self.mock_use_case.request.prefix_xmlid, True)
 
     def test_optional_arguments_read_from_config_file(self):
+        cfg = os.path.join(self.configs, "test.cfg")
         self.controller.process_arguments(
-            ["corpus", "-c", "header.xml", "--config", "tests/testdata/test.cfg"]
+            ["corpus", "-c", "header.xml", "--config", cfg]
         )
         result = [
             self.mock_use_case.request.corpus_dir,
@@ -271,19 +274,21 @@ class TeiMakeCorpusControllerTest(unittest.TestCase):
         self.assertEqual(result, expected)
 
     def test_split_docs_and_split_size_in_config_file_mutually_exclusive(self):
+        cfg = os.path.join(self.configs, "invalid.cfg")
         with self.assertRaises(SystemExit):
             self.controller.process_arguments(
-                ["corpus", "-c", "header.xml", "--config", "tests/testdata/invalid.cfg"]
+                ["corpus", "-c", "header.xml", "--config", cfg]
             )
 
     def test_arguments_can_be_read_from_file_and_cli(self):
+        cfg = os.path.join(self.configs, "config.toml")
         self.controller.process_arguments(
             [
                 "corpus",
                 "-c",
                 "header.xml",
                 "--config",
-                "tests/testdata/config.toml",
+                cfg,
                 "--to-file",
                 "out_file.xml",
             ]
@@ -295,13 +300,14 @@ class TeiMakeCorpusControllerTest(unittest.TestCase):
         self.assertEqual(result, [10, "out_file.xml"])
 
     def test_command_line_args_override_config_file(self):
+        cfg = os.path.join(self.configs, "test.cfg")
         self.controller.process_arguments(
             [
                 "corpus",
                 "-c",
                 "header.xml",
                 "--config",
-                "tests/testdata/test.cfg",
+                cfg,
                 "-f",
                 "myfile.xml",
                 "--split-documents",
@@ -316,9 +322,8 @@ class TeiMakeCorpusControllerTest(unittest.TestCase):
         self.assertEqual(result, expected)
 
     def test_empty_config_file_normal_default_values_used(self):
-        self.controller.process_arguments(
-            ["corpus", "-c", "header.xml", "-k", "tests/testdata/dir_empty/empty.xml"]
-        )
+        cfg = os.path.join("tests", "testdata", "dir_empty", "empty.xml")
+        self.controller.process_arguments(["corpus", "-c", "header.xml", "-k", cfg])
         result = [
             self.mock_use_case.request.output_file,
             self.mock_use_case.request.clean_header,
@@ -335,7 +340,60 @@ class TeiMakeCorpusControllerTest(unittest.TestCase):
             )
 
     def test_invalid_toml_file(self):
+        cfg = os.path.join(self.configs, "invalid2.cfg")
         with self.assertRaises(SystemExit):
             self.controller.process_arguments(
-                ["corpus", "-c", "head.xml", "--config", "tests/testdata/invalid2.cfg"]
+                ["corpus", "-c", "head.xml", "--config", cfg]
             )
+
+    def test_parse_cfg_file_with_table_header(self):
+        cfg = os.path.join(self.configs, "table.cfg")
+        self.controller.process_arguments(["corpus", "-c", "head.xml", "--config", cfg])
+        result = [
+            self.mock_use_case.request.split_docs,
+            self.mock_use_case.request.clean_header,
+            self.mock_use_case.request.prefix_xmlid,
+            self.mock_use_case.request.output_file,
+        ]
+        self.assertEqual(result, [30, False, True, "out.xml"])
+
+    def test_only_relevant_information_parsed_from_cfg_file(self):
+        cfg = os.path.join(self.configs, "irrelevant-info.toml")
+        self.controller.process_arguments(["corpus", "-c", "head.xml", "--config", cfg])
+        result = [
+            self.mock_use_case.request.split_size,
+            self.mock_use_case.request.clean_header,
+            self.mock_use_case.request.prefix_xmlid,
+            self.mock_use_case.request.output_file,
+        ]
+        self.assertEqual(result, [100, True, False, "out.xml"])
+
+    def test_toml_file_with_table_but_without_required_header_uses_default_values(self):
+        cfg = os.path.join(self.configs, "missing.toml")
+        self.controller.process_arguments(["corpus", "-c", "head.xml", "-k", cfg])
+        result = [
+            self.mock_use_case.request.split_size,
+            self.mock_use_case.request.clean_header,
+            self.mock_use_case.request.prefix_xmlid,
+            self.mock_use_case.request.output_file,
+        ]
+        self.assertEqual(
+            result,
+            [-1, False, False, None],
+        )
+
+    def test_toml_file_with_table_without_default_header_and_other_keys_in_main_section(
+        self,
+    ):
+        cfg = os.path.join(self.configs, "mixed.toml")
+        self.controller.process_arguments(["corpus", "-c", "head.xml", "-k", cfg])
+        result = [
+            self.mock_use_case.request.split_size,
+            self.mock_use_case.request.clean_header,
+            self.mock_use_case.request.prefix_xmlid,
+            self.mock_use_case.request.output_file,
+        ]
+        self.assertEqual(
+            result,
+            [-1, False, True, "out.xml"],
+        )

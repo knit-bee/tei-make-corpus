@@ -1,0 +1,6 @@
+split_size = 100
+deduplicate_header = true
+prefix_xmlid = false
+other_info = "something"
+value = 42
+to_file = "out.xml"

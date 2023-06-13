@@ -24,7 +24,13 @@ class TeiMakeCorpusController:
             add_help=False,
         )
         config_parser.add_argument(
-            "--config", "-k", default=None, help="Name of the config file"
+            "--config",
+            "-k",
+            default=None,
+            help="""Path to config file in TOML format for settings for optional arguments
+            (i.e. corpus_dir and --common-header should be still passed as commandline arguments).
+            Use [tei-make-corpus] as header or no header. Keys/ argument names should match CL
+            argument names but with underscore instead of dash.""",
         )
         conf_args, remaining_argv = config_parser.parse_known_args(arguments)
         defaults = self.parse_config_file(conf_args.config, config_parser)
@@ -175,4 +181,7 @@ class TeiMakeCorpusController:
                 parser.error("File not found: %s" % filepath)
             except toml.TOMLDecodeError:
                 parser.error("Invalid TOML file: %s" % filepath)
+        sub_config = config.get("tei-make-corpus", None)
+        if sub_config is not None:
+            return sub_config
         return config
