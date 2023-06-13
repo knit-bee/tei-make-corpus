@@ -20,10 +20,10 @@ $ pip install git+https://github.com/knit-bee/tei-make-corpus.git
 
 ```
 $ tei-make-corpus --help
-usage: tei-make-corpus [-h] --common-header COMMON_HEADER [--to-file FILENAME]
-                       [--deduplicate-header]
+usage: tei-make-corpus [-h] [--config CONFIG] --common-header COMMON_HEADER
+                       [--to-file FILENAME] [--deduplicate-header]
                        [--split-documents [SPLIT_DOCUMENTS] | --split-size
-                       [SPLIT_SIZE]]
+                       [SPLIT_SIZE]] [--prefix-xmlid]
                        corpus_dir
 
 Create a *teiCorpus* from a collection of TEI documents. The output will be
@@ -33,56 +33,61 @@ positional arguments:
   corpus_dir            Directory containing the TEI files. Only file with the
                         extension '.xml' are processed.
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
+  --config CONFIG, -k CONFIG
+                        Path to config file in TOML format for settings for
+                        optional arguments (i.e. corpus_dir and --common-header
+                        should be still passed as commandline arguments). Use
+                        [tei-make-corpus] as header or no header. Keys/
+                        argument names should match CL argument names but with
+                        underscore instead of dash.
   --common-header COMMON_HEADER, -c COMMON_HEADER
                         Xml file containing the common header for the whole
-                        corpus.
+                        corpus. This argument is required.
   --to-file FILENAME, -f FILENAME
                         Name of output file to write to. If this option is
                         enabled, the output is written to the file instead of
                         stdout.
   --deduplicate-header, -d
                         Remove elements from header of individual TEI files
-                        that are identical in the common header
-                        (experimental).
+                        that are identical in the common header (experimental).
   --split-documents [SPLIT_DOCUMENTS]
                         Use this option to split the teiCorpus into multiple
                         files. This option takes a NUMBER OF DOCUMENTS that are
                         written to one output file. This option requires the '
-                        --to-file' argument, which will be used as template
-                        for the names of all output files. The resulting files
-                        will be numbered consecutively. For example, if '--
-                        split-documents 10' is used, ten files are written to
-                        each output file. Each output file will be a valid,
-                        stand-alone teiCorpus and the same common header is
-                        used for all parts. If the last part would contain
-                        less than 30% of the intended number of TEI documents,
-                        all files will be distributed evenly (i.e. a part may
-                        then contain more than the indicated number of files).
-                        This option can also be used without passing a value,
-                        the default is 100 000 (documents per output file).
+                        --to-file' argument, which will be used as template for
+                        the names of all output files. The resulting files will
+                        be numbered consecutively. For example, if '--split-
+                        documents 10' is used, ten files are written to each
+                        output file. Each output file will be a valid, stand-
+                        alone teiCorpus and the same common header is used for
+                        all parts. If the last part would contain less than 30%
+                        of the intended number of TEI documents, all files will
+                        be distributed evenly (i.e. a part may then contain
+                        more than the indicated number of files). This option
+                        can also be used without passing a value, the default
+                        is 100 000 (documents per output file).
   --split-size [SPLIT_SIZE]
                         Use this option to split the teiCorpus into multiple
-                        files. This option takes an intended FILE SIZE IN
-                        BYTES for one output file. This option requires the '
-                        --to-file' argument, which will be used as template
-                        for the file names of all output files. The resulting
-                        files will be numbered consecutively. For example, if
-                        '--split-size 15000' is used, when the limit of 15
-                        kilobytes is reached, (after completing the current
-                        TEI document) a new output file will be used. This
-                        option can also be used without passing a value, the
-                        default is 150 000 000 (bytes per file, 150 MB).
-  --prefix-xmlid        
-                        Add a prefix to @xml:id attributes instead of removing
+                        files. This option takes an intended FILE SIZE IN BYTES
+                        for one output file. This option requires the '--to-
+                        file' argument, which will be used as template for the
+                        file names of all output files. The resulting files
+                        will be numbered consecutively. For example, if '--
+                        split-size 15000' is used, when the limit of 15
+                        kilobytes is reached, (after completing the current TEI
+                        document) a new output file will be used. This option
+                        can also be used without passing a value, the default
+                        is 150 000 000 (bytes per file, 150 MB).
+  --prefix-xmlid        Add a prefix to @xml:id attributes instead of removing
                         them. The prefix is generated from the the document's
                         file path and concatenated with the original value of
                         the @xml:id attribute (separated by '-'). For each
-                        @xml:id attribute, the prefix is also added to attributes
-                        referencing the @xml:id, i.e. attributes with the same
-                        value as @xml:id but with a prepended '#'.
-
+                        @xml:id attribute, the prefix is also added to
+                        attributes referencing the @xml:id, i.e. attributes
+                        with the same value as @xml:id but with a prepended
+                        '#'.
 ```
 
 `tei-make-corpus` requires the path to a directory containing the TEI file and a file containing the information for the common header of the corpus.  

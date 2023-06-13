@@ -47,7 +47,7 @@ class TeiMakeCorpusController:
         parser.add_argument(
             "--common-header",
             "-c",
-            help="Xml file containing the common header for the whole corpus.",
+            help="Xml file containing the common header for the whole corpus. This argument is required.",
             required=True,
         )
         parser.add_argument(
