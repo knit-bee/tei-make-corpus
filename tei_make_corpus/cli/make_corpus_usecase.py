@@ -53,12 +53,12 @@ class TeiMakeCorpusUseCaseImpl:
             path_finder=path_finder,
             size_estimator=size_estimator,
             xmlid_handler=xmlid_handler,
-            xml_processing_instructions=processing_instructions,
         )
         config = CorpusConfig(
             clean_header=request.clean_header,
             split_docs=request.split_docs,
             split_size=request.split_size,
+            processing_instr=processing_instructions,
         )
         corpus_maker = TeiCorpusMaker(
             outstream=self.out_stream, partitioner=partitioner, config=config
