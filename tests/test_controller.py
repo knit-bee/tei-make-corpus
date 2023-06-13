@@ -397,3 +397,43 @@ class TeiMakeCorpusControllerTest(unittest.TestCase):
             result,
             [-1, False, True, "out.xml"],
         )
+
+    def test_controller_extracts_processing_instructions(self):
+        self.controller.process_arguments(
+            ["corpus", "-c", "head.xml", "--processing-instructions", '{"a":"b"}']
+        )
+        self.assertEqual(self.mock_use_case.request.pis, {"a": "b"})
+
+    def test_read_processing_instructions_from_file_inline_table(self):
+        cfg = os.path.join(self.configs, "pi.cfg")
+        self.controller.process_arguments(["corpus", "-c", "head.xml", "-k", cfg])
+        self.assertEqual(
+            self.mock_use_case.request.pis, {"a": "b", "a2": "href='path/to/sth'"}
+        )
+
+    def test_read_processing_instructions_from_file_multiline_table(self):
+        cfg = os.path.join(self.configs, "pi2.cfg")
+        self.controller.process_arguments(["corpus", "-c", "head.xml", "-k", cfg])
+        self.assertEqual(
+            self.mock_use_case.request.pis, {"a": "b", "a2": "href='path/to/sth'"}
+        )
+
+    def test_read_processing_instructions_from_file_multiline_table_without_global_header(
+        self,
+    ):
+        cfg = os.path.join(self.configs, "pi3.cfg")
+        self.controller.process_arguments(["corpus", "-c", "head.xml", "-k", cfg])
+        self.assertEqual(
+            self.mock_use_case.request.pis, {"a": "b", "a2": "href='path/to/sth'"}
+        )
+
+    def test_read_processing_instructions_from_file_multiline_table_with_other_values(
+        self,
+    ):
+        cfg = os.path.join(self.configs, "pi3.cfg")
+        self.controller.process_arguments(["corpus", "-c", "head.xml", "-k", cfg])
+        self.assertTrue(self.mock_use_case.request.prefix_xmlid)
+
+    def test_default_for_processing_instructions(self):
+        self.controller.process_arguments(["corpus", "-c", "head.xml"])
+        self.assertIsNone(self.mock_use_case.request.pis)

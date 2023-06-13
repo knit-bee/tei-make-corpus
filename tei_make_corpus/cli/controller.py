@@ -1,4 +1,5 @@
 import argparse
+import json
 import re
 import sys
 from typing import Dict, List, Optional, Union
@@ -108,6 +109,14 @@ class TeiMakeCorpusController:
             the @xml:id, i.e. attributes with the same value as @xml:id but with a
             prepended '#'.""",
         )
+        parser.add_argument(
+            "--processing-instructions",
+            type=json.loads,
+            help="""Add xml processing instructions to the teiCorpus file. If passed as commandline
+            argument, the processing instructions should be formatted as a json-parsable string representing
+            a dictionary, e.g. '{"a":"b"}' (with double quotes). If a toml file is used, use an inline table
+            or, in multi-line format and used with global table header, prefix the sub-table with 'tei-make-corpus'. """,
+        )
         parser.set_defaults(**defaults)
         args = parser.parse_args(remaining_argv)
         if args.split_documents and args.split_size:
@@ -129,6 +138,7 @@ class TeiMakeCorpusController:
                 split_docs=args.split_documents or -1,
                 split_size=args.split_size or -1,
                 prefix_xmlid=args.prefix_xmlid,
+                pis=args.processing_instructions,
             )
         )
 
