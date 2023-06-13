@@ -323,6 +323,21 @@ class IntegrationTest(unittest.TestCase):
         ]
         self.assertEqual(result, expected)
 
+    def test_processing_instructions_added_to_file(self):
+        request = CliRequest(
+            header_file=os.path.join(self.test_dir, "header.xml"),
+            corpus_dir=os.path.join(self.test_dir, "corpus"),
+            pis={"xml-model": "some text"},
+        )
+        with contextlib.redirect_stdout(
+            io.TextIOWrapper(io.BytesIO(), sys.stdout.encoding)
+        ) as pseudo:
+            self.use_case.process(request)
+        pseudo.seek(0)
+        doc = etree.parse(pseudo)
+        result = [node.target for node in doc.xpath("preceding-sibling::node()")]
+        self.assertEqual(result, ["xml-model"])
+
     def _remove_output_files(self, dir=None, pattern=None):
         dir = dir or self.test_dir
         other_files = [file for file in os.listdir(dir) if re.match(pattern, file)]

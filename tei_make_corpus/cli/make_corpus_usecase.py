@@ -1,7 +1,10 @@
 from dataclasses import dataclass
-from typing import Optional, Protocol
+from typing import Dict, Optional, Protocol
 
 from tei_make_corpus.cli.corpus_config import CorpusConfig
+from tei_make_corpus.construct_processing_instructions import (
+    construct_processing_instructions,
+)
 from tei_make_corpus.corpus_maker import TeiCorpusMaker
 from tei_make_corpus.corpus_stream import CorpusStream
 from tei_make_corpus.file_size_estimator import FileSizeEstimatorImpl
@@ -20,6 +23,7 @@ class CliRequest:
     split_docs: int = -1
     split_size: int = -1
     prefix_xmlid: bool = False
+    pis: Optional[Dict[str, str]] = None
 
 
 class TeiMakeCorpusUseCase(Protocol):
@@ -41,11 +45,15 @@ class TeiMakeCorpusUseCaseImpl:
         path_finder = PathFinderImpl()
         size_estimator = FileSizeEstimatorImpl()
         xmlid_handler = create_xmlid_handler(request.prefix_xmlid)
+        processing_instructions = None
+        if request.pis is not None:
+            processing_instructions = construct_processing_instructions(request.pis)
         partitioner = Partitioner(
             header_handler=header_handler,
             path_finder=path_finder,
             size_estimator=size_estimator,
             xmlid_handler=xmlid_handler,
+            xml_processing_instructions=processing_instructions,
         )
         config = CorpusConfig(
             clean_header=request.clean_header,
