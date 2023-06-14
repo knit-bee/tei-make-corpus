@@ -1,9 +1,10 @@
 import logging
 from dataclasses import dataclass
-from typing import BinaryIO, List, Union
+from typing import BinaryIO, List, Optional, Union
 
 from lxml import etree
 
+from tei_make_corpus.doc_id_handler import DocIdHandler
 from tei_make_corpus.header_handler import TeiHeaderHandler
 from tei_make_corpus.xmlid_handler import XmlIdHandler
 
@@ -16,6 +17,7 @@ class Partition:
     files: List[str]
     xmlid_handler: XmlIdHandler
     clean_files: bool = False
+    docid_handler: Optional[DocIdHandler] = None
 
     def write_partition(self, path: Union[str, BinaryIO]) -> None:
         with etree.xmlfile(path, encoding="UTF-8") as xf:
@@ -45,6 +47,8 @@ class Partition:
         if self.clean_files:
             self.header_handler.declutter_individual_header(iheader)
         self.xmlid_handler.process_document(root, file_path)
+        if self.docid_handler is not None:
+            self.docid_handler.add_doc_id(root, file_path)
         return root
 
     def __len__(self):

@@ -19,6 +19,13 @@ class MockStream:
         return self.output_file
 
 
+class MockDocIdHandler:
+    def add_doc_id(self, doc_root, filepath):
+        new = etree.Element("new")
+        new.text = filepath
+        doc_root.insert(0, new)
+
+
 class PartitionTest(unittest.TestCase):
     def setUp(self):
         self.mock_header_handler = MockHeaderHandler()
@@ -247,3 +254,19 @@ class PartitionTest(unittest.TestCase):
             )
         }
         self.assertEqual(result, {"p8e0744", "p8e07440", "p8e07441", "p8e07442"})
+
+    def test_doc_id_added_to_tree(self):
+        file = os.path.join("tests", "testdata", "corpus", "file1.xml")
+        docid_handler = MockDocIdHandler()
+        partition = Partition(
+            self.mock_header_handler,
+            [file],
+            self.xmlid_handler,
+            docid_handler=docid_handler,
+        )
+        partition.write_partition(self.mock_stream.path())
+        self.mock_stream.output_file.seek(0)
+        doc = etree.parse(self.mock_stream.output_file)
+        result = doc.find(".//{*}new")
+        self.assertTrue(result is not None)
+        self.assertEqual(result.text, file)
