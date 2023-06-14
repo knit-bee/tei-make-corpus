@@ -32,7 +32,6 @@ class DocIdToIdnoHandler:
 
     def _determine_insertion_index(self, parent: etree._Element) -> int:
         insertion_index = len(parent)
-
         if (idno_siblings := parent.findall("{*}idno")) != []:
             insertion_index = parent.index(idno_siblings[-1]) + 1
         elif (availability_siblings := parent.findall("{*}availability")) != []:
