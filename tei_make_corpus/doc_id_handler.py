@@ -87,4 +87,8 @@ class DocIdToIdnoHandler:
             doc_id = self._doc_id_pattern.search(file_path)
             if doc_id:
                 return doc_id.group(1)
+            logger.warning(
+                "Couldn't match file %s with regex '%s'"
+                % (file_path, self._doc_id_pattern.pattern)
+            )
         return os.path.basename(file_path)

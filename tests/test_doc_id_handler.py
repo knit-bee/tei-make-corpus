@@ -448,3 +448,25 @@ class DocIdToIdnoHandlerTest(unittest.TestCase):
         pattern_handler.add_doc_id(doc, "path/to/file.xml")
         idno_elem = doc.find(".//{*}idno")
         self.assertEqual(idno_elem.text, "file.xml")
+
+    def test_warning_logged_if_fallback_is_used(self):
+        doc = etree.XML(
+            """
+            <TEI xmlns='http://www.tei-c.org/ns/1.0'>
+            <teiHeader>
+                <fileDesc>
+                    <titleStmt/>
+                    <publicationStmt>
+                        <publisher/>
+                    </publicationStmt>
+                </fileDesc>
+            </teiHeader>
+            </TEI>
+            """
+        )
+        filepath = "path/to/file.xml"
+        pattern_handler = DocIdToIdnoHandler(r".*/(\d+)\.xml$")
+        with self.assertLogs() as logged:
+            pattern_handler.add_doc_id(doc, filepath)
+        self.assertIn("WARNING", logged.output[0])
+        self.assertIn(filepath, logged.output[0])
