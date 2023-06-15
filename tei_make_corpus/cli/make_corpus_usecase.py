@@ -2,8 +2,10 @@ from dataclasses import dataclass
 from typing import Optional, Protocol
 
 from tei_make_corpus.cli.corpus_config import CorpusConfig
+from tei_make_corpus.cli.docid_pattern_map import PatternMap
 from tei_make_corpus.corpus_maker import TeiCorpusMaker
 from tei_make_corpus.corpus_stream import CorpusStream
+from tei_make_corpus.doc_id_handler import DocIdToIdnoHandler
 from tei_make_corpus.file_size_estimator import FileSizeEstimatorImpl
 from tei_make_corpus.header_handler import TeiHeaderHandlerImpl
 from tei_make_corpus.partitioner import Partitioner
@@ -42,11 +44,17 @@ class TeiMakeCorpusUseCaseImpl:
         path_finder = PathFinderImpl()
         size_estimator = FileSizeEstimatorImpl()
         xmlid_handler = create_xmlid_handler(request.prefix_xmlid)
+        docid_handler = None
+        if request.docid_pattern_index is not None:
+            docid_handler = DocIdToIdnoHandler(
+                PatternMap().get(request.docid_pattern_index, None)
+            )
         partitioner = Partitioner(
             header_handler=header_handler,
             path_finder=path_finder,
             size_estimator=size_estimator,
             xmlid_handler=xmlid_handler,
+            docid_handler=docid_handler,
         )
         config = CorpusConfig(
             clean_header=request.clean_header,
