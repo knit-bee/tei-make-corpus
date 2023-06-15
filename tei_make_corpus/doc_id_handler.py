@@ -69,5 +69,5 @@ class DocIdToIdnoHandler:
         if (idno_siblings := parent.findall("{*}idno")) != []:
             insertion_index = parent.index(idno_siblings[-1]) + 1
         elif (availability_siblings := parent.findall("{*}availability")) != []:
-            insertion_index = parent.index(availability_siblings[-1])
+            insertion_index = parent.index(availability_siblings[0])
         return insertion_index

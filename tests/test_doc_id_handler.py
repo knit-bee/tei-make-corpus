@@ -49,6 +49,35 @@ class DocIdToIdnoHandlerTest(unittest.TestCase):
             idno_elem.getnext().tag, "{http://www.tei-c.org/ns/1.0}availability"
         )
 
+    def test_idno_element_added_before_multiple_availability(self):
+        doc = etree.XML(
+            """
+            <TEI xmlns='http://www.tei-c.org/ns/1.0'>
+            <teiHeader>
+                <fileDesc>
+                    <titleStmt/>
+                    <publicationStmt>
+                        <publisher/>
+                        <date/>
+                        <availability/>
+                        <availability/>
+                        <availability/>
+                        <availability/>
+                    </publicationStmt>
+                </fileDesc>
+            </teiHeader>
+            </TEI>
+            """
+        )
+        self.default_handler.add_doc_id(doc, "path/to/file")
+        idno_elem = doc.find(".//{*}idno")
+        self.assertEqual(
+            idno_elem.getnext().tag, "{http://www.tei-c.org/ns/1.0}availability"
+        )
+        self.assertEqual(
+            idno_elem.getprevious().tag, "{http://www.tei-c.org/ns/1.0}date"
+        )
+
     def test_idno_added_as_last_child_if_no_availability(self):
         doc = etree.XML(
             """
