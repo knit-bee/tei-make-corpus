@@ -377,3 +377,74 @@ class DocIdToIdnoHandlerTest(unittest.TestCase):
             self.default_handler.add_doc_id(doc, "path/to/file")
         self.assertIn("WARNING", logged.output[0])
         self.assertIn("Incomplete <publicationStmt/>", logged.output[0])
+
+    def test_instantiation_of_class_with_regex_with_one_group_successful(self):
+        patterns = [
+            r"ab(\w)cd",
+            r".*_(\w+)\.xml",
+            r"/\w{2,}_(\w+)\.xml$",
+            r"(.*)",
+            r"/(\w*)",
+            r"[A-z]_(\w+)",
+            "ab\\w(\\d*)",
+        ]
+        for pattern in patterns:
+            with self.subTest():
+                doc_id_handler = DocIdToIdnoHandler(pattern)
+                self.assertTrue(isinstance(doc_id_handler, DocIdToIdnoHandler))
+
+    def test_class_instantiation_fails_with_regex_without_group(self):
+        patterns = [
+            r"(ab)(cd)",
+            "(ab)(ab)(ab)",
+            r"/\w{2,}_\w*\.",
+            r"[abcd]+\.xml",
+            "\\d{3}\\w+",
+            "\\w\\d",
+            "[A-ZÖÄÜ]{7}",
+        ]
+        for pattern in patterns:
+            with self.subTest():
+                with self.assertRaises(ValueError):
+                    DocIdToIdnoHandler(pattern)
+
+    def test_capturing_group_set_as_text_of_idno(self):
+        doc = etree.XML(
+            """
+            <TEI xmlns='http://www.tei-c.org/ns/1.0'>
+            <teiHeader>
+                <fileDesc>
+                    <titleStmt/>
+                    <publicationStmt>
+                        <publisher/>
+                        <availability/>
+                    </publicationStmt>
+                </fileDesc>
+            </teiHeader>
+            </TEI>
+            """
+        )
+        pattern_handler = DocIdToIdnoHandler(r".*/(\w+)\.xml$")
+        pattern_handler.add_doc_id(doc, "path/to/file.xml")
+        idno_elem = doc.find(".//{*}idno")
+        self.assertEqual(idno_elem.text, "file")
+
+    def test_basename_used_as_fallback_if_no_match_with_capturing_group(self):
+        doc = etree.XML(
+            """
+            <TEI xmlns='http://www.tei-c.org/ns/1.0'>
+            <teiHeader>
+                <fileDesc>
+                    <titleStmt/>
+                    <publicationStmt>
+                        <publisher/>
+                    </publicationStmt>
+                </fileDesc>
+            </teiHeader>
+            </TEI>
+            """
+        )
+        pattern_handler = DocIdToIdnoHandler(r".*/(\d+)\.xml$")
+        pattern_handler.add_doc_id(doc, "path/to/file.xml")
+        idno_elem = doc.find(".//{*}idno")
+        self.assertEqual(idno_elem.text, "file.xml")
