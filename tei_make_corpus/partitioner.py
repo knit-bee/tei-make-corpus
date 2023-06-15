@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from typing import Generator, List, Optional, Tuple
 
 from tei_make_corpus.cli.corpus_config import CorpusConfig
+from tei_make_corpus.doc_id_handler import DocIdHandler
 from tei_make_corpus.file_size_estimator import FileSizeEstimator
 from tei_make_corpus.header_handler import TeiHeaderHandler
 from tei_make_corpus.partition import Partition
@@ -15,6 +16,7 @@ class Partitioner:
     path_finder: PathFinder
     size_estimator: FileSizeEstimator
     xmlid_handler: XmlIdHandler
+    docid_handler: Optional[DocIdHandler] = None
 
     def get_partitions(
         self, corpus_dir: str, header_file: str, config: Optional[CorpusConfig] = None
@@ -56,6 +58,7 @@ class Partitioner:
                 all_files[start_index:end_index],
                 self.xmlid_handler,
                 clean_files=clean_files,
+                docid_handler=self.docid_handler,
             )
 
     def _determine_chunk_indices_num_docs(
