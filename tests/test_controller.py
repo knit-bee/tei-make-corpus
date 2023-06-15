@@ -397,3 +397,69 @@ class TeiMakeCorpusControllerTest(unittest.TestCase):
             result,
             [-1, False, True, "out.xml"],
         )
+
+    def test_controller_extracts_doc_id_option_without_value(self):
+        self.controller.process_arguments(["corpus", "-c", "header.xml", "--add-docid"])
+        self.assertEqual(self.mock_use_case.request.docid_pattern_index, 0)
+
+    def test_controller_extracts_doc_id_option_with_value(self):
+        args = [
+            "corpus -c header.xml --add-docid 1",
+            "corpus -c header.xml --add-docid=1",
+        ]
+        for arguments in args:
+            with self.subTest():
+                self.mock_use_case.request = None
+                self.controller.process_arguments(arguments.split())
+                self.assertEqual(self.mock_use_case.request.docid_pattern_index, 1)
+
+    def test_default_for_doc_id_option(self):
+        self.controller.process_arguments(["corpus", "-c", "header.xml"])
+        self.assertIsNone(self.mock_use_case.request.docid_pattern_index)
+
+    def test_invalid_value_for_doc_id_option_raises_error(self):
+        with self.assertRaises(SystemExit):
+            self.controller.process_arguments(
+                ["corpus", "-c", "header.xml", "--add-docid", "10"]
+            )
+
+    def test_invalid_type_for_doc_id_option_raises_error(self):
+        with self.assertRaises(SystemExit):
+            self.controller.process_arguments(
+                ["corpus", "-c", "header.xml", "--add-docid", "_(ab)\\.xml"]
+            )
+
+    def test_parse_doc_id_option_from_toml_file(self):
+        cfg = os.path.join(self.configs, "docid.cfg")
+        self.controller.process_arguments(
+            ["corpus", "-c", "header.xml", "--config", cfg]
+        )
+        self.assertEqual(self.mock_use_case.request.docid_pattern_index, 0)
+
+    def test_invalid_index_for_doc_id_option_in_toml_file_raises_error(self):
+        cfg = os.path.join(self.configs, "invalid-docid.cfg")
+        with self.assertRaises(SystemExit):
+            self.controller.process_arguments(
+                ["corpus", "-c", "header.xml", "--config", cfg]
+            )
+
+    def test_invalid_value_for_doc_id_option_in_toml_file_raises_error(self):
+        cfg = os.path.join(self.configs, "invalid-docid2.cfg")
+        with self.assertRaises(SystemExit):
+            self.controller.process_arguments(
+                ["corpus", "-c", "header.xml", "--config", cfg]
+            )
+
+    def test_cli_argument_overrides_cfg_file_option_for_doc_id(self):
+        cfg = os.path.join(self.configs, "docid.cfg")
+        self.controller.process_arguments(
+            ["corpus", "-c", "header.xml", "--config", cfg, "--add-docid=1"]
+        )
+        self.assertEqual(self.mock_use_case.request.docid_pattern_index, 1)
+
+    def test_no_error_raised_if_invalid_value_in_cfg_for_doc_id_but_correct_cli(self):
+        cfg = os.path.join(self.configs, "invalid-docid.cfg")
+        self.controller.process_arguments(
+            ["corpus", "-c", "header.xml", "--config", cfg, "--add-docid=1"]
+        )
+        self.assertEqual(self.mock_use_case.request.docid_pattern_index, 1)

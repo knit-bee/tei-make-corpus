@@ -20,6 +20,7 @@ class CliRequest:
     split_docs: int = -1
     split_size: int = -1
     prefix_xmlid: bool = False
+    docid_pattern_index: Optional[int] = None
 
 
 class TeiMakeCorpusUseCase(Protocol):

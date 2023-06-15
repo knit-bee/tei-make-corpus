@@ -8,6 +8,7 @@ if sys.version_info < (3, 11):
 else:
     import tomllib as toml
 
+from tei_make_corpus.cli.docid_pattern_map import PatternMap
 from tei_make_corpus.cli.make_corpus_usecase import CliRequest, TeiMakeCorpusUseCase
 
 
@@ -18,6 +19,7 @@ class TeiMakeCorpusController:
 
     def __init__(self, use_case: TeiMakeCorpusUseCase) -> None:
         self.use_case = use_case
+        self._doc_id_pattern_mapping = PatternMap()
 
     def process_arguments(self, arguments: List[str]) -> None:
         config_parser = argparse.ArgumentParser(
@@ -108,6 +110,15 @@ class TeiMakeCorpusController:
             the @xml:id, i.e. attributes with the same value as @xml:id but with a
             prepended '#'.""",
         )
+        parser.add_argument(
+            "--add-docid",
+            default=None,
+            const=0,
+            type=int,
+            nargs="?",
+            choices=self._doc_id_pattern_mapping.keys(),
+            help="",
+        )
         parser.set_defaults(**defaults)
         args = parser.parse_args(remaining_argv)
         if args.split_documents and args.split_size:
@@ -120,6 +131,11 @@ class TeiMakeCorpusController:
             parser.error("--split-size requires --to-file FILENAME")
         if not self._validate_split_value(args):
             parser.error("Split value should be greater 0")
+        if (
+            args.add_docid is not None
+            and args.add_docid not in self._doc_id_pattern_mapping
+        ):
+            parser.error(f"Invalid value for --add-docid: {args.add_docid}")
         self.use_case.process(
             CliRequest(
                 header_file=args.common_header,
@@ -129,6 +145,7 @@ class TeiMakeCorpusController:
                 split_docs=args.split_documents or -1,
                 split_size=args.split_size or -1,
                 prefix_xmlid=args.prefix_xmlid,
+                docid_pattern_index=args.add_docid,
             )
         )
 
