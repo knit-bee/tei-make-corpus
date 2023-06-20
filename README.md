@@ -144,7 +144,7 @@ To add XML processing instructions to the corpus file, use the *--processing-ins
 
 ```xml
 $ tei-make-corpus my_corpus -c header.xml --processing-instructions \
-'{"xml-model":"href=\path/to/sth\" type=\"application/xml\""}' | head -n 5
+'{"xml-model":"href=\"path/to/sth\" type=\"application/xml\""}' | head -n 5
 <?xml version='1.0' encoding='UTF-8'?>
 <?xml-model href="path/to/sth" type="application/xml"?>
 <teiCorpus xmlns="http://www.tei-c.org/ns/1.0">
