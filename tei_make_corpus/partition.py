@@ -1,6 +1,6 @@
 import logging
 from dataclasses import dataclass
-from typing import BinaryIO, List, Union
+from typing import BinaryIO, List, Optional, Union
 
 from lxml import etree
 
@@ -16,10 +16,14 @@ class Partition:
     files: List[str]
     xmlid_handler: XmlIdHandler
     clean_files: bool = False
+    processing_instructions: Optional[List[etree.PI]] = None
 
     def write_partition(self, path: Union[str, BinaryIO]) -> None:
         with etree.xmlfile(path, encoding="UTF-8") as xf:
             xf.write_declaration()
+            if self.processing_instructions is not None:
+                for pi in self.processing_instructions:
+                    xf.write(pi)
             with xf.element("teiCorpus", nsmap={None: "http://www.tei-c.org/ns/1.0"}):
                 xf.write("\n")
                 xf.write(self.header_handler.common_header())

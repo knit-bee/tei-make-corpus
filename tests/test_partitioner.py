@@ -2,6 +2,8 @@ import os
 import random
 import unittest
 
+from lxml import etree
+
 from tei_make_corpus.cli.corpus_config import CorpusConfig
 from tei_make_corpus.partitioner import Partitioner
 from tei_make_corpus.xmlid_handler import XmlIdRemover
@@ -239,3 +241,24 @@ class PartitionerTest(unittest.TestCase):
         config = CorpusConfig(clean_header=False, split_size=1000)
         partitions = self.partitioner.get_partitions("empty", self.header_file, config)
         self.assertEqual(list(partitions), [])
+
+    def test_processing_instructions_passed_to_partition(self):
+        pis = [etree.PI("test")]
+        partitioner = Partitioner(
+            self.mock_header_handler,
+            self.mock_path_finder,
+            self.size_estimator,
+            self.id_handler,
+        )
+        config = CorpusConfig(clean_header=False, processing_instructions=pis)
+        corpus_dir = os.path.join("tests", "testdata", "rec_corpus")
+        header_file = os.path.join("tests", "testdata", "header.xml")
+        corpus_files = [
+            os.path.join(root, file)
+            for root, dirs, files in os.walk(corpus_dir)
+            for file in files
+        ]
+        self.mock_path_finder.files[corpus_dir] = corpus_files
+        partition = next(partitioner.get_partitions(corpus_dir, header_file, config))
+        result = [pi.target for pi in partition.processing_instructions]
+        self.assertEqual(result, ["test"])

@@ -1,0 +1,6 @@
+prefix_xmlid=true
+to_file="out.xml"
+
+
+[section]
+prefix_xmlid = false

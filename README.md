@@ -20,10 +20,11 @@ $ pip install git+https://github.com/knit-bee/tei-make-corpus.git
 
 ```
 $ tei-make-corpus --help
-usage: tei-make-corpus [-h] --common-header COMMON_HEADER [--to-file FILENAME]
-                       [--deduplicate-header]
+usage: tei-make-corpus [-h] [--config CONFIG] --common-header COMMON_HEADER
+                       [--to-file FILENAME] [--deduplicate-header]
                        [--split-documents [SPLIT_DOCUMENTS] | --split-size
-                       [SPLIT_SIZE]]
+                       [SPLIT_SIZE]] [--prefix-xmlid]
+                       [--processing-instructions PROCESSING_INSTRUCTIONS]
                        corpus_dir
 
 Create a *teiCorpus* from a collection of TEI documents. The output will be
@@ -33,61 +34,75 @@ positional arguments:
   corpus_dir            Directory containing the TEI files. Only file with the
                         extension '.xml' are processed.
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
+  --config CONFIG, -k CONFIG
+                        Path to config file in TOML format for settings for
+                        optional arguments (i.e. corpus_dir and --common-header
+                        should be still passed as commandline arguments). Use
+                        [tei-make-corpus] as header or no header. Keys/
+                        argument names should match CL argument names but with
+                        underscore instead of dash.
   --common-header COMMON_HEADER, -c COMMON_HEADER
                         Xml file containing the common header for the whole
-                        corpus.
+                        corpus. This argument is required.
   --to-file FILENAME, -f FILENAME
                         Name of output file to write to. If this option is
                         enabled, the output is written to the file instead of
                         stdout.
   --deduplicate-header, -d
                         Remove elements from header of individual TEI files
-                        that are identical in the common header
-                        (experimental).
+                        that are identical in the common header (experimental).
   --split-documents [SPLIT_DOCUMENTS]
                         Use this option to split the teiCorpus into multiple
                         files. This option takes a NUMBER OF DOCUMENTS that are
                         written to one output file. This option requires the '
-                        --to-file' argument, which will be used as template
-                        for the names of all output files. The resulting files
-                        will be numbered consecutively. For example, if '--
-                        split-documents 10' is used, ten files are written to
-                        each output file. Each output file will be a valid,
-                        stand-alone teiCorpus and the same common header is
-                        used for all parts. If the last part would contain
-                        less than 30% of the intended number of TEI documents,
-                        all files will be distributed evenly (i.e. a part may
-                        then contain more than the indicated number of files).
-                        This option can also be used without passing a value,
-                        the default is 100 000 (documents per output file).
+                        --to-file' argument, which will be used as template for
+                        the names of all output files. The resulting files will
+                        be numbered consecutively. For example, if '--split-
+                        documents 10' is used, ten files are written to each
+                        output file. Each output file will be a valid, stand-
+                        alone teiCorpus and the same common header is used for
+                        all parts. If the last part would contain less than 30%
+                        of the intended number of TEI documents, all files will
+                        be distributed evenly (i.e. a part may then contain
+                        more than the indicated number of files). This option
+                        can also be used without passing a value, the default
+                        is 100 000 (documents per output file).
   --split-size [SPLIT_SIZE]
                         Use this option to split the teiCorpus into multiple
-                        files. This option takes an intended FILE SIZE IN
-                        BYTES for one output file. This option requires the '
-                        --to-file' argument, which will be used as template
-                        for the file names of all output files. The resulting
-                        files will be numbered consecutively. For example, if
-                        '--split-size 15000' is used, when the limit of 15
-                        kilobytes is reached, (after completing the current
-                        TEI document) a new output file will be used. This
-                        option can also be used without passing a value, the
-                        default is 150 000 000 (bytes per file, 150 MB).
-  --prefix-xmlid        
-                        Add a prefix to @xml:id attributes instead of removing
+                        files. This option takes an intended FILE SIZE IN BYTES
+                        for one output file. This option requires the '--to-
+                        file' argument, which will be used as template for the
+                        file names of all output files. The resulting files
+                        will be numbered consecutively. For example, if '--
+                        split-size 15000' is used, when the limit of 15
+                        kilobytes is reached, (after completing the current TEI
+                        document) a new output file will be used. This option
+                        can also be used without passing a value, the default
+                        is 150 000 000 (bytes per file, 150 MB).
+  --prefix-xmlid        Add a prefix to @xml:id attributes instead of removing
                         them. The prefix is generated from the the document's
                         file path and concatenated with the original value of
                         the @xml:id attribute (separated by '-'). For each
-                        @xml:id attribute, the prefix is also added to attributes
-                        referencing the @xml:id, i.e. attributes with the same
-                        value as @xml:id but with a prepended '#'.
-
+                        @xml:id attribute, the prefix is also added to
+                        attributes referencing the @xml:id, i.e. attributes
+                        with the same value as @xml:id but with a prepended
+                        '#'.
+  --processing-instructions PROCESSING_INSTRUCTIONS
+                        Add xml processing instructions to the teiCorpus file.
+                        If passed as commandline argument, the processing
+                        instructions should be formatted as a json-parsable
+                        string representing a dictionary, e.g. '{"a":"b"}'
+                        (with double quotes). If a toml file is used, use an
+                        inline table or, in multi-line format and used with
+                        global table header, prefix the sub-table with 'tei-
+                        make-corpus'.
 ```
 
 `tei-make-corpus` requires the path to a directory containing the TEI file and a file containing the information for the common header of the corpus.  
 All files in the corpus directory that don't end in `.xml` are ignored as well as files that don't contain a `TEI` element as root element.  
-The common header should be a formatted `teiHeader`. If the option `--deduplicate-header` is used, the individual header of each file is compared with the common header during the generation of the corpus, and elements that appear in the common header are removed from the individual header (experimental).  
+The common header should be a formatted `teiHeader`. If the option *--deduplicate-header* is used, the individual header of each file is compared with the common header during the generation of the corpus, and elements that appear in the common header are removed from the individual header (experimental).  
 The split options (*--split-size* and *--split-documents*) can also be used with unit prefixes (K, M, G, T), e.g. "2K" = 2000 Bytes.  
 As default, all `@xml:id ` attributes are removed from the individual TEI documents to avoid a clash of ids. With the option *--prefix-xmlid*, a prefix individual to each document can be added to `@xml:id` attributes and attributes referencing them (see example below).
 
@@ -124,6 +139,45 @@ As default, all `@xml:id ` attributes are removed from the individual TEI docume
 </tr>
 
 </table>
+
+To add XML processing instructions to the corpus file, use the *--processing-instructions*  option. From the commandline, pass a dictionary as a json-parsable string (i.e. keys and values should be enclosed with double quotes).
+
+```xml
+$ tei-make-corpus my_corpus -c header.xml --processing-instructions \
+'{"xml-model":"href=\"path/to/sth\" type=\"application/xml\""}' | head -n 5
+<?xml version='1.0' encoding='UTF-8'?>
+<?xml-model href="path/to/sth" type="application/xml"?>
+<teiCorpus xmlns="http://www.tei-c.org/ns/1.0">
+<teiHeader>
+    <fileDesc>
+        <titleStmt>
+```
+
+If a config file is used, the processing instructions can be formatted as an inline table or multi-line table. In mutli-line format, the table header should be prefixed with 'tei-make-corpus' if a global table header is used.
+```sh
+# inline table format
+$ cat config.toml
+processing_instructions = {a="b", a2="c"}
+prefix_xmlid = true
+
+# multi-line format
+
+# without global table header
+$ cat config3.toml
+prefix_xmlid = true
+[processing_instructions]
+a = "b"
+a2 = "c"
+
+# with global table header
+$ cat config3.toml
+[tei-make-corpus]
+prefix_xmlid = true
+
+[tei-make-corpus.processing_instructions]
+a = "b"
+a2 = "c"
+```
 
 
 ### Example usage
