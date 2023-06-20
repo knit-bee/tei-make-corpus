@@ -1,8 +1,11 @@
 from dataclasses import dataclass
-from typing import Optional, Protocol
+from typing import Dict, Optional, Protocol
 
 from tei_make_corpus.cli.corpus_config import CorpusConfig
 from tei_make_corpus.cli.docid_pattern_map import PatternMap
+from tei_make_corpus.construct_processing_instructions import (
+    construct_processing_instructions,
+)
 from tei_make_corpus.corpus_maker import TeiCorpusMaker
 from tei_make_corpus.corpus_stream import CorpusStream
 from tei_make_corpus.doc_id_handler import DocIdToIdnoHandler
@@ -22,6 +25,7 @@ class CliRequest:
     split_docs: int = -1
     split_size: int = -1
     prefix_xmlid: bool = False
+    processing_instructions: Optional[Dict[str, str]] = None
     docid_pattern_index: Optional[int] = None
 
 
@@ -49,6 +53,11 @@ class TeiMakeCorpusUseCaseImpl:
             docid_handler = DocIdToIdnoHandler(
                 PatternMap().get(request.docid_pattern_index, None)
             )
+        processing_instructions = None
+        if request.processing_instructions is not None:
+            processing_instructions = construct_processing_instructions(
+                request.processing_instructions
+            )
         partitioner = Partitioner(
             header_handler=header_handler,
             path_finder=path_finder,
@@ -60,6 +69,7 @@ class TeiMakeCorpusUseCaseImpl:
             clean_header=request.clean_header,
             split_docs=request.split_docs,
             split_size=request.split_size,
+            processing_instructions=processing_instructions,
         )
         corpus_maker = TeiCorpusMaker(
             outstream=self.out_stream, partitioner=partitioner, config=config

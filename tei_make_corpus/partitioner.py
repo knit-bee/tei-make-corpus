@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from typing import Generator, List, Optional, Tuple
 
+from lxml import etree
+
 from tei_make_corpus.cli.corpus_config import CorpusConfig
 from tei_make_corpus.doc_id_handler import DocIdHandler
 from tei_make_corpus.file_size_estimator import FileSizeEstimator
@@ -24,16 +26,19 @@ class Partitioner:
         clean = False
         docs_per_file = -1
         doc_size = -1
+        processing_instructions = None
         if config is not None:
             clean = config.clean_header
             docs_per_file = config.split_docs
             doc_size = config.split_size
+            processing_instructions = config.processing_instructions
         return self._determine_partitions(
             corpus_dir,
             header_file,
             clean_files=clean,
             docs_per_file=docs_per_file,
             doc_size=doc_size,
+            xml_processing_instructions=processing_instructions,
         )
 
     def _determine_partitions(
@@ -43,6 +48,7 @@ class Partitioner:
         clean_files: bool = False,
         docs_per_file: int = -1,
         doc_size: int = -1,
+        xml_processing_instructions: Optional[List[etree.PI]] = None,
     ) -> Generator[Partition, None, None]:
         all_files = self.path_finder.get_paths_for_corpus_files(corpus_dir, header_file)
         total_number_files = len(all_files)
@@ -58,6 +64,7 @@ class Partitioner:
                 all_files[start_index:end_index],
                 self.xmlid_handler,
                 clean_files=clean_files,
+                processing_instructions=xml_processing_instructions,
                 docid_handler=self.docid_handler,
             )
 

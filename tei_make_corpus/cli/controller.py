@@ -1,4 +1,5 @@
 import argparse
+import json
 import re
 import sys
 from typing import Dict, List, Optional, Union
@@ -111,6 +112,14 @@ class TeiMakeCorpusController:
             prepended '#'.""",
         )
         parser.add_argument(
+            "--processing-instructions",
+            type=json.loads,
+            help="""Add xml processing instructions to the teiCorpus file. If passed as commandline
+            argument, the processing instructions should be formatted as a json-parsable string representing
+            a dictionary, e.g. '{"a":"b"}' (with double quotes). If a toml file is used, use an inline table
+            or, in multi-line format and used with global table header, prefix the sub-table with 'tei-make-corpus'. """,
+        )
+        parser.add_argument(
             "--add-docid",
             default=None,
             const=0,
@@ -124,11 +133,11 @@ class TeiMakeCorpusController:
             Otherwise, a predefined regex is used to search the filename and extract a
             capturing group that should be added as identifier. If the filename can't be
             matched, the basename is used instead and a warning is logged.
-            Possible regular expressions
-            are:
+            Possible regular expressions are:
             {self._doc_id_pattern_mapping}
             """,
         )
+
         parser.set_defaults(**defaults)
         args = parser.parse_args(remaining_argv)
         if args.split_documents and args.split_size:
@@ -155,6 +164,7 @@ class TeiMakeCorpusController:
                 split_docs=args.split_documents or -1,
                 split_size=args.split_size or -1,
                 prefix_xmlid=args.prefix_xmlid,
+                processing_instructions=args.processing_instructions,
                 docid_pattern_index=args.add_docid,
             )
         )
