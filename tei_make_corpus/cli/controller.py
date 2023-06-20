@@ -138,7 +138,7 @@ class TeiMakeCorpusController:
                 split_docs=args.split_documents or -1,
                 split_size=args.split_size or -1,
                 prefix_xmlid=args.prefix_xmlid,
-                pis=args.processing_instructions,
+                processing_instructions=args.processing_instructions,
             )
         )
 

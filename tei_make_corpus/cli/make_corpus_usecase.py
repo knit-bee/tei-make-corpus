@@ -23,7 +23,7 @@ class CliRequest:
     split_docs: int = -1
     split_size: int = -1
     prefix_xmlid: bool = False
-    pis: Optional[Dict[str, str]] = None
+    processing_instructions: Optional[Dict[str, str]] = None
 
 
 class TeiMakeCorpusUseCase(Protocol):
@@ -46,8 +46,10 @@ class TeiMakeCorpusUseCaseImpl:
         size_estimator = FileSizeEstimatorImpl()
         xmlid_handler = create_xmlid_handler(request.prefix_xmlid)
         processing_instructions = None
-        if request.pis is not None:
-            processing_instructions = construct_processing_instructions(request.pis)
+        if request.processing_instructions is not None:
+            processing_instructions = construct_processing_instructions(
+                request.processing_instructions
+            )
         partitioner = Partitioner(
             header_handler=header_handler,
             path_finder=path_finder,

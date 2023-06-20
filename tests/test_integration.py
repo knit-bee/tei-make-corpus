@@ -327,7 +327,7 @@ class IntegrationTest(unittest.TestCase):
         request = CliRequest(
             header_file=os.path.join(self.test_dir, "header.xml"),
             corpus_dir=os.path.join(self.test_dir, "corpus"),
-            pis={"xml-model": "some text"},
+            processing_instructions={"xml-model": "some text"},
         )
         with contextlib.redirect_stdout(
             io.TextIOWrapper(io.BytesIO(), sys.stdout.encoding)

@@ -402,20 +402,22 @@ class TeiMakeCorpusControllerTest(unittest.TestCase):
         self.controller.process_arguments(
             ["corpus", "-c", "head.xml", "--processing-instructions", '{"a":"b"}']
         )
-        self.assertEqual(self.mock_use_case.request.pis, {"a": "b"})
+        self.assertEqual(self.mock_use_case.request.processing_instructions, {"a": "b"})
 
     def test_read_processing_instructions_from_file_inline_table(self):
         cfg = os.path.join(self.configs, "pi.cfg")
         self.controller.process_arguments(["corpus", "-c", "head.xml", "-k", cfg])
         self.assertEqual(
-            self.mock_use_case.request.pis, {"a": "b", "a2": "href='path/to/sth'"}
+            self.mock_use_case.request.processing_instructions,
+            {"a": "b", "a2": "href='path/to/sth'"},
         )
 
     def test_read_processing_instructions_from_file_multiline_table(self):
         cfg = os.path.join(self.configs, "pi2.cfg")
         self.controller.process_arguments(["corpus", "-c", "head.xml", "-k", cfg])
         self.assertEqual(
-            self.mock_use_case.request.pis, {"a": "b", "a2": "href='path/to/sth'"}
+            self.mock_use_case.request.processing_instructions,
+            {"a": "b", "a2": "href='path/to/sth'"},
         )
 
     def test_read_processing_instructions_from_file_multiline_table_without_global_header(
@@ -424,7 +426,8 @@ class TeiMakeCorpusControllerTest(unittest.TestCase):
         cfg = os.path.join(self.configs, "pi3.cfg")
         self.controller.process_arguments(["corpus", "-c", "head.xml", "-k", cfg])
         self.assertEqual(
-            self.mock_use_case.request.pis, {"a": "b", "a2": "href='path/to/sth'"}
+            self.mock_use_case.request.processing_instructions,
+            {"a": "b", "a2": "href='path/to/sth'"},
         )
 
     def test_read_processing_instructions_from_file_multiline_table_with_other_values(
@@ -436,4 +439,4 @@ class TeiMakeCorpusControllerTest(unittest.TestCase):
 
     def test_default_for_processing_instructions(self):
         self.controller.process_arguments(["corpus", "-c", "head.xml"])
-        self.assertIsNone(self.mock_use_case.request.pis)
+        self.assertIsNone(self.mock_use_case.request.processing_instructions)
