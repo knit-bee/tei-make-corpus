@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import Dict, Optional, Protocol
 
 from tei_make_corpus.cli.corpus_config import CorpusConfig
-from tei_make_corpus.cli.docid_pattern_map import PatternMap
+from tei_make_corpus.cli.docid_pattern_map import PATTERN_MAP
 from tei_make_corpus.construct_processing_instructions import (
     construct_processing_instructions,
 )
@@ -51,7 +51,7 @@ class TeiMakeCorpusUseCaseImpl:
         docid_handler = None
         if request.docid_pattern_index is not None:
             docid_handler = DocIdToIdnoHandler(
-                PatternMap().get(request.docid_pattern_index, None)
+                PATTERN_MAP.get(request.docid_pattern_index, None)
             )
         processing_instructions = None
         if request.processing_instructions is not None:

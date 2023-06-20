@@ -9,7 +9,7 @@ if sys.version_info < (3, 11):
 else:
     import tomllib as toml
 
-from tei_make_corpus.cli.docid_pattern_map import PatternMap
+from tei_make_corpus.cli.docid_pattern_map import PATTERN_MAP
 from tei_make_corpus.cli.make_corpus_usecase import CliRequest, TeiMakeCorpusUseCase
 
 
@@ -20,7 +20,7 @@ class TeiMakeCorpusController:
 
     def __init__(self, use_case: TeiMakeCorpusUseCase) -> None:
         self.use_case = use_case
-        self._doc_id_pattern_mapping = PatternMap()
+        self._doc_id_pattern_mapping = PATTERN_MAP
 
     def process_arguments(self, arguments: List[str]) -> None:
         config_parser = argparse.ArgumentParser(
