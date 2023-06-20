@@ -102,7 +102,7 @@ options:
 
 `tei-make-corpus` requires the path to a directory containing the TEI file and a file containing the information for the common header of the corpus.  
 All files in the corpus directory that don't end in `.xml` are ignored as well as files that don't contain a `TEI` element as root element.  
-The common header should be a formatted `teiHeader`. If the option `--deduplicate-header` is used, the individual header of each file is compared with the common header during the generation of the corpus, and elements that appear in the common header are removed from the individual header (experimental).  
+The common header should be a formatted `teiHeader`. If the option *--deduplicate-header* is used, the individual header of each file is compared with the common header during the generation of the corpus, and elements that appear in the common header are removed from the individual header (experimental).  
 The split options (*--split-size* and *--split-documents*) can also be used with unit prefixes (K, M, G, T), e.g. "2K" = 2000 Bytes.  
 As default, all `@xml:id ` attributes are removed from the individual TEI documents to avoid a clash of ids. With the option *--prefix-xmlid*, a prefix individual to each document can be added to `@xml:id` attributes and attributes referencing them (see example below).
 
@@ -139,6 +139,45 @@ As default, all `@xml:id ` attributes are removed from the individual TEI docume
 </tr>
 
 </table>
+
+To add XML processing instructions to the corpus file, use the *--processing-instructions*  option. From the commandline, pass a dictionary as a json-parsable string (i.e. keys and values should be enclosed with double quotes).
+
+```xml
+$ tei-make-corpus my_corpus -c header.xml --processing-instructions \
+'{"xml-model":"href=\path/to/sth\" type=\"application/xml\""}' | head -n 5
+<?xml version='1.0' encoding='UTF-8'?>
+<?xml-model href="path/to/sth" type="application/xml"?>
+<teiCorpus xmlns="http://www.tei-c.org/ns/1.0">
+<teiHeader>
+    <fileDesc>
+        <titleStmt>
+```
+
+If a config file is used, the processing instructions can be formatted as an inline table or multi-line table. In mutli-line format, the table header should be prefixed with 'tei-make-corpus' if a global table header is used.
+```sh
+# inline table format
+$ cat config.toml
+processing_instructions = {a="b", a2="c"}
+prefix_xmlid = true
+
+# multi-line format
+
+# without global table header
+$ cat config3.toml
+prefix_xmlid = true
+[processing_instructions]
+a = "b"
+a2 = "c"
+
+# with global table header
+$ cat config3.toml
+[tei-make-corpus]
+prefix_xmlid = true
+
+[tei-make-corpus.processing_instructions]
+a = "b"
+a2 = "c"
+```
 
 
 ### Example usage
