@@ -24,6 +24,7 @@ usage: tei-make-corpus [-h] [--config CONFIG] --common-header COMMON_HEADER
                        [--to-file FILENAME] [--deduplicate-header]
                        [--split-documents [SPLIT_DOCUMENTS] | --split-size
                        [SPLIT_SIZE]] [--prefix-xmlid]
+                       [--processing-instructions PROCESSING_INSTRUCTIONS]
                        corpus_dir
 
 Create a *teiCorpus* from a collection of TEI documents. The output will be
@@ -88,6 +89,15 @@ options:
                         attributes referencing the @xml:id, i.e. attributes
                         with the same value as @xml:id but with a prepended
                         '#'.
+  --processing-instructions PROCESSING_INSTRUCTIONS
+                        Add xml processing instructions to the teiCorpus file.
+                        If passed as commandline argument, the processing
+                        instructions should be formatted as a json-parsable
+                        string representing a dictionary, e.g. '{"a":"b"}'
+                        (with double quotes). If a toml file is used, use an
+                        inline table or, in multi-line format and used with
+                        global table header, prefix the sub-table with 'tei-
+                        make-corpus'.
 ```
 
 `tei-make-corpus` requires the path to a directory containing the TEI file and a file containing the information for the common header of the corpus.  
