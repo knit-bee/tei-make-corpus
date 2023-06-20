@@ -60,7 +60,7 @@ class TeiMakeCorpusUseCaseImpl:
             clean_header=request.clean_header,
             split_docs=request.split_docs,
             split_size=request.split_size,
-            processing_instr=processing_instructions,
+            processing_instructions=processing_instructions,
         )
         corpus_maker = TeiCorpusMaker(
             outstream=self.out_stream, partitioner=partitioner, config=config

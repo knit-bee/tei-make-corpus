@@ -16,13 +16,13 @@ class Partition:
     files: List[str]
     xmlid_handler: XmlIdHandler
     clean_files: bool = False
-    xml_processing_instructions: Optional[List[etree.PI]] = None
+    processing_instructions: Optional[List[etree.PI]] = None
 
     def write_partition(self, path: Union[str, BinaryIO]) -> None:
         with etree.xmlfile(path, encoding="UTF-8") as xf:
             xf.write_declaration()
-            if self.xml_processing_instructions is not None:
-                for pi in self.xml_processing_instructions:
+            if self.processing_instructions is not None:
+                for pi in self.processing_instructions:
                     xf.write(pi)
             with xf.element("teiCorpus", nsmap={None: "http://www.tei-c.org/ns/1.0"}):
                 xf.write("\n")

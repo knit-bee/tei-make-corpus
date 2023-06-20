@@ -29,7 +29,7 @@ class Partitioner:
             clean = config.clean_header
             docs_per_file = config.split_docs
             doc_size = config.split_size
-            processing_instructions = config.processing_instr
+            processing_instructions = config.processing_instructions
         return self._determine_partitions(
             corpus_dir,
             header_file,
@@ -62,7 +62,7 @@ class Partitioner:
                 all_files[start_index:end_index],
                 self.xmlid_handler,
                 clean_files=clean_files,
-                xml_processing_instructions=xml_processing_instructions,
+                processing_instructions=xml_processing_instructions,
             )
 
     def _determine_chunk_indices_num_docs(

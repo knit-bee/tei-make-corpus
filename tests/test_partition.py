@@ -254,7 +254,7 @@ class PartitionTest(unittest.TestCase):
             self.mock_header_handler,
             [],
             self.xmlid_handler,
-            xml_processing_instructions=xml_pi,
+            processing_instructions=xml_pi,
         )
         partition.write_partition(self.mock_stream.path())
         self.mock_stream.output_file.seek(0)
@@ -272,7 +272,7 @@ class PartitionTest(unittest.TestCase):
             self.mock_header_handler,
             [],
             self.xmlid_handler,
-            xml_processing_instructions=xml_pis,
+            processing_instructions=xml_pis,
         )
         partition.write_partition(self.mock_stream.path())
         self.mock_stream.output_file.seek(0)

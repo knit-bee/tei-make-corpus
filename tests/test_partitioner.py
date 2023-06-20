@@ -250,7 +250,7 @@ class PartitionerTest(unittest.TestCase):
             self.size_estimator,
             self.id_handler,
         )
-        config = CorpusConfig(clean_header=False, processing_instr=pis)
+        config = CorpusConfig(clean_header=False, processing_instructions=pis)
         corpus_dir = os.path.join("tests", "testdata", "rec_corpus")
         header_file = os.path.join("tests", "testdata", "header.xml")
         corpus_files = [
@@ -260,5 +260,5 @@ class PartitionerTest(unittest.TestCase):
         ]
         self.mock_path_finder.files[corpus_dir] = corpus_files
         partition = next(partitioner.get_partitions(corpus_dir, header_file, config))
-        result = [pi.target for pi in partition.xml_processing_instructions]
+        result = [pi.target for pi in partition.processing_instructions]
         self.assertEqual(result, ["test"])
