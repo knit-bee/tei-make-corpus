@@ -98,6 +98,20 @@ options:
                         inline table or, in multi-line format and used with
                         global table header, prefix the sub-table with 'tei-
                         make-corpus'.
+  --add-docid [{0,1,2,3}]
+                        Add an <idno/> element with @type='docId' attribute to
+                        teiHeader/fileDesc/publicationStmt to each TEI
+                        document in the teiCorpus containing a document
+                        identifier. The doc id is derived from the original
+                        filename. If used without value, it defaults to 0,
+                        i.e. the basename of the file is added as doc id.
+                        Otherwise, a predefined regex is used to search the
+                        filename and extract a capturing group that should be
+                        added as identifier. If the filename can't be matched,
+                        the basename is used instead and a warning is logged.
+                        Possible regular expressions are: {0: None, 1:
+                        '.*/\\w{2,3}_(\\w+)\\.xml$', 2: '.*/(\\w+)\\.', 3:
+                        '.*/\\w{2,3}_(.+)\\.xml$'}
 ```
 
 `tei-make-corpus` requires the path to a directory containing the TEI file and a file containing the information for the common header of the corpus.  
@@ -178,6 +192,22 @@ prefix_xmlid = true
 a = "b"
 a2 = "c"
 ```
+
+The option *--add-docid* can be used to add a document identifier to each TEI document. The doc id is derived from the original file path and as default the basename of the path is used. A set of predefined regular expressions is available to extract only part of the file path as document identifier, e.g.:
+
+```xml
+$ ls my_corpus
+PRE_Ahfb5ls.xml
+$ tei-make-corpus my_corpus -c header.xml --add-docid 1 | grep '<idno type="docId">'
+<idno type="docId">Ahfb5ls</idno>
+```
+
+The extracted doc id is added as text content of a `<idno/>` element with `@type='docId'`. This `<idno/>` element is inserted in `teiHeader/fileDesc/publicationStmt`:
+  - after the last `<idno/>` child, if present
+  - else: before `<availability/>`, if present
+  - else: as last child of `<publicationStmt/>`
+
+If the `<publicationStmt/>` is empty of contains only `<p/>` children, `<p/>` is used as tag for the new element and no `@type` attribute is added.
 
 
 ### Example usage
