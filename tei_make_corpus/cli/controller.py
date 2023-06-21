@@ -126,8 +126,8 @@ class TeiMakeCorpusController:
             type=int,
             nargs="?",
             choices=self._doc_id_pattern_mapping.keys(),
-            help=f"""Add an <idno/> element to teiHeader/fileDesc/publicationStmt to each
-            TEI document in the teiCorpus containing a document identifier. The doc id
+            help=f"""Add an <idno/> element with @type='docId' attribute to teiHeader/fileDesc/publicationStmt
+            to each TEI document in the teiCorpus containing a document identifier. The doc id
             is derived from the original filename. If used without value, it defaults to 0,
             i.e. the basename of the file is added as doc id.
             Otherwise, a predefined regex is used to search the filename and extract a
