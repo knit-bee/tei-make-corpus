@@ -470,3 +470,44 @@ class DocIdToIdnoHandlerTest(unittest.TestCase):
             pattern_handler.add_doc_id(doc, filepath)
         self.assertIn("WARNING", logged.output[0])
         self.assertIn(filepath, logged.output[0])
+
+    def test_type_attribute_added(self):
+        doc = etree.XML(
+            """
+            <TEI xmlns='http://www.tei-c.org/ns/1.0'>
+            <teiHeader>
+                <fileDesc>
+                    <titleStmt/>
+                    <publicationStmt>
+                        <publisher/>
+                        <availability/>
+                    </publicationStmt>
+                </fileDesc>
+            </teiHeader>
+            </TEI>
+            """
+        )
+        self.default_handler.add_doc_id(doc, "path/to/file")
+        self.assertEqual(
+            doc.find(".//{*}fileDesc/{*}publicationStmt/{*}idno").attrib,
+            {"type": "docId"},
+        )
+
+    def test_no_type_attribute_added_if_new_element_is_p(self):
+        doc = etree.XML(
+            """
+            <TEI xmlns='http://www.tei-c.org/ns/1.0'>
+            <teiHeader>
+                <fileDesc>
+                    <titleStmt/>
+                    <publicationStmt>
+                        <p n='1'/>
+                        <p n='2'/>
+                    </publicationStmt>
+                </fileDesc>
+            </teiHeader>
+            </TEI>
+            """
+        )
+        self.default_handler.add_doc_id(doc, "path/to/file")
+        self.assertEqual(doc.find(".//{*}publicationStmt")[-1].attrib, {})

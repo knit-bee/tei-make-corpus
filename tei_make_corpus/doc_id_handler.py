@@ -9,7 +9,19 @@ logger = logging.getLogger(__name__)
 
 
 class DocIdHandler(Protocol):
+    """
+    Protocol defining interface for classes responsible for adding a
+    document identifier to each TEI document in the teiCorpus.
+    """
+
     def add_doc_id(self, doc_root: etree._Element, file_path: str) -> None:
+        """
+        Add a document identifier to element tree of TEI document.
+
+        doc_root:   root element of TEI element tree
+
+        file_path:  path of the xml file containing the TEI document
+        """
         ...
 
 
@@ -34,21 +46,27 @@ class DocIdToIdnoHandler:
 
     def add_doc_id(self, doc_root: etree._Element, file_path: str) -> None:
         """
-        Add a <idno/> element as child of teiHeader/fileDesc/publicationStmt
+        Add an <idno/> element as child of teiHeader/fileDesc/publicationStmt
         containing the basename of file_path, or, if a doc_id_pattern was
-        set,the corresponding part of the filepath.
-        The new <idno/> element is as following sibling of the last <idno/>,
-        if present, or before any <availability/> element, if present;
-        otherwise it is added as last child of <publicationStmt/>.
+        set, the corresponding part of the filepath.
+        The new <idno/> element is added as following sibling of the last
+        <idno/>, if present, or before any <availability/> element, if
+        present; otherwise it is added as last child of <publicationStmt/>.
+        Also, a @type="docId" attribute is added to the <idno/> element.
 
-        doc_root: etree._Element        Root element of a element tree
+        If <publicationStmt/> has no children or <p/> as first child, the
+        tag of the new element is set to <p/> instead of <idno/>.
+
+        doc_root: etree._Element        Root element of an element tree
                                         representing a TEI document
         file_path: str                  A string from which the document
                                         id is extracted. As default, the
                                         basename (i.e. the part of the
                                         string after the last slash) is
                                         used. If a doc_id_pattern was set,
-                                        it will be used to search file_path.
+                                        it will be used to search file_path
+                                        and extract the group corresponding
+                                        to the doc id.
         """
         publstmt_elem = doc_root.find(".//{*}teiHeader/{*}fileDesc/{*}publicationStmt")
         if publstmt_elem is None:
@@ -61,7 +79,7 @@ class DocIdToIdnoHandler:
             new_idno = etree.Element("p")
             logger.warning("Incomplete <publicationStmt/> in file: %s" % file_path)
         else:
-            new_idno = etree.Element("idno")
+            new_idno = etree.Element("idno", attrib={"type": "docId"})
         new_idno.text = self._extract_doc_id(file_path)
         insertion_index = self._determine_insertion_index(publstmt_elem)
         publstmt_elem.insert(insertion_index, new_idno)
