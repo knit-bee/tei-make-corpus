@@ -13,6 +13,30 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class Partition:
+    """
+    Represents a teiCorpus.
+
+    Partition is created with a list of TEI files that form the corpus
+    and configuration classes and values.
+
+    header_handler:     implementation of TeiHeaderHandler interface,
+                        provides common corpus header and removes elements
+                        in individual headers that are repeated in the
+                        common header
+    files:              list of files paths
+    xmlid_handler:      subclass of XmlIdHandler, handles @xml:id in
+                        individual TEI documents
+    clean_files:        flag determining if individual headers should be
+                        cleared of elements already present in the common
+                        header. Default is false.
+    processing_instructions:
+                        list of processing instructions (as lxml.etree.PI),
+                        default is None
+    docid_handler:      implementation of DocIdHandler interface, allows
+                        adding a document identifier to individual TEI
+                        documents
+    """
+
     header_handler: TeiHeaderHandler
     files: List[str]
     xmlid_handler: XmlIdHandler
@@ -21,6 +45,9 @@ class Partition:
     docid_handler: Optional[DocIdHandler] = None
 
     def write_partition(self, path: Union[str, BinaryIO]) -> None:
+        """
+        Write teiCorpus according to chosen settings to output stream.
+        """
         with etree.xmlfile(path, encoding="UTF-8") as xf:
             xf.write_declaration()
             if self.processing_instructions is not None:
