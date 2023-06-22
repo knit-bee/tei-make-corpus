@@ -36,10 +36,10 @@ class TeiHeaderHandlerImpl:
         common teiHeader of the corpus.
         """
         self._header_file = header_file_path
-        self._cheader = self._construct_common_header(header_file_path)
+        self._common_header = self._construct_common_header(header_file_path)
 
     def common_header(self) -> etree._Element:
-        return self._cheader
+        return self._common_header
 
     def declutter_individual_header(self, iheader: etree._Element) -> None:
         """
@@ -56,14 +56,16 @@ class TeiHeaderHandlerImpl:
         as each @key='value' pair is present on both elements.
 
         """
-        for element in self._cheader.iterdescendants():
+        for element in self._common_header.iterdescendants():
             if etree.QName(element.tag).localname in self.tags_no_leftover_sibling:
                 continue
             matching = self._element_equivalent_in_individual_header(element, iheader)
             for struct_match in matching:
                 if elements_equal(element, struct_match, ignore_ns=True):
                     struct_match.getparent().remove(struct_match)
-        for element in self._cheader.iterdescendants(self.tags_no_leftover_sibling):
+        for element in self._common_header.iterdescendants(
+            self.tags_no_leftover_sibling
+        ):
             matching = self._element_equivalent_in_individual_header(element, iheader)
             for struct_match in matching:
                 if elements_equal(element, struct_match, ignore_ns=True):
@@ -78,7 +80,7 @@ class TeiHeaderHandlerImpl:
     def _element_equivalent_in_individual_header(
         self, element: etree._Element, iheader: etree._Element
     ) -> List[etree._Element]:
-        cheader_tree = self._cheader.getroottree()
+        cheader_tree = self._common_header.getroottree()
         elem_xpath = cheader_tree.getelementpath(element)
         return iheader.findall(
             self._adjust_xpath(elem_xpath),
