@@ -9,6 +9,7 @@ if sys.version_info < (3, 11):
 else:
     import tomllib as toml
 
+from tei_make_corpus.cli.docid_pattern_map import PATTERN_MAP
 from tei_make_corpus.cli.make_corpus_usecase import CliRequest, TeiMakeCorpusUseCase
 
 
@@ -19,6 +20,7 @@ class TeiMakeCorpusController:
 
     def __init__(self, use_case: TeiMakeCorpusUseCase) -> None:
         self.use_case = use_case
+        self._doc_id_pattern_mapping = PATTERN_MAP
 
     def process_arguments(self, arguments: List[str]) -> None:
         config_parser = argparse.ArgumentParser(
@@ -117,6 +119,25 @@ class TeiMakeCorpusController:
             a dictionary, e.g. '{"a":"b"}' (with double quotes). If a toml file is used, use an inline table
             or, in multi-line format and used with global table header, prefix the sub-table with 'tei-make-corpus'. """,
         )
+        parser.add_argument(
+            "--add-docid",
+            default=None,
+            const=0,
+            type=int,
+            nargs="?",
+            choices=self._doc_id_pattern_mapping.keys(),
+            help=f"""Add an <idno/> element with @type='docId' attribute to teiHeader/fileDesc/publicationStmt
+            to each TEI document in the teiCorpus containing a document identifier. The doc id
+            is derived from the original filename. If used without value, it defaults to 0,
+            i.e. the basename of the file is added as doc id.
+            Otherwise, a predefined regex is used to search the filename and extract a
+            capturing group that should be added as identifier. If the filename can't be
+            matched, the basename is used instead and a warning is logged.
+            Possible regular expressions are:
+            {self._doc_id_pattern_mapping}
+            """,
+        )
+
         parser.set_defaults(**defaults)
         args = parser.parse_args(remaining_argv)
         if args.split_documents and args.split_size:
@@ -129,6 +150,11 @@ class TeiMakeCorpusController:
             parser.error("--split-size requires --to-file FILENAME")
         if not self._validate_split_value(args):
             parser.error("Split value should be greater 0")
+        if (
+            args.add_docid is not None
+            and args.add_docid not in self._doc_id_pattern_mapping
+        ):
+            parser.error(f"Invalid value for --add-docid: {args.add_docid}")
         self.use_case.process(
             CliRequest(
                 header_file=args.common_header,
@@ -139,6 +165,7 @@ class TeiMakeCorpusController:
                 split_size=args.split_size or -1,
                 prefix_xmlid=args.prefix_xmlid,
                 processing_instructions=args.processing_instructions,
+                docid_pattern_index=args.add_docid,
             )
         )
 

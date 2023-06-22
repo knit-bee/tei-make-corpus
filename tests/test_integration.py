@@ -338,6 +338,60 @@ class IntegrationTest(unittest.TestCase):
         result = [node.target for node in doc.xpath("preceding-sibling::node()")]
         self.assertEqual(result, ["xml-model"])
 
+    def test_basename_added_as_doc_id(self):
+        request = CliRequest(
+            header_file=os.path.join(self.test_dir, "xmlid", "header.xml"),
+            corpus_dir=os.path.join(self.test_dir, "xmlid"),
+            docid_pattern_index=0,
+        )
+        with contextlib.redirect_stdout(
+            io.TextIOWrapper(io.BytesIO(), sys.stdout.encoding)
+        ) as pseudo:
+            self.use_case.process(request)
+        pseudo.seek(0)
+        doc = etree.parse(pseudo)
+        doc_ids = [
+            elem.text
+            for elem in doc.findall(".//{*}fileDesc/{*}publicationStmt/{*}idno")
+        ]
+        self.assertEqual(doc_ids, ["file1.xml", "file2.xml"])
+
+    def test_regex_extracted_doc_id_added(self):
+        request = CliRequest(
+            header_file=os.path.join(self.test_dir, "xmlid", "header.xml"),
+            corpus_dir=os.path.join(self.test_dir, "xmlid"),
+            docid_pattern_index=2,
+        )
+        with contextlib.redirect_stdout(
+            io.TextIOWrapper(io.BytesIO(), sys.stdout.encoding)
+        ) as pseudo:
+            self.use_case.process(request)
+        pseudo.seek(0)
+        doc = etree.parse(pseudo)
+        doc_ids = [
+            elem.text
+            for elem in doc.findall(".//{*}fileDesc/{*}publicationStmt/{*}idno")
+        ]
+        self.assertEqual(doc_ids, ["file1", "file2"])
+
+    def test_doc_id_not_added_if_option_not_used(self):
+        request = CliRequest(
+            header_file=os.path.join(self.test_dir, "xmlid", "header.xml"),
+            corpus_dir=os.path.join(self.test_dir, "xmlid"),
+            docid_pattern_index=None,
+        )
+        with contextlib.redirect_stdout(
+            io.TextIOWrapper(io.BytesIO(), sys.stdout.encoding)
+        ) as pseudo:
+            self.use_case.process(request)
+        pseudo.seek(0)
+        doc = etree.parse(pseudo)
+        doc_ids = [
+            elem.text
+            for elem in doc.findall(".//{*}fileDesc/{*}publicationStmt/{*}idno")
+        ]
+        self.assertEqual(doc_ids, [])
+
     def _remove_output_files(self, dir=None, pattern=None):
         dir = dir or self.test_dir
         other_files = [file for file in os.listdir(dir) if re.match(pattern, file)]

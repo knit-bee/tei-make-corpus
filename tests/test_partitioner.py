@@ -5,6 +5,7 @@ import unittest
 from lxml import etree
 
 from tei_make_corpus.cli.corpus_config import CorpusConfig
+from tei_make_corpus.doc_id_handler import DocIdToIdnoHandler
 from tei_make_corpus.partitioner import Partitioner
 from tei_make_corpus.xmlid_handler import XmlIdRemover
 from tests.utils import MockHeaderHandler
@@ -262,3 +263,15 @@ class PartitionerTest(unittest.TestCase):
         partition = next(partitioner.get_partitions(corpus_dir, header_file, config))
         result = [pi.target for pi in partition.processing_instructions]
         self.assertEqual(result, ["test"])
+
+    def test_partition_instantiated_with_doc_id_handler(self):
+        partitioner = Partitioner(
+            header_handler=self.mock_header_handler,
+            path_finder=self.mock_path_finder,
+            size_estimator=self.size_estimator,
+            xmlid_handler=self.id_handler,
+            docid_handler=DocIdToIdnoHandler(),
+        )
+        self.mock_path_finder.files["test"] = ["test/subdir/file.xml"]
+        result = next(partitioner.get_partitions("test", self.header_file))
+        self.assertTrue(result.docid_handler, DocIdToIdnoHandler)

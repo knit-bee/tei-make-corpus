@@ -2,11 +2,13 @@ from dataclasses import dataclass
 from typing import Dict, Optional, Protocol
 
 from tei_make_corpus.cli.corpus_config import CorpusConfig
+from tei_make_corpus.cli.docid_pattern_map import PATTERN_MAP
 from tei_make_corpus.construct_processing_instructions import (
     construct_processing_instructions,
 )
 from tei_make_corpus.corpus_maker import TeiCorpusMaker
 from tei_make_corpus.corpus_stream import CorpusStream
+from tei_make_corpus.doc_id_handler import DocIdToIdnoHandler
 from tei_make_corpus.file_size_estimator import FileSizeEstimatorImpl
 from tei_make_corpus.header_handler import TeiHeaderHandlerImpl
 from tei_make_corpus.partitioner import Partitioner
@@ -24,6 +26,7 @@ class CliRequest:
     split_size: int = -1
     prefix_xmlid: bool = False
     processing_instructions: Optional[Dict[str, str]] = None
+    docid_pattern_index: Optional[int] = None
 
 
 class TeiMakeCorpusUseCase(Protocol):
@@ -45,6 +48,11 @@ class TeiMakeCorpusUseCaseImpl:
         path_finder = PathFinderImpl()
         size_estimator = FileSizeEstimatorImpl()
         xmlid_handler = create_xmlid_handler(request.prefix_xmlid)
+        docid_handler = None
+        if request.docid_pattern_index is not None:
+            docid_handler = DocIdToIdnoHandler(
+                PATTERN_MAP.get(request.docid_pattern_index, None)
+            )
         processing_instructions = None
         if request.processing_instructions is not None:
             processing_instructions = construct_processing_instructions(
@@ -55,6 +63,7 @@ class TeiMakeCorpusUseCaseImpl:
             path_finder=path_finder,
             size_estimator=size_estimator,
             xmlid_handler=xmlid_handler,
+            docid_handler=docid_handler,
         )
         config = CorpusConfig(
             clean_header=request.clean_header,
