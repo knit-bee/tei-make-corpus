@@ -7,10 +7,23 @@ from tei_make_corpus.element_equality import elements_equal
 
 
 class TeiHeaderHandler(Protocol):
+    """
+    Interface providing the common corpus header and functionality to
+    deduplicate elements in the individual headers if they are present
+    in the common header.
+    """
+
     def common_header(self) -> etree._Element:
+        """
+        Returns root element of common teiHeader of the corpus.
+        """
         ...
 
     def declutter_individual_header(self, iheader: etree._Element) -> None:
+        """
+        Removes elements from the header of a TEI document that present
+        and identical in the common header.
+        """
         ...
 
 
@@ -18,10 +31,14 @@ class TeiHeaderHandlerImpl:
     tags_no_leftover_sibling = {"distributor", "publisher", "authority"}
 
     def __init__(self, header_file_path: str) -> None:
+        """
+        TeiHeaderHandlerImpl is constructed with the file path to the
+        common teiHeader of the corpus.
+        """
         self._header_file = header_file_path
         self._cheader = self._construct_common_header(header_file_path)
 
-    def common_header(self):
+    def common_header(self) -> etree._Element:
         return self._cheader
 
     def declutter_individual_header(self, iheader: etree._Element) -> None:
