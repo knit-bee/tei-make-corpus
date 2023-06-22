@@ -4,8 +4,8 @@ from typing import List, Protocol
 
 class PathFinder(Protocol):
     """
-    Interface used by tei_make_corpus.Partitioner to file paths of
-    corpus files.
+    Interface used by tei_make_corpus.Partitioner to collect file
+    paths of corpus files.
     """
 
     def get_paths_for_corpus_files(

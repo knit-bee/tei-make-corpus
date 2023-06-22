@@ -17,7 +17,7 @@ def construct_processing_instructions(
     correctly, the passed text should contain substrings of attribute-
     value pairs, e.g. attr='val', joined by '='. The value should be
     enclosed by quotes.
-    Multuiple attribute-value pairs are separated by whitespace.
+    Multiple attribute-value pairs are separated by whitespace.
 
     Example:
     >>> pi_dict = {"targ1":"href='path/to/sth' attr='val'", "targ2":"val"}

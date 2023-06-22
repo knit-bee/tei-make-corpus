@@ -21,8 +21,8 @@ class TeiHeaderHandler(Protocol):
 
     def declutter_individual_header(self, iheader: etree._Element) -> None:
         """
-        Removes elements from the header of a TEI document that present
-        and identical in the common header.
+        Removes elements from the header of a TEI document that are
+        identical in the common header.
         """
         ...
 
