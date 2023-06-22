@@ -14,7 +14,7 @@ $ pip install git+https://github.com/knit-bee/tei-make-corpus.git
 * lxml >= 4.0
 
 ## Usage
-`tei-make-corpus` assumes that the TEI files you want to merge to a `teiCorpus` are valid TEI files (according to [TEI P5](https://www.tei-c.org/release/doc/tei-p5-doc/en/html/index.html)). Otherwise, it is not guaranteed that the output is valid according the same standard.
+`tei-make-corpus` assumes that the TEI files you want to merge to a `teiCorpus` are valid TEI files (according to [TEI P5](https://www.tei-c.org/release/doc/tei-p5-doc/en/html/index.html)). Otherwise, it is not guaranteed that the output is valid according to the same standard.
 
 `tei-make-corpus` can be used from the command line:
 
@@ -31,15 +31,15 @@ Create a *teiCorpus* from a collection of TEI documents. The output will be
 printed to stdout as default.
 
 positional arguments:
-  corpus_dir            Directory containing the TEI files. Only file with the
+  corpus_dir            Directory containing the TEI files. Only files with the
                         extension '.xml' are processed.
 
 options:
   -h, --help            show this help message and exit
   --config CONFIG, -k CONFIG
-                        Path to config file in TOML format for settings for
+                        Path to config file in TOML format for settings of
                         optional arguments (i.e. corpus_dir and --common-header
-                        should be still passed as commandline arguments). Use
+                        should always be passed as command line arguments). Use
                         [tei-make-corpus] as header or no header. Keys/
                         argument names should match CL argument names but with
                         underscore instead of dash.
@@ -91,7 +91,7 @@ options:
                         '#'.
   --processing-instructions PROCESSING_INSTRUCTIONS
                         Add xml processing instructions to the teiCorpus file.
-                        If passed as commandline argument, the processing
+                        If passed as command line argument, the processing
                         instructions should be formatted as a json-parsable
                         string representing a dictionary, e.g. '{"a":"b"}'
                         (with double quotes). If a toml file is used, use an
@@ -114,7 +114,7 @@ options:
                         '.*/\\w{2,3}_(.+)\\.xml$'}
 ```
 
-`tei-make-corpus` requires the path to a directory containing the TEI file and a file containing the information for the common header of the corpus.  
+`tei-make-corpus` requires the path to a directory containing the TEI files and a file containing the information for the common header of the corpus.  
 All files in the corpus directory that don't end in `.xml` are ignored as well as files that don't contain a `TEI` element as root element.  
 The common header should be a formatted `teiHeader`. If the option *--deduplicate-header* is used, the individual header of each file is compared with the common header during the generation of the corpus, and elements that appear in the common header are removed from the individual header (experimental).  
 The split options (*--split-size* and *--split-documents*) can also be used with unit prefixes (K, M, G, T), e.g. "2K" = 2000 Bytes.  
@@ -154,7 +154,7 @@ As default, all `@xml:id ` attributes are removed from the individual TEI docume
 
 </table>
 
-To add XML processing instructions to the corpus file, use the *--processing-instructions*  option. From the commandline, pass a dictionary as a json-parsable string (i.e. keys and values should be enclosed with double quotes).
+To add XML processing instructions to the corpus file, use the *--processing-instructions*  option. From the command line, pass a dictionary as a json-parsable string (i.e. keys and values should be enclosed with double quotes).
 
 ```xml
 $ tei-make-corpus my_corpus -c header.xml --processing-instructions \
@@ -201,13 +201,14 @@ PRE_Ahfb5ls.xml
 $ tei-make-corpus my_corpus -c header.xml --add-docid 1 | grep '<idno type="docId">'
 <idno type="docId">Ahfb5ls</idno>
 ```
+If the chosen regular expressions that is used to search the file path does not produce a match, the basename is used as fallback doc id and a warning will be logged.
 
 The extracted doc id is added as text content of a `<idno/>` element with `@type='docId'`. This `<idno/>` element is inserted in `teiHeader/fileDesc/publicationStmt`:
   - after the last `<idno/>` child, if present
   - else: before `<availability/>`, if present
   - else: as last child of `<publicationStmt/>`
 
-If the `<publicationStmt/>` is empty of contains only `<p/>` children, `<p/>` is used as tag for the new element and no `@type` attribute is added.
+If the `<publicationStmt/>` is empty or contains only `<p/>` children, `<p/>` is used as tag for the new element and no `@type` attribute is added.
 
 
 ### Example usage
