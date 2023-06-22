@@ -30,6 +30,10 @@ class CliRequest:
 
 
 class TeiMakeCorpusUseCase(Protocol):
+    """
+    Interface defining how (CLI) request is processed to build a teiCorpus
+    """
+
     def process(self, request: CliRequest) -> None:
         ...
 
@@ -43,6 +47,10 @@ class TeiMakeCorpusUseCaseImpl:
     out_stream: CorpusStream
 
     def process(self, request: CliRequest) -> None:
+        """
+        Process CliRequest and build teiCorpus according to its parameters.
+        The output is written to CorpusStream.
+        """
         self.out_stream.set_output_file(request.output_file)
         header_handler = TeiHeaderHandlerImpl(request.header_file)
         path_finder = PathFinderImpl()

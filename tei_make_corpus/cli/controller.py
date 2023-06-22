@@ -30,8 +30,8 @@ class TeiMakeCorpusController:
             "--config",
             "-k",
             default=None,
-            help="""Path to config file in TOML format for settings for optional arguments
-            (i.e. corpus_dir and --common-header should be still passed as commandline arguments).
+            help="""Path to config file in TOML format for settings of optional arguments
+            (i.e. corpus_dir and --common-header should always be passed as command line arguments).
             Use [tei-make-corpus] as header or no header. Keys/ argument names should match CL
             argument names but with underscore instead of dash.""",
         )
@@ -44,7 +44,7 @@ class TeiMakeCorpusController:
         )
         parser.add_argument(
             "corpus_dir",
-            help="Directory containing the TEI files. Only file with the extension '.xml' are processed.",
+            help="Directory containing the TEI files. Only files with the extension '.xml' are processed.",
             type=str,
         )
         parser.add_argument(
@@ -114,7 +114,7 @@ class TeiMakeCorpusController:
         parser.add_argument(
             "--processing-instructions",
             type=json.loads,
-            help="""Add xml processing instructions to the teiCorpus file. If passed as commandline
+            help="""Add xml processing instructions to the teiCorpus file. If passed as command line
             argument, the processing instructions should be formatted as a json-parsable string representing
             a dictionary, e.g. '{"a":"b"}' (with double quotes). If a toml file is used, use an inline table
             or, in multi-line format and used with global table header, prefix the sub-table with 'tei-make-corpus'. """,

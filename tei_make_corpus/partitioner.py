@@ -14,6 +14,25 @@ from tei_make_corpus.xmlid_handler import XmlIdHandler
 
 @dataclass
 class Partitioner:
+    """
+    Splits files in corpus directory into parts and creates configured
+    Partition for each part.
+
+    header_handler:     implementation of TeiHeaderHandler interface,
+                        provides common corpus header and removes elements
+                        in individual headers that are repeated in the
+                        common header
+    path_finder:        implementation of PathFinder protocol, provides
+                        list of file paths for the corpus
+    size_estimator:     implementation of FileSizeEstimator protocol,
+                        provides file sizes of corpus files
+    xmlid_handler:      subclass of XmlIdHandler, handles @xml:id in
+                        individual TEI documents
+    docid_handler:      implementation of DocIdHandler interface, allows
+                        adding a document identifier to individual TEI
+                        documents
+    """
+
     header_handler: TeiHeaderHandler
     path_finder: PathFinder
     size_estimator: FileSizeEstimator
@@ -23,6 +42,15 @@ class Partitioner:
     def get_partitions(
         self, corpus_dir: str, header_file: str, config: Optional[CorpusConfig] = None
     ) -> Generator[Partition, None, None]:
+        """
+        Split files in corpus_dir into Partitions according to configuration.
+
+        corpus_dir:     path to directory containing corpus files
+        header_file:    path to file containing common corpus header
+        config:         configurations for processing the corpus
+
+        Returns:        generator of Partition
+        """
         clean = False
         docs_per_file = -1
         doc_size = -1
