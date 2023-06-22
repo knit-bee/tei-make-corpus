@@ -11,9 +11,9 @@ class XmlIdHandler(abc.ABC):
     """
 
     @abc.abstractmethod
-    def process_document(self, doc_root: etree._Element, filepath: str) -> None:
+    def process_document(self, doc_root: etree._Element, file_path: str) -> None:
         """
-        Process a single TEI document and handle @xml:id's.
+        Process a single TEI document and handle @xml:ids.
 
         doc_root:   root of element tree of TEI document
 
@@ -27,7 +27,7 @@ class XmlIdRemover(XmlIdHandler):
     Remove all @xml:id attributes from document.
     """
 
-    def process_document(self, doc_root: etree._Element, filepath: str) -> None:
+    def process_document(self, doc_root: etree._Element, file_path: str) -> None:
         self._remove_all_xmlid_attributes(doc_root)
 
     def _remove_all_xmlid_attributes(self, tei_doc: etree._Element) -> None:
@@ -44,14 +44,14 @@ class XmlIdPrefixer(XmlIdHandler):
     def __init__(self) -> None:
         self._prefixes: Set[str] = set()
 
-    def process_document(self, doc_root: etree._Element, filepath: str) -> None:
+    def process_document(self, doc_root: etree._Element, file_path: str) -> None:
         """
         Disambiguate @xml:id in TEI document by prefixing values of @xml:id
         and attributes referencing them.
         """
-        self._add_prefix_to_xmlid_attributes(doc_root, filepath)
+        self._add_prefix_to_xmlid_attributes(doc_root, file_path)
 
-    def generate_prefix(self, filepath: str) -> str:
+    def generate_prefix(self, file_path: str) -> str:
         """
         Generate a prefix for a document by hashing its file path.
 
@@ -74,7 +74,7 @@ class XmlIdPrefixer(XmlIdHandler):
         # clipped:   a3a300
         # final:     pa3a300
         """
-        uid = uuid.uuid5(uuid.NAMESPACE_DNS, filepath).hex
+        uid = uuid.uuid5(uuid.NAMESPACE_DNS, file_path).hex
         prefix = uid[:6]
         tmp_prefix = prefix
         suffix_on_collision = 0
@@ -85,9 +85,9 @@ class XmlIdPrefixer(XmlIdHandler):
         return f"p{tmp_prefix}"
 
     def _add_prefix_to_xmlid_attributes(
-        self, doc_root: etree._Element, filepath: str
+        self, doc_root: etree._Element, file_path: str
     ) -> None:
-        prefix = self.generate_prefix(filepath)
+        prefix = self.generate_prefix(file_path)
         if (
             xmlid_attrib := doc_root.get("{http://www.w3.org/XML/1998/namespace}id")
         ) is not None:
